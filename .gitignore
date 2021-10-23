@@ -1,0 +1,18 @@
+# Logs and databases #
+######################
+*.log
+
+# Gradle Files #
+################
+.gradle
+
+# Build output directies
+/build
+*/build
+
+# IntelliJ specific files/directories
+out
+.idea
+*.ipr
+*.iws
+*.iml
