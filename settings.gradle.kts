@@ -4,6 +4,7 @@ include(
         "domain",
         "signing",
         "datetime",
+        "app",
         "web",
         "integration",
         "persistence"

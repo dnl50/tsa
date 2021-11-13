@@ -2,7 +2,7 @@ package dev.mieser.tsa.persistence.api;
 
 import dev.mieser.tsa.domain.TimestampResponseData;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -12,6 +12,6 @@ public interface TspResponseDataRepository {
 
     Optional<TimestampResponseData> findById(Long id);
 
-    Page<TimestampResponseData> findAll(PageRequest pageRequest);
+    Page<TimestampResponseData> findAll(Pageable pageable);
 
 }

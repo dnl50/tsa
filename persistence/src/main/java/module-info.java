@@ -13,4 +13,5 @@ module tsa.persistence {
     requires static lombok;
 
     exports dev.mieser.tsa.persistence.api;
+    exports dev.mieser.tsa.persistence.config;
 }

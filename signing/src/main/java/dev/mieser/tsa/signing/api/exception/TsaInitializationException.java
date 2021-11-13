@@ -6,4 +6,8 @@ public class TsaInitializationException extends RuntimeException {
         super(message, cause);
     }
 
+    public TsaInitializationException(String message) {
+        super(message);
+    }
+
 }

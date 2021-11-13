@@ -6,10 +6,13 @@ import dev.mieser.tsa.persistence.entity.TspResponseEntity;
 import dev.mieser.tsa.persistence.mapper.TspResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
+/**
+ * {@link TspResponseDataRepository} using a Spring Data JPA Repository to persist the data.
+ */
 @RequiredArgsConstructor
 public class TspResponseDataRepositoryImpl implements TspResponseDataRepository {
 
@@ -29,8 +32,8 @@ public class TspResponseDataRepositoryImpl implements TspResponseDataRepository 
     }
 
     @Override
-    public Page<TimestampResponseData> findAll(PageRequest pageRequest) {
-        return repository.findAll(pageRequest).map(tspResponseMapper::toDomain);
+    public Page<TimestampResponseData> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(tspResponseMapper::toDomain);
     }
 
 }

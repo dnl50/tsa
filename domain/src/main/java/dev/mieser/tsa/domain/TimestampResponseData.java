@@ -46,7 +46,7 @@ public class TimestampResponseData {
     /**
      * The request this response belongs to.
      */
-    private final TimestampRequestData requestData;
+    private final TimestampRequestData request;
 
     /**
      * The ASN.1 encoded TSP response.

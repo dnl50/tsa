@@ -38,7 +38,7 @@ public class TimestampResponseMapper {
                 .statusString(timeStampResponse.getStatusString())
                 .failureInfo(mapIfNotNull(timeStampResponse.getFailInfo(), PKIFailureInfo::intValue))
                 .serialNumber(mapIfNotNull(timeStampResponse.getTimeStampToken(), token -> token.getTimeStampInfo().getSerialNumber()))
-                .requestData(requestData)
+                .request(requestData)
                 .generationTime(mapIfNotNull(timeStampResponse.getTimeStampToken(), token -> dateConverter.toZonedDateTime(token.getTimeStampInfo().getGenTime())))
                 .asnEncoded(asnEncoded(timeStampResponse, TimeStampResponse::getEncoded))
                 .build();

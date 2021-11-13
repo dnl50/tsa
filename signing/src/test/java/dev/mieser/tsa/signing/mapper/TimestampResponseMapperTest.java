@@ -113,7 +113,7 @@ class TimestampResponseMapperTest {
                 .status(PKIStatus.REJECTION)
                 .failureInfo(PKIFailureInfo.badAlg)
                 .statusString(statusString)
-                .requestData(expectedRequestData)
+                .request(expectedRequestData)
                 .asnEncoded(asnEncodedResponse)
                 .build();
 
@@ -154,7 +154,7 @@ class TimestampResponseMapperTest {
                 .status(PKIStatus.GRANTED)
                 .serialNumber(responseSerialNumber)
                 .generationTime(genTime)
-                .requestData(expectedRequestData)
+                .request(expectedRequestData)
                 .asnEncoded(asnEncodedResponse)
                 .build();
 
@@ -191,7 +191,7 @@ class TimestampResponseMapperTest {
                 .build();
 
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
-                .requestData(expectedRequestData)
+                .request(expectedRequestData)
                 .build();
 
         assertThat(actualResponseData).isEqualTo(expectedResponseData);

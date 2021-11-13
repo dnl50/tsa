@@ -12,5 +12,8 @@ dependencies {
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("commons-io:commons-io:2.11.0")
 
+    integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
+    integrationTestImplementation("org.hibernate.validator:hibernate-validator")
+
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }

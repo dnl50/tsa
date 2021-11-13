@@ -32,7 +32,7 @@ public class TsaConfiguration {
     }
 
     @Bean
-    @ConditionalOnExpression("#{${tsa.certificate.path} matches 'classpath:.*'}")
+    @ConditionalOnExpression("#{!('${tsa.certificate.path}' matches '^classpath:.*$')}")
     SigningCertificateLoader fileSystemCertificateLoader(TsaProperties tsaProperties) {
         char[] password = toCharArray(tsaProperties.getCertificate().getPassword());
 
@@ -40,11 +40,12 @@ public class TsaConfiguration {
     }
 
     @Bean
-    @ConditionalOnExpression("#{!(${tsa.certificate.path} matches 'classpath:.*')}")
+    @ConditionalOnExpression("#{'${tsa.certificate.path}' matches '^classpath:.*$'}")
     SigningCertificateLoader classPathSystemCertificateLoader(TsaProperties tsaProperties) {
         char[] password = toCharArray(tsaProperties.getCertificate().getPassword());
+        String path = tsaProperties.getCertificate().getPath().replace("classpath:", "");
 
-        return new ClasspathCertificateLoader(tsaProperties.getCertificate().getPath(), password);
+        return new ClasspathCertificateLoader(path, password);
     }
 
     private char[] toCharArray(String password) {

@@ -40,6 +40,18 @@ sourceSets {
     }
 }
 
+val integrationTest = task<Test>("integrationTest") {
+    group = "verification"
+
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+    shouldRunAfter("test")
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.check {
+    dependsOn(integrationTest)
 }

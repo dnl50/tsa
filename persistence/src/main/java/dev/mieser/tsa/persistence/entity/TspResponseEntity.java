@@ -1,7 +1,9 @@
 package dev.mieser.tsa.persistence.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -9,6 +11,8 @@ import java.time.ZonedDateTime;
 @Data
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "TSP_RESPONSE")
 public class TspResponseEntity {
 
@@ -28,7 +32,7 @@ public class TspResponseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "REQUEST_ID")
-    private TspRequestEntity requestData;
+    private TspRequestEntity request;
 
     private String asnEncoded;
 

@@ -121,12 +121,12 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
         X509Certificate signingCertificate = signingCertificateLoader.loadCertificate();
         PublicKey signingCertificatePublicKey = signingCertificate.getPublicKey();
         if (!hasSupportedPublicKeyAlgorithm(signingCertificatePublicKey)) {
-            throw new IllegalStateException(format("Public Key algorithm '%s' is not supported.", signingCertificatePublicKey.getAlgorithm()));
+            throw new TsaInitializationException(format("Public Key algorithm '%s' is not supported.", signingCertificatePublicKey.getAlgorithm()));
         }
 
         PrivateKey signingPrivateKey = signingCertificateLoader.loadPrivateKey();
         String signingAlgorithmName = bouncyCastleSigningAlgorithmName(signingCertificatePublicKey);
-        log.info("Using public key algorithm '{}' and signing algorithm '{}'", signingCertificatePublicKey.getAlgorithm(), signingCertificate);
+        log.info("Using public key algorithm '{}' and signing algorithm '{}'.", signingCertificatePublicKey.getAlgorithm(), signingAlgorithmName);
 
         return new JcaSimpleSignerInfoGeneratorBuilder().build(signingAlgorithmName, signingPrivateKey, signingCertificate);
     }
