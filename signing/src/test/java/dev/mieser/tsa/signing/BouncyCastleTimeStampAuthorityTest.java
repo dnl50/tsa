@@ -7,7 +7,7 @@ import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
-import dev.mieser.tsa.signing.config.properties.TsaProperties;
+import dev.mieser.tsa.signing.config.TsaProperties;
 import dev.mieser.tsa.signing.mapper.TimestampResponseMapper;
 import dev.mieser.tsa.signing.serial.SerialNumberGenerator;
 import org.bouncycastle.asn1.ASN1Boolean;
@@ -20,6 +20,7 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.util.io.pem.PemReader;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -76,197 +77,207 @@ class BouncyCastleTimeStampAuthorityTest {
         this.timestampResponseMapperMock = timestampResponseMapper;
     }
 
-    @Test
-    void signRequestThrowsExceptionWhenTsaIsNotInitialized() {
-        // given
-        var tspRequestInputStream = new ByteArrayInputStream(new byte[0]);
+    @Nested
+    class Initialize {
 
-        BouncyCastleTimeStampAuthority testSubject = createTestSubject(new TsaProperties());
+        @Test
+        void throwsExceptionWhenInitializationFails() throws IOException {
+            // given
+            BouncyCastleTimeStampAuthority testSubject = createTestSubject(new TsaProperties());
 
-        // when / then
-        assertThatExceptionOfType(TsaNotInitializedException.class)
-                .isThrownBy(() -> testSubject.signRequest(tspRequestInputStream));
+            IOException cause = new IOException();
+            when(signingCertificateLoaderMock.loadCertificate()).thenThrow(cause);
+
+            // when / then
+            assertThatExceptionOfType(TsaInitializationException.class)
+                    .isThrownBy(testSubject::initialize)
+                    .withMessage("Could not initialize TSA.")
+                    .withCause(cause);
+        }
+
     }
 
-    @Test
-    void initializeThrowsExceptionWhenInitializationFails() throws IOException {
-        // given
-        BouncyCastleTimeStampAuthority testSubject = createTestSubject(new TsaProperties());
+    @Nested
+    class SignRequest {
 
-        IOException cause = new IOException();
-        when(signingCertificateLoaderMock.loadCertificate()).thenThrow(cause);
+        @Test
+        void throwsExceptionWhenTsaIsNotInitialized() {
+            // given
+            var tspRequestInputStream = new ByteArrayInputStream(new byte[0]);
 
-        // when / then
-        assertThatExceptionOfType(TsaInitializationException.class)
-                .isThrownBy(testSubject::initialize)
-                .withMessage("Could not initialize TSA.")
-                .withCause(cause);
-    }
+            BouncyCastleTimeStampAuthority testSubject = createTestSubject(new TsaProperties());
 
-    @Test
-    void signRequestThrowsExceptionWhenTsaDoesNotRecognizeHashAlgorithm(@Mock TimeStampRequest timeStampRequestMock) throws Exception {
-        // given
-        var tspRequestInputStream = new ByteArrayInputStream(new byte[0]);
-        var tsaProperties = new TsaProperties();
-        tsaProperties.setEssCertIdAlgorithm(HashAlgorithm.SHA1);
-        tsaProperties.setSigningDigestAlgorithm(SHA256);
+            // when / then
+            assertThatExceptionOfType(TsaNotInitializedException.class)
+                    .isThrownBy(() -> testSubject.signRequest(tspRequestInputStream));
+        }
 
-        X509Certificate certificate = loadRsaCertificate();
-        PrivateKey privateKey = loadRsaPrivateKey();
+        @Test
+        void throwsExceptionWhenTsaDoesNotRecognizeHashAlgorithm(@Mock TimeStampRequest timeStampRequestMock) throws Exception {
+            // given
+            var tspRequestInputStream = new ByteArrayInputStream(new byte[0]);
+            var tsaProperties = new TsaProperties();
+            tsaProperties.setEssCertIdAlgorithm(HashAlgorithm.SHA1);
+            tsaProperties.setSigningDigestAlgorithm(SHA256);
 
-        when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(timeStampRequestMock);
-        when(tspRequestValidatorMock.isKnownHashAlgorithm(timeStampRequestMock)).thenReturn(false);
-        when(timeStampRequestMock.getMessageImprintAlgOID()).thenReturn(new ASN1ObjectIdentifier("1.2.840.113549.2.5"));
+            X509Certificate certificate = loadRsaCertificate();
+            PrivateKey privateKey = loadRsaPrivateKey();
 
-        BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
+            when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(timeStampRequestMock);
+            when(tspRequestValidatorMock.isKnownHashAlgorithm(timeStampRequestMock)).thenReturn(false);
+            when(timeStampRequestMock.getMessageImprintAlgOID()).thenReturn(new ASN1ObjectIdentifier("1.2.840.113549.2.5"));
 
-        // when / then
-        assertThatExceptionOfType(UnknownHashAlgorithmException.class)
-                .isThrownBy(() -> testSubject.signRequest(tspRequestInputStream))
-                .withMessage("Unknown hash algorithm OID '1.2.840.113549.2.5'.");
-    }
+            BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
 
-    @Test
-    void signRequestReturnsMappedTspResponse(@Mock TimestampResponseData timestampResponseDataMock) throws Exception {
-        // given
-        TimeStampRequest tspRequest = createSha256TimestampRequest();
-        var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
-        var tsaProperties = new TsaProperties();
-        tsaProperties.setAcceptedHashAlgorithms(EnumSet.of(SHA512));
+            // when / then
+            assertThatExceptionOfType(UnknownHashAlgorithmException.class)
+                    .isThrownBy(() -> testSubject.signRequest(tspRequestInputStream))
+                    .withMessage("Unknown hash algorithm OID '1.2.840.113549.2.5'.");
+        }
 
-        X509Certificate certificate = loadRsaCertificate();
-        PrivateKey privateKey = loadRsaPrivateKey();
+        @Test
+        void returnsMappedTspResponse(@Mock TimestampResponseData timestampResponseDataMock) throws Exception {
+            // given
+            TimeStampRequest tspRequest = createSha256TimestampRequest();
+            var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
+            var tsaProperties = new TsaProperties();
+            tsaProperties.setAcceptedHashAlgorithms(EnumSet.of(SHA512));
 
-        when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
-        when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
-        when(timestampResponseMapperMock.map(eq(tspRequest), any())).thenReturn(timestampResponseDataMock);
-        when(currentDateTimeServiceMock.now()).thenReturn(new Date());
-        when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
+            X509Certificate certificate = loadRsaCertificate();
+            PrivateKey privateKey = loadRsaPrivateKey();
 
-        BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
+            when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
+            when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
+            when(timestampResponseMapperMock.map(eq(tspRequest), any())).thenReturn(timestampResponseDataMock);
+            when(currentDateTimeServiceMock.now()).thenReturn(new Date());
+            when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
 
-        // when
-        TimestampResponseData actualResponseData = testSubject.signRequest(tspRequestInputStream);
+            BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
 
-        // then
-        assertThat(actualResponseData).isEqualTo(timestampResponseDataMock);
-    }
+            // when
+            TimestampResponseData actualResponseData = testSubject.signRequest(tspRequestInputStream);
 
-    @Test
-    void signRequestDoesNotSignRequestWhenHashAlgorithmIsNotAccepted() throws Exception {
-        // given
-        TimeStampRequest tspRequest = createSha256TimestampRequest();
-        var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
-        var tsaProperties = new TsaProperties();
-        tsaProperties.setAcceptedHashAlgorithms(EnumSet.of(SHA512));
+            // then
+            assertThat(actualResponseData).isEqualTo(timestampResponseDataMock);
+        }
 
-        X509Certificate certificate = loadRsaCertificate();
-        PrivateKey privateKey = loadRsaPrivateKey();
+        @Test
+        void doesNotSignRequestWhenHashAlgorithmIsNotAccepted() throws Exception {
+            // given
+            TimeStampRequest tspRequest = createSha256TimestampRequest();
+            var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
+            var tsaProperties = new TsaProperties();
+            tsaProperties.setAcceptedHashAlgorithms(EnumSet.of(SHA512));
 
-        when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
-        when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
-        when(currentDateTimeServiceMock.now()).thenReturn(new Date());
-        when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
+            X509Certificate certificate = loadRsaCertificate();
+            PrivateKey privateKey = loadRsaPrivateKey();
 
-        BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
+            when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
+            when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
+            when(currentDateTimeServiceMock.now()).thenReturn(new Date());
+            when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
 
-        // when
-        testSubject.signRequest(tspRequestInputStream);
+            BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
 
-        // then
-        ArgumentCaptor<TimeStampResponse> tspResponseCaptor = ArgumentCaptor.forClass(TimeStampResponse.class);
-        then(timestampResponseMapperMock).should().map(eq(tspRequest), tspResponseCaptor.capture());
+            // when
+            testSubject.signRequest(tspRequestInputStream);
 
-        TimeStampResponse generatedTspResponse = tspResponseCaptor.getValue();
-        assertThat(generatedTspResponse.getFailInfo()).extracting(PKIFailureInfo::intValue).isEqualTo(PKIFailureInfo.badAlg);
-    }
+            // then
+            ArgumentCaptor<TimeStampResponse> tspResponseCaptor = ArgumentCaptor.forClass(TimeStampResponse.class);
+            then(timestampResponseMapperMock).should().map(eq(tspRequest), tspResponseCaptor.capture());
 
-    @Test
-    void signRequestSignsRequestWhenHashAlgorithmIsAccepted() throws Exception {
-        // given
-        TimeStampRequest tspRequest = createSha256TimestampRequest();
-        var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
+            TimeStampResponse generatedTspResponse = tspResponseCaptor.getValue();
+            assertThat(generatedTspResponse.getFailInfo()).extracting(PKIFailureInfo::intValue).isEqualTo(PKIFailureInfo.badAlg);
+        }
 
-        X509Certificate certificate = loadRsaCertificate();
-        PrivateKey privateKey = loadRsaPrivateKey();
-        Date signingDate = Date.from(ZonedDateTime.parse("2021-11-06T15:57:37+01:00").toInstant());
+        @Test
+        void signsRequestWhenHashAlgorithmIsAccepted() throws Exception {
+            // given
+            TimeStampRequest tspRequest = createSha256TimestampRequest();
+            var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
 
-        when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
-        when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
-        when(currentDateTimeServiceMock.now()).thenReturn(signingDate);
-        when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
+            X509Certificate certificate = loadRsaCertificate();
+            PrivateKey privateKey = loadRsaPrivateKey();
+            Date signingDate = Date.from(ZonedDateTime.parse("2021-11-06T15:57:37+01:00").toInstant());
 
-        BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(new TsaProperties(), certificate, privateKey);
+            when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
+            when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
+            when(currentDateTimeServiceMock.now()).thenReturn(signingDate);
+            when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
 
-        // when
-        testSubject.signRequest(tspRequestInputStream);
+            BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(new TsaProperties(), certificate, privateKey);
 
-        // then
-        ArgumentCaptor<TimeStampResponse> tspResponseCaptor = ArgumentCaptor.forClass(TimeStampResponse.class);
-        then(timestampResponseMapperMock).should().map(eq(tspRequest), tspResponseCaptor.capture());
+            // when
+            testSubject.signRequest(tspRequestInputStream);
 
-        TimeStampResponse generatedTspResponse = tspResponseCaptor.getValue();
-        assertThat(generatedTspResponse.getTimeStampToken().getTimeStampInfo().getGenTime()).isEqualTo(signingDate);
-    }
+            // then
+            ArgumentCaptor<TimeStampResponse> tspResponseCaptor = ArgumentCaptor.forClass(TimeStampResponse.class);
+            then(timestampResponseMapperMock).should().map(eq(tspRequest), tspResponseCaptor.capture());
 
-    @Test
-    void signRequestUsesConfiguredPolicy() throws Exception {
-        // given
-        TimeStampRequest tspRequest = createSha256TimestampRequest();
-        var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
-        var tsaProperties = new TsaProperties();
-        tsaProperties.setPolicyOid("1.2.3.4.5");
+            TimeStampResponse generatedTspResponse = tspResponseCaptor.getValue();
+            assertThat(generatedTspResponse.getTimeStampToken().getTimeStampInfo().getGenTime()).isEqualTo(signingDate);
+        }
 
-        X509Certificate certificate = loadRsaCertificate();
-        PrivateKey privateKey = loadRsaPrivateKey();
-        Date signingDate = Date.from(ZonedDateTime.parse("2021-11-06T15:57:37+01:00").toInstant());
+        @Test
+        void usesConfiguredPolicy() throws Exception {
+            // given
+            TimeStampRequest tspRequest = createSha256TimestampRequest();
+            var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
+            var tsaProperties = new TsaProperties();
+            tsaProperties.setPolicyOid("1.2.3.4.5");
 
-        when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
-        when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
-        when(currentDateTimeServiceMock.now()).thenReturn(signingDate);
-        when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
+            X509Certificate certificate = loadRsaCertificate();
+            PrivateKey privateKey = loadRsaPrivateKey();
+            Date signingDate = Date.from(ZonedDateTime.parse("2021-11-06T15:57:37+01:00").toInstant());
 
-        BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
+            when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
+            when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
+            when(currentDateTimeServiceMock.now()).thenReturn(signingDate);
+            when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
 
-        // when
-        testSubject.signRequest(tspRequestInputStream);
+            BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
 
-        // then
-        ArgumentCaptor<TimeStampResponse> tspResponseCaptor = ArgumentCaptor.forClass(TimeStampResponse.class);
-        then(timestampResponseMapperMock).should().map(eq(tspRequest), tspResponseCaptor.capture());
+            // when
+            testSubject.signRequest(tspRequestInputStream);
 
-        TimeStampResponse generatedTspResponse = tspResponseCaptor.getValue();
-        assertThat(generatedTspResponse.getTimeStampToken().getTimeStampInfo().getPolicy()).isEqualTo(new ASN1ObjectIdentifier("1.2.3.4.5"));
-    }
+            // then
+            ArgumentCaptor<TimeStampResponse> tspResponseCaptor = ArgumentCaptor.forClass(TimeStampResponse.class);
+            then(timestampResponseMapperMock).should().map(eq(tspRequest), tspResponseCaptor.capture());
 
-    @Test
-    void signRequestUsesGeneratedSerialNumber() throws Exception {
-        // given
-        TimeStampRequest tspRequest = createSha256TimestampRequest();
-        var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
-        var tsaProperties = new TsaProperties();
-        tsaProperties.setPolicyOid("1.2.3.4.5");
+            TimeStampResponse generatedTspResponse = tspResponseCaptor.getValue();
+            assertThat(generatedTspResponse.getTimeStampToken().getTimeStampInfo().getPolicy()).isEqualTo(new ASN1ObjectIdentifier("1.2.3.4.5"));
+        }
 
-        X509Certificate certificate = loadRsaCertificate();
-        PrivateKey privateKey = loadRsaPrivateKey();
-        Date signingDate = Date.from(ZonedDateTime.parse("2021-11-06T15:57:37+01:00").toInstant());
+        @Test
+        void usesGeneratedSerialNumber() throws Exception {
+            // given
+            TimeStampRequest tspRequest = createSha256TimestampRequest();
+            var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
+            var tsaProperties = new TsaProperties();
+            tsaProperties.setPolicyOid("1.2.3.4.5");
 
-        when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
-        when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
-        when(currentDateTimeServiceMock.now()).thenReturn(signingDate);
-        when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
+            X509Certificate certificate = loadRsaCertificate();
+            PrivateKey privateKey = loadRsaPrivateKey();
+            Date signingDate = Date.from(ZonedDateTime.parse("2021-11-06T15:57:37+01:00").toInstant());
 
-        BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
+            when(tspRequestParserMock.parseRequest(tspRequestInputStream)).thenReturn(tspRequest);
+            when(tspRequestValidatorMock.isKnownHashAlgorithm(tspRequest)).thenReturn(true);
+            when(currentDateTimeServiceMock.now()).thenReturn(signingDate);
+            when(serialNumberGeneratorMock.generateSerialNumber()).thenReturn(BigInteger.TEN);
 
-        // when
-        testSubject.signRequest(tspRequestInputStream);
+            BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(tsaProperties, certificate, privateKey);
 
-        // then
-        ArgumentCaptor<TimeStampResponse> tspResponseCaptor = ArgumentCaptor.forClass(TimeStampResponse.class);
-        then(timestampResponseMapperMock).should().map(eq(tspRequest), tspResponseCaptor.capture());
+            // when
+            testSubject.signRequest(tspRequestInputStream);
 
-        TimeStampResponse generatedTspResponse = tspResponseCaptor.getValue();
-        assertThat(generatedTspResponse.getTimeStampToken().getTimeStampInfo().getSerialNumber()).isEqualTo(BigInteger.TEN);
+            // then
+            ArgumentCaptor<TimeStampResponse> tspResponseCaptor = ArgumentCaptor.forClass(TimeStampResponse.class);
+            then(timestampResponseMapperMock).should().map(eq(tspRequest), tspResponseCaptor.capture());
+
+            TimeStampResponse generatedTspResponse = tspResponseCaptor.getValue();
+            assertThat(generatedTspResponse.getTimeStampToken().getTimeStampInfo().getSerialNumber()).isEqualTo(BigInteger.TEN);
+        }
+
     }
 
     private BouncyCastleTimeStampAuthority createTestSubject(TsaProperties tsaProperties) {

@@ -8,10 +8,13 @@ import org.bouncycastle.tsp.TimeStampRequest;
 
 import java.io.InputStream;
 
+/**
+ * Reads an ASN.1 DER encoded TSP request from an input stream.
+ */
 public class TspRequestParser {
 
     /**
-     * @param requestInputStream The input stream of an ASN.1 encoded TSP request, not {@code null}. The input stream will <b>not</b> be closed.
+     * @param requestInputStream The input stream of an ASN.1 DER encoded TSP request, not {@code null}. The input stream will <b>not</b> be closed.
      * @return The parsed TSP request.
      * @throws InvalidTspRequestException When the input stream cannot be parsed to an TSP request.
      */

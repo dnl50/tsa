@@ -1,4 +1,4 @@
-package dev.mieser.tsa.signing.config.properties;
+package dev.mieser.tsa.signing.config;
 
 import dev.mieser.tsa.domain.HashAlgorithm;
 import lombok.Getter;

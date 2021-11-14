@@ -9,7 +9,7 @@ import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.TspResponseException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
-import dev.mieser.tsa.signing.config.properties.TsaProperties;
+import dev.mieser.tsa.signing.config.TsaProperties;
 import dev.mieser.tsa.signing.mapper.TimestampResponseMapper;
 import dev.mieser.tsa.signing.serial.SerialNumberGenerator;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +32,9 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
+/**
+ * {@link TimeStampAuthority} implementation using Bouncy Castle's TSP implementation.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
@@ -55,10 +58,10 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
     private TimeStampResponseGenerator timeStampResponseGenerator;
 
     @Override
-    public TimestampResponseData signRequest(InputStream tspRequest) {
+    public TimestampResponseData signRequest(InputStream tspRequestInputStream) {
         verifyTsaIsInitialized();
 
-        TimeStampRequest timeStampRequest = tspRequestParser.parseRequest(tspRequest);
+        TimeStampRequest timeStampRequest = tspRequestParser.parseRequest(tspRequestInputStream);
         if (!tspRequestValidator.isKnownHashAlgorithm(timeStampRequest)) {
             throw new UnknownHashAlgorithmException(format("Unknown hash algorithm OID '%s'.", timeStampRequest.getMessageImprintAlgOID().getId()));
         }
@@ -67,7 +70,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
     }
 
     /**
-     * Verifies that the TSA has been initialzed via the {@link #initialize()} method.
+     * Verifies that the TSA has been initialized via the {@link #initialize()} method.
      *
      * @throws TsaNotInitializedException When the TSA has not yet been initialized.
      */
@@ -91,18 +94,22 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
     @Override
     public void initialize() {
         try {
+            log.info("Starting TSA initialization.");
+
             DigestCalculator signerCertDigestCalculator = buildSignerCertDigestCalculator();
             SignerInfoGenerator signerInfoGenerator = buildSignerInfoGenerator();
             var timeStampTokenGenerator = new TimeStampTokenGenerator(signerInfoGenerator, signerCertDigestCalculator, new ASN1ObjectIdentifier(tsaProperties.getPolicyOid()));
-
             this.timeStampResponseGenerator = new TimeStampResponseGenerator(timeStampTokenGenerator, acceptedHashAlgorithmIdentifiers());
+
+            log.info("Successfully initialized TSA. Tokens are issued under policy OID '{}'. The following hash algorithms are accepted: {}",
+                    tsaProperties.getPolicyOid(), tsaProperties.getAcceptedHashAlgorithms());
         } catch (Exception e) {
             throw new TsaInitializationException("Could not initialize TSA.", e);
         }
     }
 
     /**
-     * @return The {@link DigestCalculator} which is used to calculate the {@code ESSCertID} which is included TSA responses.
+     * @return The {@link DigestCalculator} which is used to calculate the {@code ESSCertID} which is included in TSA responses.
      * @throws Exception When an error occurs building the digest calculator.
      */
     private DigestCalculator buildSignerCertDigestCalculator() throws Exception {
@@ -126,14 +133,14 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
 
         PrivateKey signingPrivateKey = signingCertificateLoader.loadPrivateKey();
         String signingAlgorithmName = bouncyCastleSigningAlgorithmName(signingCertificatePublicKey);
-        log.info("Using public key algorithm '{}' and signing algorithm '{}'.", signingCertificatePublicKey.getAlgorithm(), signingAlgorithmName);
+        log.info("Public key algorithm is '{}', using signing algorithm '{}'.", signingCertificatePublicKey.getAlgorithm(), signingAlgorithmName);
 
         return new JcaSimpleSignerInfoGeneratorBuilder().build(signingAlgorithmName, signingPrivateKey, signingCertificate);
     }
 
     /**
      * @param signingCertificatePublicKey The public key of the certificate used to sign the TSP requests with, not {@code null}.
-     * @return {@code true}, iff the public key's algorithm name is contained in {@link #SUPPORTED_PUBLIC_KEY_ALGORITHMS} set.
+     * @return {@code true}, iff the public key's algorithm is supported by this TSA.
      */
     private boolean hasSupportedPublicKeyAlgorithm(PublicKey signingCertificatePublicKey) {
         String publicKeyAlgorithmName = signingCertificatePublicKey.getAlgorithm();
@@ -142,7 +149,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
 
     /**
      * @param signingCertificatePublicKey The {@link #hasSupportedPublicKeyAlgorithm(PublicKey) supported} public key, not {@code null}.
-     * @return The name of the Bouncycastle signature algorithm.
+     * @return The name of the Bouncy Castle signature algorithm used to sign TSP requests.
      */
     private String bouncyCastleSigningAlgorithmName(PublicKey signingCertificatePublicKey) {
         return format("%swith%s", tsaProperties.getSigningDigestAlgorithm().name(), signingCertificatePublicKey.getAlgorithm());

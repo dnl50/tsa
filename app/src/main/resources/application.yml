@@ -1,3 +1,0 @@
-tsa:
-  certificate:
-    path: "classpath:/cert/tsa-cert.p12"

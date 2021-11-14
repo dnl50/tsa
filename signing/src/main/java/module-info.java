@@ -16,6 +16,5 @@ module tsa.signing {
     exports dev.mieser.tsa.signing.api;
     exports dev.mieser.tsa.signing.api.exception;
     exports dev.mieser.tsa.signing.config;
-    exports dev.mieser.tsa.signing.config.properties;
     exports dev.mieser.tsa.signing.serial;
 }

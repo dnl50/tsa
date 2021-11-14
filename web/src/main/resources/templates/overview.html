@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Spring Boot Thymeleaf Application - Bootstrap Pagination</title>
+
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap-icons/font/bootstrap-icons.css}">
+
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/web/overview}">Time Stamp Authority (TSA)</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 mt-5 mb-5">
+            <table id="posts" class="table table-bordered table-responsive-sm">
+                <thead>
+                <tr>
+                    <th>Serial</th>
+                    <th>Algorithm</th>
+                    <th>Status</th>
+                    <th>Status String</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="response : ${responses.content}">
+                    <td th:text="${response.serialNumber}">Serial Number</td>
+                    <td th:text="${response.request.hashAlgorithm}">Hash Algorithm</td>
+                    <td th:text="${response.status}">Status</td>
+                    <td th:text="${response.statusString}">Status String</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <nav aria-label="Pagination" th:if="${responses.totalPages gt 0}">
+                <ul class="pagination justify-content-center font-weight-medium">
+                    <li class="page-item" th:classappend="${responses.number eq 0} ? 'disabled'">
+                        <a class="page-link svg-icon"
+                           th:href="@{/web/overview?page={id}(id=${responses.number - 1})}"
+                           aria-label="Previous"
+                           title="Previous Page" rel="tooltip">
+                            <i class="bi-chevron-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" th:classappend="${i eq responses.number + 1} ? 'active'"
+                        th:each="i : ${#numbers.sequence( responses.number + 1, responses.totalPages > 10 + responses.number ? responses.number + 10 : responses.totalPages, 1)}">
+                        <a class="page-link" th:href="@{/web/overview?page={id}(id=${i - 1})}" th:text="${i}"
+                           th:title="${'Page '+ i}"
+                           rel="tooltip"></a>
+                    </li>
+                    <li class="page-item disabled" th:if="${responses.number + 10 < responses.totalPages}">
+                        <a class="page-link" href="#">
+                            <i class="bi-three-dots"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" th:classappend="${responses.number + 1 eq responses.totalPages} ? 'disabled'">
+                        <a class="page-link svg-icon" th:href="@{/web/overview?page={id}(id=${responses.number + 1})}"
+                           aria-label="Next"
+                           title="Next Page" rel="tooltip">
+                            <i class="bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

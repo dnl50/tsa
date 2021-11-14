@@ -16,13 +16,18 @@ import java.util.function.Function;
 import static java.lang.String.format;
 
 /**
- * Maps Bouncycastle-specific TSP request/response objects to domain objects.
+ * Maps Bouncy Castle-specific TSP request/response objects to domain objects.
  */
 @RequiredArgsConstructor
 public class TimestampResponseMapper {
 
     private final DateConverter dateConverter;
 
+    /**
+     * @param timeStampRequest  The Bouncy Castle TSP request for which the response was generated, not {@code null}.
+     * @param timeStampResponse The corresponding response, not {@code null}.
+     * @return The corresponding domain object.
+     */
     public TimestampResponseData map(TimeStampRequest timeStampRequest, TimeStampResponse timeStampResponse) {
         TimestampRequestData requestData = TimestampRequestData.builder()
                 .hashAlgorithm(extractHashAlgorithm(timeStampRequest))

@@ -1,7 +1,9 @@
 package dev.mieser.tsa.integration.config;
 
-import dev.mieser.tsa.integration.PersistentTsaImpl;
-import dev.mieser.tsa.integration.api.PersistentTsa;
+import dev.mieser.tsa.integration.IssueTimeStampServiceImpl;
+import dev.mieser.tsa.integration.QueryTimeStampResponseServiceImpl;
+import dev.mieser.tsa.integration.api.IssueTimeStampService;
+import dev.mieser.tsa.integration.api.QueryTimeStampResponseService;
 import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
 import dev.mieser.tsa.persistence.config.PersistenceConfiguration;
 import dev.mieser.tsa.signing.api.TimeStampAuthority;
@@ -14,13 +16,18 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @RequiredArgsConstructor
 @Import({TsaConfiguration.class, PersistenceConfiguration.class})
-public class PersistentTsaConfiguration {
+public class TsaIntegrationConfiguration {
 
     private final TimeStampAuthority timeStampAuthority;
 
     @Bean
-    PersistentTsa persistentTsa(TspResponseDataRepository repository) {
-        return new PersistentTsaImpl(timeStampAuthority, repository);
+    IssueTimeStampService persistentTsa(TspResponseDataRepository repository) {
+        return new IssueTimeStampServiceImpl(timeStampAuthority, repository);
+    }
+
+    @Bean
+    QueryTimeStampResponseService queryTimeStampResponseService(TspResponseDataRepository repository) {
+        return new QueryTimeStampResponseServiceImpl(repository);
     }
 
 }

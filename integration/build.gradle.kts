@@ -4,9 +4,9 @@ plugins {
 
 dependencies {
     api(project(":domain"))
+    api(project(":signing"))
 
     implementation("org.springframework:spring-context")
 
-    implementation(project(":signing"))
     implementation(project(":persistence"))
 }

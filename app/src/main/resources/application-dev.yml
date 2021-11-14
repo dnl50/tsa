@@ -1,0 +1,12 @@
+tsa:
+  certificate:
+    path: "classpath:/cert/tsa-cert.p12"
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: "jdbc:h2:mem:test"
+  sql:
+    init:
+      platform: h2

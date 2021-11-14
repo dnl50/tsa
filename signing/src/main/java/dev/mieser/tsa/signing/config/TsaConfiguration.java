@@ -10,7 +10,6 @@ import dev.mieser.tsa.signing.api.TimeStampAuthority;
 import dev.mieser.tsa.signing.cert.ClasspathCertificateLoader;
 import dev.mieser.tsa.signing.cert.FileSystemCertificateLoader;
 import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
-import dev.mieser.tsa.signing.config.properties.TsaProperties;
 import dev.mieser.tsa.signing.mapper.TimestampResponseMapper;
 import dev.mieser.tsa.signing.serial.RandomSerialNumberGenerator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
