@@ -7,8 +7,8 @@ repositories {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 val integrationTestImplementation by configurations.creating
@@ -18,8 +18,8 @@ integrationTestImplementation.extendsFrom(configurations.testImplementation.get(
 integrationTestRuntimeOnly.extendsFrom(configurations.testRuntimeOnly.get())
 
 dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.5.6"))
-    annotationProcessor(platform("org.springframework.boot:spring-boot-dependencies:2.5.6"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.6.1"))
+    annotationProcessor(platform("org.springframework.boot:spring-boot-dependencies:2.6.1"))
 
     implementation("org.slf4j:slf4j-api")
 
