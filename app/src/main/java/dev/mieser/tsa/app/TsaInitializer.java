@@ -6,7 +6,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 /**
- * {@link InitializingBean} to {@link TimeStampAuthority#initialize() initialize} the {@link TimeStampAuthority} implementation.
+ * {@link InitializingBean} to {@link TimeStampAuthority#initialize() initialize} the {@link TimeStampAuthority}.
  */
 @Component
 @RequiredArgsConstructor

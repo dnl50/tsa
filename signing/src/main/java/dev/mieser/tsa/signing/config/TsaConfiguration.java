@@ -4,13 +4,17 @@ import dev.mieser.tsa.datetime.api.CurrentDateTimeService;
 import dev.mieser.tsa.datetime.api.DateConverter;
 import dev.mieser.tsa.datetime.config.DateTimeConfiguration;
 import dev.mieser.tsa.signing.BouncyCastleTimeStampAuthority;
-import dev.mieser.tsa.signing.TspRequestParser;
+import dev.mieser.tsa.signing.BouncyCastleTimeStampValidator;
+import dev.mieser.tsa.signing.TspParser;
 import dev.mieser.tsa.signing.TspRequestValidator;
 import dev.mieser.tsa.signing.api.TimeStampAuthority;
+import dev.mieser.tsa.signing.api.TimeStampValidator;
 import dev.mieser.tsa.signing.cert.ClasspathCertificateLoader;
 import dev.mieser.tsa.signing.cert.FileSystemCertificateLoader;
+import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
 import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
 import dev.mieser.tsa.signing.mapper.TimestampResponseMapper;
+import dev.mieser.tsa.signing.mapper.TimestampVerificationResultMapper;
 import dev.mieser.tsa.signing.serial.RandomSerialNumberGenerator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,8 +30,23 @@ public class TsaConfiguration {
     @Bean
     TimeStampAuthority timeStampAuthority(TsaProperties tsaProperties, SigningCertificateLoader signingCertificateLoader,
                                           CurrentDateTimeService currentDateTimeService, DateConverter dateConverter) {
-        return new BouncyCastleTimeStampAuthority(tsaProperties, new TspRequestParser(), new TspRequestValidator(),
-                signingCertificateLoader, currentDateTimeService, new RandomSerialNumberGenerator(), new TimestampResponseMapper(dateConverter));
+        return new BouncyCastleTimeStampAuthority(tsaProperties, tspParser(), new TspRequestValidator(),
+                signingCertificateLoader, currentDateTimeService, new RandomSerialNumberGenerator(), new TimestampResponseMapper(dateConverter), publicKeyAnalyzer());
+    }
+
+    @Bean
+    TimeStampValidator timeStampValidator(SigningCertificateLoader signingCertificateLoader, DateConverter dateConverter) {
+        return new BouncyCastleTimeStampValidator(tspParser(), signingCertificateLoader, publicKeyAnalyzer(), new TimestampVerificationResultMapper(dateConverter));
+    }
+
+    @Bean
+    PublicKeyAnalyzer publicKeyAnalyzer() {
+        return new PublicKeyAnalyzer();
+    }
+
+    @Bean
+    TspParser tspParser() {
+        return new TspParser();
     }
 
     @Bean

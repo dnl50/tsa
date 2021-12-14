@@ -12,12 +12,14 @@ import java.io.InputStream;
 public interface TimeStampAuthority {
 
     /**
+     * Initializes the Time Stamp Authority.
+     *
      * @throws TsaInitializationException When an error occurs while initializing the TSA.
      */
     void initialize();
 
     /**
-     * @param tspRequestInputStream The input stream which contains a ASN.1 DER encoded TSP response, not {@code null}.
+     * @param tspRequestInputStream The input stream of an ASN.1 DER encoded TSP response, not {@code null}.
      * @return The TSP response data, including the ASN.1 DER encoded response.
      * @throws TsaNotInitializedException    When the TSA has not yet been {@link #initialize() initialized}.
      * @throws UnknownHashAlgorithmException When the hash algorithm specified in the TSP request
@@ -25,6 +27,5 @@ public interface TimeStampAuthority {
      * @throws TspResponseException          When an error occurs while generating the signing TSP request.
      */
     TimestampResponseData signRequest(InputStream tspRequestInputStream);
-
 
 }

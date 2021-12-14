@@ -1,5 +1,6 @@
 module tsa.app {
     requires spring.beans;
+    requires spring.context;
     requires spring.boot;
     requires spring.boot.autoconfigure;
 

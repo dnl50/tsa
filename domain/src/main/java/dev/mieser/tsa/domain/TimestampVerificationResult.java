@@ -6,17 +6,9 @@ import lombok.Data;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
 
-/**
- * Encapsulates the TSP response data as well as the TSP request data.
- */
 @Data
 @Builder
-public class TimestampResponseData {
-
-    /**
-     * An arbitrary Identifier, may be {@code null}.
-     */
-    private final Long id;
+public class TimestampVerificationResult {
 
     /**
      * The status of the TSP response as defined in {@code PKIStatus}.
@@ -44,13 +36,32 @@ public class TimestampResponseData {
     private final BigInteger serialNumber;
 
     /**
-     * The request this response belongs to.
+     * The nonce which was included.
+     * <p/>
+     * Can be {@code null}.
      */
-    private final TimestampRequestData request;
+    private final BigInteger nonce;
 
     /**
-     * The ASN.1 encoded TSP response.
+     * The hash algorithm which was used.
      */
-    private final byte[] asnEncoded;
+    private final HashAlgorithm hashAlgorithm;
+
+    /**
+     * The hash which was signed.
+     */
+    private final byte[] hash;
+
+    /**
+     * General information about the certificate which was used to
+     * <p/>
+     * May be null when the certificate was not included in the response.
+     */
+    private final SigningCertificateInformation certificateInformation;
+
+    /**
+     * A flag whether the response was signed by the certificate which is currently in use.
+     */
+    private final boolean signedByThisTsa;
 
 }

@@ -1,16 +1,16 @@
 package dev.mieser.tsa.domain;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
 
 /**
- * Encapsulates information about the certificate used for signing TSP requests.
+ * Encapsulates information about the certificate which was used for signing.
  */
-@Getter
-@RequiredArgsConstructor
+@Data
+@Builder
 public class SigningCertificateInformation {
 
     /**
@@ -19,7 +19,7 @@ public class SigningCertificateInformation {
     private final String issuer;
 
     /**
-     * The serial number of the
+     * The serial number of the certificate.
      */
     private final BigInteger serialNumber;
 
