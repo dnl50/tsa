@@ -1,6 +1,6 @@
 tsa:
   certificate:
-    path: "classpath:/cert/tsa-cert.p12"
+    path: "classpath:/cert/rsa.p12"
 spring:
   jpa:
     hibernate:
