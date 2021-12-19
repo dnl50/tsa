@@ -49,7 +49,7 @@ class TimeStampCertificateSelectorTest {
     @Test
     void matchReturnsFalseWhenExtendedKeyUsageExtensionDoesNotHaveTimeStampingPurpose(@Mock X509CertificateHolder x509CertificateMock) throws IOException {
         // given
-        var keyPurposeIds = new DEROctetString(new DERSequence(new ASN1Encodable[]{id_kp_serverAuth}));
+        var keyPurposeIds = new DEROctetString(new DERSequence(new ASN1Encodable[] {id_kp_serverAuth}));
         var extendedKeyUsageExtension = new Extension(extendedKeyUsage, true, keyPurposeIds);
 
         given(x509CertificateMock.getExtension(extendedKeyUsage)).willReturn(extendedKeyUsageExtension);
@@ -64,7 +64,7 @@ class TimeStampCertificateSelectorTest {
     @Test
     void matchReturnsTrueWhenExtendedKeyUsageExtensionSingleTimeStampingPurpose(@Mock X509CertificateHolder x509CertificateMock) throws IOException {
         // given
-        var keyPurposeIds = new DEROctetString(new DERSequence(new ASN1Encodable[]{id_kp_timeStamping}));
+        var keyPurposeIds = new DEROctetString(new DERSequence(new ASN1Encodable[] {id_kp_timeStamping}));
         var extendedKeyUsageExtension = new Extension(extendedKeyUsage, true, keyPurposeIds);
 
         given(x509CertificateMock.getExtension(extendedKeyUsage)).willReturn(extendedKeyUsageExtension);

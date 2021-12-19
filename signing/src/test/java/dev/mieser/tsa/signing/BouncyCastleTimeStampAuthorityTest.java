@@ -293,7 +293,8 @@ class BouncyCastleTimeStampAuthorityTest {
                 currentDateTimeServiceMock, serialNumberGeneratorMock, timestampResponseMapperMock, publicKeyAnalyzerMock);
     }
 
-    private BouncyCastleTimeStampAuthority createInitializedTestSubject(TsaProperties tsaProperties, PublicKeyAlgorithm publicKeyAlgorithm, X509Certificate x509Certificate, PrivateKey privateKey) throws IOException {
+    private BouncyCastleTimeStampAuthority createInitializedTestSubject(TsaProperties tsaProperties, PublicKeyAlgorithm publicKeyAlgorithm,
+            X509Certificate x509Certificate, PrivateKey privateKey) throws IOException {
         given(signingCertificateLoaderMock.loadCertificate()).willReturn(x509Certificate);
         given(signingCertificateLoaderMock.loadPrivateKey()).willReturn(privateKey);
         given(publicKeyAnalyzerMock.publicKeyAlgorithm(x509Certificate)).willReturn(publicKeyAlgorithm);

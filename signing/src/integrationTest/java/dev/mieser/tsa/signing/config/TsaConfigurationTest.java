@@ -23,8 +23,7 @@ public class TsaConfigurationTest {
 
         private final SigningCertificateLoader signingCertificateLoader;
 
-        @Autowired
-        ClasspathCertificateLoaderConfiguration(SigningCertificateLoader signingCertificateLoader) {
+        @Autowired ClasspathCertificateLoaderConfiguration(SigningCertificateLoader signingCertificateLoader) {
             this.signingCertificateLoader = signingCertificateLoader;
         }
 
@@ -44,8 +43,7 @@ public class TsaConfigurationTest {
 
         private final SigningCertificateLoader signingCertificateLoader;
 
-        @Autowired
-        FileSystemCertificateLoaderConfiguration(SigningCertificateLoader signingCertificateLoader) {
+        @Autowired FileSystemCertificateLoaderConfiguration(SigningCertificateLoader signingCertificateLoader) {
             this.signingCertificateLoader = signingCertificateLoader;
         }
 

@@ -40,7 +40,8 @@ class TimestampResponseMapperTest {
     }
 
     @Test
-    void mapThrowsExceptionWhenTspRequestCannotBeConvertedToAsnObject(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampResponse timeStampResponseMock) throws IOException {
+    void mapThrowsExceptionWhenTspRequestCannotBeConvertedToAsnObject(@Mock TimeStampRequest timeStampRequestMock,
+            @Mock TimeStampResponse timeStampResponseMock) throws IOException {
         // given
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
 
@@ -57,7 +58,8 @@ class TimestampResponseMapperTest {
     }
 
     @Test
-    void mapMapsUnsuccessfulResponseToExpectedObject(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampResponse timeStampResponseMock) throws IOException {
+    void mapMapsUnsuccessfulResponseToExpectedObject(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampResponse timeStampResponseMock)
+            throws IOException {
         // given
         var statusString = "Unsupported Hash Algorithm";
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
@@ -90,7 +92,8 @@ class TimestampResponseMapperTest {
     }
 
     @Test
-    void mapMapsSuccessfulResponseToExpectedObject(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampToken timeStampTokenMock, @Mock TimeStampTokenInfo tokenInfoMock, @Mock TimeStampResponse timeStampResponseMock) throws IOException {
+    void mapMapsSuccessfulResponseToExpectedObject(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampToken timeStampTokenMock,
+            @Mock TimeStampTokenInfo tokenInfoMock, @Mock TimeStampResponse timeStampResponseMock) throws IOException {
         // given
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
         byte[] asnEncodedResponse = "TSP response".getBytes(UTF_8);

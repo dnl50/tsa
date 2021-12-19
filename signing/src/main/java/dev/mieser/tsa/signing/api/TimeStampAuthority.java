@@ -1,6 +1,5 @@
 package dev.mieser.tsa.signing.api;
 
-
 import dev.mieser.tsa.domain.TimestampResponseData;
 import dev.mieser.tsa.signing.api.exception.*;
 

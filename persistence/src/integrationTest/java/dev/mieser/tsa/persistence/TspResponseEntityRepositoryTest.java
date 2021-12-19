@@ -27,8 +27,7 @@ class TspResponseEntityRepositoryTest {
 
     private final TspRequestEntityRepository requestEntityRepository;
 
-    @Autowired
-    TspResponseEntityRepositoryTest(TspResponseEntityRepository testSubject, TspRequestEntityRepository requestEntityRepository) {
+    @Autowired TspResponseEntityRepositoryTest(TspResponseEntityRepository testSubject, TspRequestEntityRepository requestEntityRepository) {
         this.testSubject = testSubject;
         this.requestEntityRepository = requestEntityRepository;
     }

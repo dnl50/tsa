@@ -20,7 +20,7 @@ public class UiController {
 
     @GetMapping("/overview")
     public String overview(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
-                           @RequestParam(value = "size", required = false, defaultValue = "25") int size, Model model) {
+            @RequestParam(value = "size", required = false, defaultValue = "25") int size, Model model) {
         model.addAttribute("responses", queryResponseService.findAll(PageRequest.of(page, size)));
         return "overview";
     }

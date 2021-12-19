@@ -104,7 +104,8 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
 
             DigestCalculator signerCertDigestCalculator = buildSignerCertDigestCalculator();
             SignerInfoGenerator signerInfoGenerator = buildSignerInfoGenerator();
-            var timeStampTokenGenerator = new TimeStampTokenGenerator(signerInfoGenerator, signerCertDigestCalculator, new ASN1ObjectIdentifier(tsaProperties.getPolicyOid()));
+            var timeStampTokenGenerator =
+                    new TimeStampTokenGenerator(signerInfoGenerator, signerCertDigestCalculator, new ASN1ObjectIdentifier(tsaProperties.getPolicyOid()));
             this.timeStampResponseGenerator = new TimeStampResponseGenerator(timeStampTokenGenerator, acceptedHashAlgorithmIdentifiers());
 
             log.info("Successfully initialized TSA. Tokens are issued under policy OID '{}'. The following hash algorithms are accepted: {}",

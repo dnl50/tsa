@@ -45,8 +45,7 @@ class TimeStampAuthorityControllerTest {
     @MockBean
     private IssueTimeStampService issueTimeStampServiceMock;
 
-    @Autowired
-    TimeStampAuthorityControllerTest(MockMvc mockMvc) {
+    @Autowired TimeStampAuthorityControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
 

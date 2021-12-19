@@ -1,6 +1,5 @@
 package dev.mieser.tsa.signing.cert;
 
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
