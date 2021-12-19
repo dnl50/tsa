@@ -22,6 +22,6 @@ dependencies {
     testImplementation("jakarta.servlet:jakarta.servlet-api")
 
     webResource("org.webjars:bootstrap:5.1.3")
-    webResource("org.webjars:jquery:5.1.3")
+    webResource("org.webjars:jquery:3.6.0")
     webResource("org.webjars.npm:bootstrap-icons:1.7.0")
 }

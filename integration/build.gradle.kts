@@ -6,7 +6,8 @@ dependencies {
     api(project(":domain"))
     api(project(":signing"))
 
-    implementation("org.springframework:spring-context")
-
     implementation(project(":persistence"))
+
+    implementation("org.springframework:spring-context")
+    implementation("commons-codec:commons-codec")
 }

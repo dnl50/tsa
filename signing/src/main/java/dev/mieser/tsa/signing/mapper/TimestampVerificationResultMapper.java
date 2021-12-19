@@ -2,7 +2,7 @@ package dev.mieser.tsa.signing.mapper;
 
 import dev.mieser.tsa.datetime.api.DateConverter;
 import dev.mieser.tsa.domain.SigningCertificateInformation;
-import dev.mieser.tsa.domain.TimestampVerificationResult;
+import dev.mieser.tsa.domain.TimestampValidationResult;
 import dev.mieser.tsa.signing.cert.TimeStampCertificateSelector;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +20,10 @@ public class TimestampVerificationResultMapper extends AbstractTspMapper {
 
     private final DateConverter dateConverter;
 
-    public TimestampVerificationResult map(TimeStampResponse timeStampResponse, boolean signedByThisTsa) {
+    public TimestampValidationResult map(TimeStampResponse timeStampResponse, boolean signedByThisTsa) {
         TimeStampTokenInfo timeStampInfo = timeStampResponse.getTimeStampToken().getTimeStampInfo();
 
-        return TimestampVerificationResult.builder()
+        return TimestampValidationResult.builder()
                 .status(timeStampResponse.getStatus())
                 .statusString(timeStampResponse.getStatusString())
                 .failureInfo(mapIfNotNull(timeStampResponse.getFailInfo(), PKIFailureInfo::intValue))

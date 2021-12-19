@@ -1,6 +1,6 @@
 package dev.mieser.tsa.signing.api;
 
-import dev.mieser.tsa.domain.TimestampVerificationResult;
+import dev.mieser.tsa.domain.TimestampValidationResult;
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
@@ -28,6 +28,6 @@ public interface TimeStampValidator {
      * @throws TsaNotInitializedException  When the validator has not yet been {@link #initialize() initialized}.
      * @throws InvalidTspResponseException When the specified input stream does not contain a valid ASN.1 DER encoded TSP response.
      */
-    TimestampVerificationResult verifyResponse(InputStream tspResponseInputStream);
+    TimestampValidationResult validateResponse(InputStream tspResponseInputStream);
 
 }

@@ -1,6 +1,6 @@
 package dev.mieser.tsa.signing;
 
-import dev.mieser.tsa.domain.TimestampVerificationResult;
+import dev.mieser.tsa.domain.TimestampValidationResult;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
@@ -56,7 +56,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
     }
 
     @Override
-    public TimestampVerificationResult verifyResponse(InputStream tspResponseInputStream) {
+    public TimestampValidationResult validateResponse(InputStream tspResponseInputStream) {
         verifyInitialized();
 
         TimeStampResponse timeStampResponse = tspParser.parseResponse(tspResponseInputStream);

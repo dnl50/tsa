@@ -1,6 +1,6 @@
 package dev.mieser.tsa.signing;
 
-import dev.mieser.tsa.domain.TimestampVerificationResult;
+import dev.mieser.tsa.domain.TimestampValidationResult;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
@@ -56,7 +56,7 @@ class BouncyCastleTimeStampValidatorTest {
     }
 
     @Nested
-    class VerifyResponseTest {
+    class validateResponseTest {
 
         @Test
         void throwsExceptionWhenValidatorIsNotInitialized() {
@@ -66,7 +66,7 @@ class BouncyCastleTimeStampValidatorTest {
 
             // when / then
             assertThatExceptionOfType(TsaNotInitializedException.class)
-                    .isThrownBy(() -> testSubject.verifyResponse(responseStream));
+                    .isThrownBy(() -> testSubject.validateResponse(responseStream));
         }
 
         @Test
@@ -82,12 +82,12 @@ class BouncyCastleTimeStampValidatorTest {
 
             // when / then
             assertThatExceptionOfType(UnknownHashAlgorithmException.class)
-                    .isThrownBy(() -> testSubject.verifyResponse(responseStream))
+                    .isThrownBy(() -> testSubject.validateResponse(responseStream))
                     .withMessage("Unknown hash algorithm OID '1.2.840.113549.2.5'.");
         }
 
         @Test
-        void verifyResponseUsesConfiguredCertificateToValidateResponse(@Mock TimeStampResponse timeStampResponseMock,
+        void validateResponseUsesConfiguredCertificateToValidateResponse(@Mock TimeStampResponse timeStampResponseMock,
                 @Mock(answer = RETURNS_DEEP_STUBS) TimeStampToken timeStampTokenMock) throws Exception {
             // given
             BouncyCastleTimeStampValidator testSubject = createInitializedTestSubject();
@@ -100,7 +100,7 @@ class BouncyCastleTimeStampValidatorTest {
             given(tspValidatorMock.isKnownHashAlgorithm(hashAlgorithmOid)).willReturn(true);
 
             // when
-            testSubject.verifyResponse(responseStream);
+            testSubject.validateResponse(responseStream);
 
             // then
             ArgumentCaptor<SignerInformationVerifier> signerInformationCaptor = ArgumentCaptor.forClass(SignerInformationVerifier.class);
@@ -110,49 +110,49 @@ class BouncyCastleTimeStampValidatorTest {
         }
 
         @Test
-        void verifyResponseMarksResponseAsSignedByOtherTsaWhenValidationFails(@Mock TimeStampResponse timeStampResponseMock,
+        void validateResponseMarksResponseAsSignedByOtherTsaWhenValidationFails(@Mock TimeStampResponse timeStampResponseMock,
                 @Mock(answer = RETURNS_DEEP_STUBS) TimeStampToken timeStampTokenMock) throws Exception {
             // given
             BouncyCastleTimeStampValidator testSubject = createInitializedTestSubject();
             InputStream responseStream = new ByteArrayInputStream("tsp response".getBytes(UTF_8));
             var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
-            TimestampVerificationResult verificationResult = TimestampVerificationResult.builder().build();
+            TimestampValidationResult validationResult = TimestampValidationResult.builder().build();
 
             given(tspParserMock.parseResponse(responseStream)).willReturn(timeStampResponseMock);
             given(timeStampResponseMock.getTimeStampToken()).willReturn(timeStampTokenMock);
             given(timeStampTokenMock.getTimeStampInfo().getMessageImprintAlgOID()).willReturn(hashAlgorithmOid);
             given(tspValidatorMock.isKnownHashAlgorithm(hashAlgorithmOid)).willReturn(true);
             willThrow(new TSPException("Validation Error!!1!")).given(timeStampTokenMock).validate(notNull());
-            given(timestampVerificationResultMapperMock.map(timeStampResponseMock, false)).willReturn(verificationResult);
+            given(timestampVerificationResultMapperMock.map(timeStampResponseMock, false)).willReturn(validationResult);
 
             // when
-            TimestampVerificationResult actualVerificationResult = testSubject.verifyResponse(responseStream);
+            TimestampValidationResult actualVerificationResult = testSubject.validateResponse(responseStream);
 
             // then
-            assertThat(actualVerificationResult).isEqualTo(verificationResult);
+            assertThat(actualVerificationResult).isEqualTo(validationResult);
         }
 
         @Test
-        void verifyResponseMarksResponseAsSignedByThisTsaWhenValidationSucceeds(@Mock TimeStampResponse timeStampResponseMock,
+        void validateResponseMarksResponseAsSignedByThisTsaWhenValidationSucceeds(@Mock TimeStampResponse timeStampResponseMock,
                 @Mock(answer = RETURNS_DEEP_STUBS) TimeStampToken timeStampTokenMock) throws Exception {
             // given
             BouncyCastleTimeStampValidator testSubject = createInitializedTestSubject();
             InputStream responseStream = new ByteArrayInputStream("tsp response".getBytes(UTF_8));
             var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
-            TimestampVerificationResult verificationResult = TimestampVerificationResult.builder().build();
+            TimestampValidationResult validationResult = TimestampValidationResult.builder().build();
 
             given(tspParserMock.parseResponse(responseStream)).willReturn(timeStampResponseMock);
             given(timeStampResponseMock.getTimeStampToken()).willReturn(timeStampTokenMock);
             given(timeStampTokenMock.getTimeStampInfo().getMessageImprintAlgOID()).willReturn(hashAlgorithmOid);
             given(tspValidatorMock.isKnownHashAlgorithm(hashAlgorithmOid)).willReturn(true);
             willDoNothing().given(timeStampTokenMock).validate(notNull());
-            given(timestampVerificationResultMapperMock.map(timeStampResponseMock, true)).willReturn(verificationResult);
+            given(timestampVerificationResultMapperMock.map(timeStampResponseMock, true)).willReturn(validationResult);
 
             // when
-            TimestampVerificationResult actualVerificationResult = testSubject.verifyResponse(responseStream);
+            TimestampValidationResult actualVerificationResult = testSubject.validateResponse(responseStream);
 
             // then
-            assertThat(actualVerificationResult).isEqualTo(verificationResult);
+            assertThat(actualVerificationResult).isEqualTo(validationResult);
         }
 
     }

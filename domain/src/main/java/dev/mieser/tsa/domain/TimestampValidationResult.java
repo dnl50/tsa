@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 
 @Data
 @Builder
-public class TimestampVerificationResult {
+public class TimestampValidationResult {
 
     /**
      * The status of the TSP response as defined in {@code PKIStatus}.

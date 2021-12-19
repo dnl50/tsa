@@ -1,6 +1,7 @@
 module tsa.integration {
     requires spring.context;
     requires spring.beans;
+    requires org.apache.commons.codec;
 
     requires tsa.domain;
     requires tsa.signing;

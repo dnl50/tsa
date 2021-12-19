@@ -11,4 +11,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-tomcat")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.hibernate.validator:hibernate-validator")
+
+    integrationTestImplementation("org.apache.commons:commons-lang3")
+    integrationTestImplementation("io.rest-assured:rest-assured")
+    integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
+    integrationTestImplementation("org.bouncycastle:bcpkix-jdk15on:1.70")
 }
