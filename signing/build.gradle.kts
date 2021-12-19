@@ -13,6 +13,8 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.apache.commons:commons-lang3")
 
+    testImplementation(project(":test-util"))
+
     integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
     integrationTestImplementation("org.hibernate.validator:hibernate-validator")
 

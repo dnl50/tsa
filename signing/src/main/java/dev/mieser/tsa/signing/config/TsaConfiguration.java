@@ -6,7 +6,7 @@ import dev.mieser.tsa.datetime.config.DateTimeConfiguration;
 import dev.mieser.tsa.signing.BouncyCastleTimeStampAuthority;
 import dev.mieser.tsa.signing.BouncyCastleTimeStampValidator;
 import dev.mieser.tsa.signing.TspParser;
-import dev.mieser.tsa.signing.TspRequestValidator;
+import dev.mieser.tsa.signing.TspValidator;
 import dev.mieser.tsa.signing.api.TimeStampAuthority;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
 import dev.mieser.tsa.signing.cert.ClasspathCertificateLoader;
@@ -29,14 +29,16 @@ public class TsaConfiguration {
 
     @Bean
     TimeStampAuthority timeStampAuthority(TsaProperties tsaProperties, SigningCertificateLoader signingCertificateLoader,
-                                          CurrentDateTimeService currentDateTimeService, DateConverter dateConverter) {
-        return new BouncyCastleTimeStampAuthority(tsaProperties, tspParser(), new TspRequestValidator(),
-                signingCertificateLoader, currentDateTimeService, new RandomSerialNumberGenerator(), new TimestampResponseMapper(dateConverter), publicKeyAnalyzer());
+            CurrentDateTimeService currentDateTimeService, DateConverter dateConverter) {
+        return new BouncyCastleTimeStampAuthority(tsaProperties, tspParser(), tspValidator(),
+                signingCertificateLoader, currentDateTimeService, new RandomSerialNumberGenerator(), new TimestampResponseMapper(dateConverter),
+                publicKeyAnalyzer());
     }
 
     @Bean
     TimeStampValidator timeStampValidator(SigningCertificateLoader signingCertificateLoader, DateConverter dateConverter) {
-        return new BouncyCastleTimeStampValidator(tspParser(), signingCertificateLoader, publicKeyAnalyzer(), new TimestampVerificationResultMapper(dateConverter));
+        return new BouncyCastleTimeStampValidator(tspParser(), signingCertificateLoader, publicKeyAnalyzer(),
+                new TimestampVerificationResultMapper(dateConverter), tspValidator());
     }
 
     @Bean
@@ -47,6 +49,11 @@ public class TsaConfiguration {
     @Bean
     TspParser tspParser() {
         return new TspParser();
+    }
+
+    @Bean
+    TspValidator tspValidator() {
+        return new TspValidator();
     }
 
     @Bean

@@ -45,7 +45,7 @@ public class TimestampVerificationResultMapper extends AbstractTspMapper {
             log.info("No certificate with timeStamping purpose present.");
             return null;
         } else if (matches.size() > 1) {
-            log.info("Multiple certificates with timeStamping purpose present.");
+            log.info("Multiple certificates with timeStamping purpose present. The first certificate will be used.");
         }
 
         X509CertificateHolder timeStampingCertificate = matches.iterator().next();

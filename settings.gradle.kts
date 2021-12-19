@@ -7,5 +7,6 @@ include(
         "app",
         "web",
         "integration",
-        "persistence"
+        "persistence",
+        "test-util"
 )

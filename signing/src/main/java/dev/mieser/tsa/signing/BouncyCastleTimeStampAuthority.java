@@ -49,7 +49,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
 
     private final TspParser tspParser;
 
-    private final TspRequestValidator tspRequestValidator;
+    private final TspValidator tspValidator;
 
     private final SigningCertificateLoader signingCertificateLoader;
 
@@ -68,7 +68,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
         verifyTsaIsInitialized();
 
         TimeStampRequest timeStampRequest = tspParser.parseRequest(tspRequestInputStream);
-        if (!tspRequestValidator.isKnownHashAlgorithm(timeStampRequest)) {
+        if (!tspValidator.isKnownHashAlgorithm(timeStampRequest.getMessageImprintAlgOID())) {
             throw new UnknownHashAlgorithmException(format("Unknown hash algorithm OID '%s'.", timeStampRequest.getMessageImprintAlgOID().getId()));
         }
 

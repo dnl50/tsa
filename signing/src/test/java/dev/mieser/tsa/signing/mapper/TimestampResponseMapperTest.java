@@ -40,20 +40,6 @@ class TimestampResponseMapperTest {
     }
 
     @Test
-    void mapThrowsExceptionWhenRequestHashAlgorithmIsNotKnown(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampResponse timeStampResponseMock) {
-        // given
-        String oid = "1.2.840.113549.2.5";
-        var hashAlgorithmOid = new ASN1ObjectIdentifier(oid);
-
-        given(timeStampRequestMock.getMessageImprintAlgOID()).willReturn(hashAlgorithmOid);
-
-        // when / then
-        assertThatIllegalStateException()
-                .isThrownBy(() -> testSubject.map(timeStampRequestMock, timeStampResponseMock))
-                .withMessage("Unknown hash algorithm with OID '%s'.", oid);
-    }
-
-    @Test
     void mapThrowsExceptionWhenTspRequestCannotBeConvertedToAsnObject(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampResponse timeStampResponseMock) throws IOException {
         // given
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
@@ -62,23 +48,6 @@ class TimestampResponseMapperTest {
 
         given(timeStampRequestMock.getMessageImprintAlgOID()).willReturn(hashAlgorithmOid);
         given(timeStampRequestMock.getEncoded()).willThrow(thrownException);
-
-        // when / then
-        assertThatIllegalStateException()
-                .isThrownBy(() -> testSubject.map(timeStampRequestMock, timeStampResponseMock))
-                .withMessage("Error converting object to ASN.1.")
-                .withCause(thrownException);
-    }
-
-    @Test
-    void mapThrowsExceptionWhenTspResponseCannotBeConvertedToAsnObject(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampResponse timeStampResponseMock) throws IOException {
-        // given
-        var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
-
-        IOException thrownException = new IOException();
-
-        given(timeStampRequestMock.getMessageImprintAlgOID()).willReturn(hashAlgorithmOid);
-        given(timeStampResponseMock.getEncoded()).willThrow(thrownException);
 
         // when / then
         assertThatIllegalStateException()
