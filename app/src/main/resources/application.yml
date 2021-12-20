@@ -1,0 +1,6 @@
+server:
+  port: 318
+tsa:
+  certificate:
+    path: "classpath:dev/mieser/tsa/app/rsa.p12"
+

@@ -7,6 +7,4 @@ spring:
   sql:
     init:
       platform: h2
-tsa:
-  certificate:
-    path: "classpath:dev/mieser/tsa/app/rsa.p12"
+

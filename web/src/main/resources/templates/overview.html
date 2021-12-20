@@ -16,7 +16,7 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
-        <a class="navbar-brand" th:href="@{/web/overview}">Time Stamp Authority (TSA)</a>
+        <a class="navbar-brand" th:href="@{/web/overview}">RFC3161 Time Stamp Authority</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
                 aria-controls="navbarResponsive"
                 aria-expanded="false" aria-label="Toggle navigation">
@@ -26,15 +26,14 @@
 </nav>
 
 <div class="container">
-    <div class="row">
+    <div class="row" th:if="${responses.totalElements gt 0}">
         <div class="col-lg-10 mt-5 mb-5">
-            <table id="posts" class="table table-bordered table-responsive-sm">
+            <table class="table table-bordered table-responsive-sm">
                 <thead>
                 <tr>
-                    <th>Serial</th>
-                    <th>Algorithm</th>
-                    <th>Status</th>
-                    <th>Status String</th>
+                    <th th:text="#{overview.column.serial}">Serial</th>
+                    <th th:text="#{overview.column.algorithm}">Algorithm</th>
+                    <th th:text="#{overview.column.status}">Status</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -42,7 +41,6 @@
                     <td th:text="${response.serialNumber}">Serial Number</td>
                     <td th:text="${response.request.hashAlgorithm}">Hash Algorithm</td>
                     <td th:text="${response.status}">Status</td>
-                    <td th:text="${response.statusString}">Status String</td>
                 </tr>
                 </tbody>
             </table>
@@ -80,6 +78,19 @@
 
         </div>
     </div>
+
+    <div class="row mt-5" th:unless="${responses.totalElements gt 0}">
+        <div class="col text-center">
+            <i class="display-1 bi bi-emoji-frown"></i>
+        </div>
+    </div>
+
+    <div class="row" th:unless="${responses.totalElements gt 0}">
+        <div class="col text-center">
+            <span class="display-6" th:text="#{overview.no-responses}">no responses</span>
+        </div>
+    </div>
+
 </div>
 
 </body>

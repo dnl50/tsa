@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 /**
  * @see dev.mieser.tsa.signing.api.TimeStampAuthority
+ * @see QueryTimeStampResponseService
  */
 public interface IssueTimeStampService {
 
