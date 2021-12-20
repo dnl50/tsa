@@ -1,6 +1,6 @@
 tsa:
   certificate:
-    path: "classpath:/cert/rsa.p12"
+    path: "classpath:cert/rsa.p12"
   accepted-hash-algorithms:
     - SHA512
 spring:

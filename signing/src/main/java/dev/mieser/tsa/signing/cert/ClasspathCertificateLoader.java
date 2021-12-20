@@ -10,7 +10,7 @@ public class ClasspathCertificateLoader extends Pkcs12SigningCertificateLoader {
 
     @Override
     InputStream pkcs12InputStream(String path) {
-        return getClass().getResourceAsStream(path);
+        return getClass().getClassLoader().getResourceAsStream(path);
     }
 
 }

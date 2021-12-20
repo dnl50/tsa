@@ -1,4 +1,5 @@
 module tsa.web {
+    requires spring.context;
     requires spring.web;
     requires spring.tx;
     requires spring.data.commons;

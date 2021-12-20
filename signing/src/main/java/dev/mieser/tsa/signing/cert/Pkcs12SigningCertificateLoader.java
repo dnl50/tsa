@@ -8,6 +8,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import static java.lang.String.format;
 import static java.util.Collections.list;
 
 @RequiredArgsConstructor
@@ -55,7 +56,12 @@ abstract class Pkcs12SigningCertificateLoader implements SigningCertificateLoade
     }
 
     private KeyStore loadKeystore() throws IOException {
-        try (InputStream pkcs12InputStream = pkcs12InputStream(path)) {
+        InputStream pkcs12InputStream = pkcs12InputStream(path);
+        if (pkcs12InputStream == null) {
+            throw new IllegalStateException(format("PKCS#12 key store not found at '%s'.", path));
+        }
+
+        try (pkcs12InputStream) {
             KeyStore pkcs12Keystore = KeyStore.getInstance(PKCS12_KEYSTORE_TYPE);
             pkcs12Keystore.load(pkcs12InputStream, password);
 

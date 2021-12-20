@@ -14,4 +14,6 @@ module tsa.persistence {
 
     exports dev.mieser.tsa.persistence.api;
     exports dev.mieser.tsa.persistence.config;
+
+    opens dev.mieser.tsa.persistence.config;
 }

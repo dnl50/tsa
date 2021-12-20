@@ -13,6 +13,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 class Pkcs12SigningCertificateLoaderTest {
 
@@ -74,6 +75,17 @@ class Pkcs12SigningCertificateLoaderTest {
 
         // then
         assertThat(actualCertificate).isEqualTo(expectedPrivateKey);
+    }
+
+    @Test
+    void throwsExceptionWhenKeyStoreNotPresent() {
+        // given
+        var testSubject = new Pkcs12SigningCertificateLoaderImpl("/unknown-file.p12", NO_PASSWORD);
+
+        // when / then
+        assertThatIllegalStateException()
+                .isThrownBy(testSubject::loadCertificate)
+                .withMessage("PKCS#12 key store not found at '/unknown-file.p12'.");
     }
 
     private PrivateKey loadPrivateKey() throws Exception {

@@ -13,15 +13,13 @@ class ClasspathCertificateLoaderTest {
     @Test
     void pkcs12InputStreamReturnsInputStreamOfClasspathResource() throws IOException {
         // given
-        String resourcePath = "/dev/mieser/tsa/signing/cert/unprotected.p12";
-
-        var testSubject = new ClasspathCertificateLoader(resourcePath, "password".toCharArray());
+        var testSubject = new ClasspathCertificateLoader("dev/mieser/tsa/signing/cert/unprotected.p12", "password".toCharArray());
 
         // when
-        byte[] actualPkcs12Container = readToByteArrayAndClose(testSubject.pkcs12InputStream(resourcePath));
+        byte[] actualPkcs12Container = readToByteArrayAndClose(testSubject.pkcs12InputStream("dev/mieser/tsa/signing/cert/unprotected.p12"));
 
         // then
-        byte[] expectedPkcs12Container = readToByteArrayAndClose(getClass().getResourceAsStream(resourcePath));
+        byte[] expectedPkcs12Container = readToByteArrayAndClose(getClass().getResourceAsStream("unprotected.p12"));
 
         assertThat(actualPkcs12Container).isEqualTo(expectedPkcs12Container);
     }
