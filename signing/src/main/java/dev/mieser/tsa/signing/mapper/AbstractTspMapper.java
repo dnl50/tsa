@@ -1,6 +1,7 @@
 package dev.mieser.tsa.signing.mapper;
 
 import dev.mieser.tsa.domain.HashAlgorithm;
+import dev.mieser.tsa.domain.ResponseStatus;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
@@ -25,6 +26,16 @@ abstract class AbstractTspMapper {
 
         return HashAlgorithm.fromObjectIdentifier(hashAlgorithmOid)
                 .orElseThrow(() -> new IllegalStateException(format("Unknown hash algorithm with OID '%s'.", hashAlgorithmOid)));
+    }
+
+    /**
+     * @param status The status to get the corresponding {@link ResponseStatus} for.
+     * @return The corresponding {@link ResponseStatus}.
+     * @throws IllegalStateException When no corresponding {@link ResponseStatus} is defined.
+     */
+    ResponseStatus mapToResponseStatus(int status) {
+        return ResponseStatus.fromIntValue(status)
+                .orElseThrow(() -> new IllegalStateException(format("Unknown status '%d'.", status)));
     }
 
     /**

@@ -1,6 +1,7 @@
 package dev.mieser.tsa.persistence;
 
 import dev.mieser.tsa.domain.HashAlgorithm;
+import dev.mieser.tsa.domain.ResponseStatus;
 import dev.mieser.tsa.persistence.entity.TspRequestEntity;
 import dev.mieser.tsa.persistence.entity.TspResponseEntity;
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,7 @@ class TspResponseEntityRepositoryTest {
                 .build();
 
         return TspResponseEntity.builder()
-                .status(2)
+                .status(ResponseStatus.REJECTION)
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(ZonedDateTime.parse("2021-11-13T21:29:13Z"))

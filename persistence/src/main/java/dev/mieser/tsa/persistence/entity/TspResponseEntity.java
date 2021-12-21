@@ -1,5 +1,6 @@
 package dev.mieser.tsa.persistence.entity;
 
+import dev.mieser.tsa.domain.ResponseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,8 @@ public class TspResponseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private ResponseStatus status;
 
     private String statusString;
 

@@ -33,7 +33,7 @@ public class TimestampResponseMapper extends AbstractTspMapper {
                 .build();
 
         return TimestampResponseData.builder()
-                .status(timeStampResponse.getStatus())
+                .status(mapToResponseStatus(timeStampResponse.getStatus()))
                 .statusString(timeStampResponse.getStatusString())
                 .failureInfo(mapIfNotNull(timeStampResponse.getFailInfo(), PKIFailureInfo::intValue))
                 .serialNumber(mapIfNotNull(timeStampResponse.getTimeStampToken(), token -> token.getTimeStampInfo().getSerialNumber()))

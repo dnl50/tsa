@@ -1,6 +1,8 @@
 server:
   port: 318
+  error:
+    whitelabel:
+      enabled: false
 tsa:
   certificate:
     path: "classpath:dev/mieser/tsa/app/rsa.p12"
-

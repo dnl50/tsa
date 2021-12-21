@@ -5,6 +5,8 @@ module tsa.web {
     requires spring.tx;
     requires spring.data.commons;
     requires org.slf4j;
+    requires java.servlet;
+    requires spring.boot.autoconfigure;
 
     requires tsa.signing;
     requires tsa.integration;

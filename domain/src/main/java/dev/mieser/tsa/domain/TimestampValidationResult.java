@@ -13,7 +13,7 @@ public class TimestampValidationResult {
     /**
      * The status of the TSP response as defined in {@code PKIStatus}.
      */
-    private final int status;
+    private final ResponseStatus status;
 
     /**
      * An optional reason text.

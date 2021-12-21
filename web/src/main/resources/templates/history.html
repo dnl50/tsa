@@ -1,29 +1,11 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Spring Boot Thymeleaf Application - Bootstrap Pagination</title>
 
-    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
-    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap-icons/font/bootstrap-icons.css}">
+<head th:replace="fragments/head :: head (#{history.page-title})"></head>
 
-    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-
-</head>
 <body>
 
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/web/overview}">RFC3161 Time Stamp Authority</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-                aria-controls="navbarResponsive"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</nav>
+<div th:replace="fragments/navbar.html :: navbar"></div>
 
 <div class="container">
     <div class="row" th:if="${responses.totalElements gt 0}">
@@ -31,16 +13,16 @@
             <table class="table table-bordered table-responsive-sm">
                 <thead>
                 <tr>
-                    <th th:text="#{overview.column.serial}">Serial</th>
-                    <th th:text="#{overview.column.algorithm}">Algorithm</th>
-                    <th th:text="#{overview.column.status}">Status</th>
+                    <th th:text="#{history.column.serial}">Serial</th>
+                    <th th:text="#{history.column.algorithm}">Algorithm</th>
+                    <th th:text="#{history.column.status}">Status</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="response : ${responses.content}">
-                    <td th:text="${response.serialNumber}">Serial Number</td>
-                    <td th:text="${response.request.hashAlgorithm}">Hash Algorithm</td>
-                    <td th:text="${response.status}">Status</td>
+                    <td th:text="${response.serialNumber}">123456789</td>
+                    <td th:text="${response.request.hashAlgorithm}">SHA256</td>
+                    <td th:text="${response.status}">0</td>
                 </tr>
                 </tbody>
             </table>
@@ -49,7 +31,7 @@
                 <ul class="pagination justify-content-center font-weight-medium">
                     <li class="page-item" th:classappend="${responses.number eq 0} ? 'disabled'">
                         <a class="page-link svg-icon"
-                           th:href="@{/web/overview?page={id}(id=${responses.number - 1})}"
+                           th:href="@{/web/history?page={id}(id=${responses.number - 1})}"
                            aria-label="Previous"
                            title="Previous Page" rel="tooltip">
                             <i class="bi-chevron-double-left"></i>
@@ -57,7 +39,7 @@
                     </li>
                     <li class="page-item" th:classappend="${i eq responses.number + 1} ? 'active'"
                         th:each="i : ${#numbers.sequence( responses.number + 1, responses.totalPages > 10 + responses.number ? responses.number + 10 : responses.totalPages, 1)}">
-                        <a class="page-link" th:href="@{/web/overview?page={id}(id=${i - 1})}" th:text="${i}"
+                        <a class="page-link" th:href="@{/web/history?page={id}(id=${i - 1})}" th:text="${i}"
                            th:title="${'Page '+ i}"
                            rel="tooltip"></a>
                     </li>
@@ -67,7 +49,7 @@
                         </a>
                     </li>
                     <li class="page-item" th:classappend="${responses.number + 1 eq responses.totalPages} ? 'disabled'">
-                        <a class="page-link svg-icon" th:href="@{/web/overview?page={id}(id=${responses.number + 1})}"
+                        <a class="page-link svg-icon" th:href="@{/web/history?page={id}(id=${responses.number + 1})}"
                            aria-label="Next"
                            title="Next Page" rel="tooltip">
                             <i class="bi-chevron-double-right"></i>
@@ -87,7 +69,7 @@
 
     <div class="row" th:unless="${responses.totalElements gt 0}">
         <div class="col text-center">
-            <span class="display-6" th:text="#{overview.no-responses}">no responses</span>
+            <span class="display-6" th:text="#{history.no-responses}">no responses</span>
         </div>
     </div>
 

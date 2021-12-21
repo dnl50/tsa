@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
@@ -38,6 +40,21 @@ class QueryTimeStampResponseServiceImplTest {
 
         // then
         assertThat(actualPage).isEqualTo(responseDataPageMock);
+    }
+
+    @Test
+    void findByIdDelegatesToRepository() {
+        // given
+        Long id = 1337L;
+        TimestampResponseData responseData = TimestampResponseData.builder().build();
+
+        given(tspResponseDataRepositoryMock.findById(id)).willReturn(Optional.of(responseData));
+
+        // when
+        Optional<TimestampResponseData> byId = testSubject.findById(id);
+
+        // then
+        assertThat(byId).contains(responseData);
     }
 
 }

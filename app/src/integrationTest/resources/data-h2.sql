@@ -7,9 +7,9 @@ VALUES (1, 'SHA512', 'U0hBNTEyLXRlc3QtMTIzNA==', 'A441F', 1, NULL, 'R0ZaVU9FQUlH
 
 INSERT INTO TSP_RESPONSE (ID, STATUS, STATUS_STRING, FAILURE_INFO, GENERATION_TIME, SERIAL_NUMBER, REQUEST_ID,
                           ASN_ENCODED)
-VALUES (1, 0, 'OK', NULL, TIMESTAMP '2021-03-15 13:02:21', 'A13', 1, 'bT6yyIc8PaiD0X2kBNbR0+rqKQ=='),
-       (2, 2, 'Bad Algorithm', 256, NULL, 'AF321', 2, 'dkTd+YpLsJOfOlElr4CqSM/zPg=='),
-       (3, 0, 'OK', NULL, TIMESTAMP '2021-05-12 21:02:21', 'D4214', 3, 'Hpxmv3yyXwsla92bjtMf7miBKw=='),
-       (4, 2, 'System Failure', 3411, NULL, '5325AC32', 4, 'Hpxmv3yyXwsla92bjtMf7miBKw=='),
-       (5, 0, 'OK', NULL, TIMESTAMP '2021-09-23 17:32:12', 'FA241', 5, 'ZDtDCqv1QmdxoCFZlZ+4lY2bnQ==');
+VALUES (1, 'GRANTED', 'OK', NULL, TIMESTAMP '2021-03-15 13:02:21', 'A13', 1, 'bT6yyIc8PaiD0X2kBNbR0+rqKQ=='),
+       (2, 'REJECTION', 'Bad Algorithm', 256, NULL, 'AF321', 2, 'dkTd+YpLsJOfOlElr4CqSM/zPg=='),
+       (3, 'GRANTED', 'OK', NULL, TIMESTAMP '2021-05-12 21:02:21', 'D4214', 3, 'Hpxmv3yyXwsla92bjtMf7miBKw=='),
+       (4, 'REJECTION', 'System Failure', 3411, NULL, '5325AC32', 4, 'Hpxmv3yyXwsla92bjtMf7miBKw=='),
+       (5, 'GRANTED', 'OK', NULL, TIMESTAMP '2021-09-23 17:32:12', 'FA241', 5, 'ZDtDCqv1QmdxoCFZlZ+4lY2bnQ==');
 

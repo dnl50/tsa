@@ -1,6 +1,7 @@
 package dev.mieser.tsa.persistence.mapper;
 
 import dev.mieser.tsa.domain.HashAlgorithm;
+import dev.mieser.tsa.domain.ResponseStatus;
 import dev.mieser.tsa.domain.TimestampRequestData;
 import dev.mieser.tsa.domain.TimestampResponseData;
 import dev.mieser.tsa.persistence.entity.TspRequestEntity;
@@ -33,7 +34,7 @@ class TspResponseMapperTest {
                 .build();
 
         TspResponseEntity responseEntity = TspResponseEntity.builder()
-                .status(2)
+                .status(ResponseStatus.REJECTION)
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(generationTime)
@@ -56,7 +57,7 @@ class TspResponseMapperTest {
                 .build();
 
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
-                .status(2)
+                .status(ResponseStatus.REJECTION)
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(generationTime)
@@ -83,7 +84,7 @@ class TspResponseMapperTest {
                 .build();
 
         TimestampResponseData responseData = TimestampResponseData.builder()
-                .status(2)
+                .status(ResponseStatus.REJECTION)
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(generationTime)
@@ -106,7 +107,7 @@ class TspResponseMapperTest {
                 .build();
 
         TspResponseEntity expectedResponseEntity = TspResponseEntity.builder()
-                .status(2)
+                .status(ResponseStatus.REJECTION)
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(generationTime)

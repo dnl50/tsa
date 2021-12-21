@@ -14,8 +14,9 @@ dependencies {
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework:spring-tx")
     implementation("org.webjars:webjars-locator:0.42")
-
     implementation("org.springframework.data:spring-data-commons")
+    implementation("jakarta.servlet:jakarta.servlet-api")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
 
     testImplementation("commons-io:commons-io:2.11.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

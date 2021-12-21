@@ -1,6 +1,7 @@
 package dev.mieser.tsa.signing.mapper;
 
 import dev.mieser.tsa.domain.HashAlgorithm;
+import dev.mieser.tsa.domain.ResponseStatus;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.function.Function;
 
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
+import static dev.mieser.tsa.domain.ResponseStatus.GRANTED;
 import static dev.mieser.tsa.signing.mapper.AbstractTspMapper.AsnEncodingConverter;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,6 +99,23 @@ class AbstractTspMapperTest {
 
         // then
         assertThat(asnEncodedValue).isEqualTo(value.getBytes(UTF_8));
+    }
+
+    @Test
+    void mapToResponseStatusReturnsExpectedStatus() {
+        // given / when
+        ResponseStatus responseStatus = testSubject.mapToResponseStatus(0);
+
+        // then
+        assertThat(responseStatus).isEqualTo(GRANTED);
+    }
+
+    @Test
+    void mapToResponseStatusThrowsExceptionWhenNoStatusIsDefined() {
+        // given / when / then
+        assertThatIllegalStateException()
+                .isThrownBy(() -> testSubject.mapToResponseStatus(-1))
+                .withMessage("Unknown status '-1'.");
     }
 
     private static class AbstractTspMapperImpl extends AbstractTspMapper {

@@ -24,7 +24,7 @@ public class TimestampVerificationResultMapper extends AbstractTspMapper {
         TimeStampTokenInfo timeStampInfo = timeStampResponse.getTimeStampToken().getTimeStampInfo();
 
         return TimestampValidationResult.builder()
-                .status(timeStampResponse.getStatus())
+                .status(mapToResponseStatus(timeStampResponse.getStatus()))
                 .statusString(timeStampResponse.getStatusString())
                 .failureInfo(mapIfNotNull(timeStampResponse.getFailInfo(), PKIFailureInfo::intValue))
                 .generationTime(dateConverter.toZonedDateTime(timeStampInfo.getGenTime()))

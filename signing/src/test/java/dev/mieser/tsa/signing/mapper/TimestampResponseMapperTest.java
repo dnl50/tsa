@@ -1,6 +1,7 @@
 package dev.mieser.tsa.signing.mapper;
 
 import dev.mieser.tsa.datetime.api.DateConverter;
+import dev.mieser.tsa.domain.ResponseStatus;
 import dev.mieser.tsa.domain.TimestampRequestData;
 import dev.mieser.tsa.domain.TimestampResponseData;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -81,7 +82,7 @@ class TimestampResponseMapperTest {
                 .build();
 
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
-                .status(PKIStatus.REJECTION)
+                .status(ResponseStatus.REJECTION)
                 .failureInfo(PKIFailureInfo.badAlg)
                 .statusString(statusString)
                 .request(expectedRequestData)
@@ -123,7 +124,7 @@ class TimestampResponseMapperTest {
                 .build();
 
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
-                .status(PKIStatus.GRANTED)
+                .status(ResponseStatus.GRANTED)
                 .serialNumber(responseSerialNumber)
                 .generationTime(genTime)
                 .request(expectedRequestData)
@@ -163,6 +164,7 @@ class TimestampResponseMapperTest {
                 .build();
 
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
+                .status(ResponseStatus.GRANTED)
                 .request(expectedRequestData)
                 .build();
 
