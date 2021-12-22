@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head (#{history.page-title})"></head>
+
+<body>
+
+<div th:replace="fragments/navbar.html :: navbar"></div>
+
+<div class="container">
+    <form th:action="@{/web/validate}" th:object="${response}" method="post">
+        <div class="mb-3">
+            <input type="text" class="form-control" id="tspResponse" aria-describedby="tspResponseHelp" th:field="*{base64EncodedResponse}">
+            <div id="tspResponseHelp" class="form-text" th:text="#{validate.input-description}">Base64</div>
+            <div class="alert alert-warning" th:if="${#fields.hasErrors('base64EncodedResponse')}" th:errors="*{base64EncodedResponse}"></div>
+        </div>
+        <button type="submit" class="btn btn-primary" th:text="#{validate.submit}">Validate</button>
+    </form>
+</div>
+
+</body>
+</html>

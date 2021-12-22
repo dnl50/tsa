@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head (#{history.page-title})"></head>
+
+<body>
+
+<div th:replace="fragments/navbar.html :: navbar"></div>
+
+<div class="container">
+    <div class="row mb-3">
+        <span class="h1" th:text="#{validation.result.title}">Result</span>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <p><strong th:text="#{validate.result.status}">Status</strong></p>
+        </div>
+        <div class="col-8">
+            <p>
+                <span th:text="${validationResult.status}">GRANTED</span>
+                <span class="mx-1" th:if="${validationResult.statusString}" th:text="'(' + ${validationResult.statusString} + ')'">(OK)</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="row" th:if="${validationResult.generationTime}">
+        <div class="col">
+            <p><strong th:text="#{validate.result.generation-time}">Generation Time</strong></p>
+        </div>
+        <div class="col-8">
+            <p th:text="${#temporals.formatISO(validationResult.generationTime)}">2021-12-22T13:37:00Z</p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

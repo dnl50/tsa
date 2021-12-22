@@ -4,9 +4,11 @@ module tsa.web {
     requires spring.webmvc;
     requires spring.tx;
     requires spring.data.commons;
+    requires spring.boot.autoconfigure;
     requires org.slf4j;
     requires java.servlet;
-    requires spring.boot.autoconfigure;
+    requires java.validation;
+    requires org.apache.commons.codec;
 
     requires tsa.signing;
     requires tsa.integration;
