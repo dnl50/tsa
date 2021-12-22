@@ -18,8 +18,8 @@ integrationTestImplementation.extendsFrom(configurations.testImplementation.get(
 integrationTestRuntimeOnly.extendsFrom(configurations.testRuntimeOnly.get())
 
 dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.6.1"))
-    annotationProcessor(platform("org.springframework.boot:spring-boot-dependencies:2.6.1"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.6.2"))
+    annotationProcessor(platform("org.springframework.boot:spring-boot-dependencies:2.6.2"))
 
     implementation("org.slf4j:slf4j-api")
 
