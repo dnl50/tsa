@@ -19,7 +19,7 @@ public class DatatablesPageableMapper implements Function<DatatablesPagingReques
 
     @Override
     public Pageable apply(DatatablesPagingRequest pagingRequest) {
-        return new OffsetBasedPageable(pagingRequest.getStart(), pagingRequest.getDraw(), mapSorting(pagingRequest));
+        return new OffsetBasedPageable(pagingRequest.getStart(), pagingRequest.getLength(), mapSorting(pagingRequest));
     }
 
     private Sort mapSorting(DatatablesPagingRequest pagingRequest) {

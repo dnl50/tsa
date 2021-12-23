@@ -36,6 +36,7 @@ public class HistoryRestController {
         return DatatablesPage.<TimestampResponseData>builder()
                 .draw(request.getDraw())
                 .recordsTotal(page.getTotalElements())
+                .recordsFiltered(page.getTotalElements())
                 .data(page.getContent())
                 .build();
     }

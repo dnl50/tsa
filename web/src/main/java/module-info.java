@@ -9,7 +9,9 @@ module tsa.web {
     requires java.servlet;
     requires java.validation;
     requires org.apache.commons.codec;
+    requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.annotation;
+    requires com.fasterxml.jackson.datatype.jsr310;
 
     requires tsa.signing;
     requires tsa.integration;

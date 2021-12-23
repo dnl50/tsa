@@ -19,7 +19,7 @@ dependencies {
     implementation("jakarta.servlet:jakarta.servlet-api")
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("commons-codec:commons-codec")
-    implementation("com.fasterxml.jackson.core:jackson-annotations")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
     testImplementation("commons-io:commons-io:2.11.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

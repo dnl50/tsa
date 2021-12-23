@@ -30,9 +30,9 @@ public class DatatablesPage<T> {
     private long recordsTotal;
 
     /**
-     * The number of filtered records. Always set to zero, since no searching is supported.
+     * The number of records  after filtering.
      */
-    private long recordFiltered;
+    private long recordsFiltered;
 
     /**
      * The page entries.

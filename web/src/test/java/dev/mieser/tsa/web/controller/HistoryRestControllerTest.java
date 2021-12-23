@@ -70,6 +70,7 @@ class HistoryRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.draw").value("12"))
                 .andExpect(jsonPath("$.recordsTotal").value("1337"))
+                .andExpect(jsonPath("$.recordsFiltered").value("1337"))
                 .andExpect(jsonPath("$.data.length()").value("1"))
                 .andExpect(jsonPath("$.data[0].serialNumber").value("10"));
     }
