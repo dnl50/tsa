@@ -7,3 +7,6 @@ spring:
   sql:
     init:
       platform: h2
+  h2:
+    console:
+      enabled: true

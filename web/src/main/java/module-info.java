@@ -9,6 +9,7 @@ module tsa.web {
     requires java.servlet;
     requires java.validation;
     requires org.apache.commons.codec;
+    requires com.fasterxml.jackson.annotation;
 
     requires tsa.signing;
     requires tsa.integration;

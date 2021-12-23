@@ -9,31 +9,67 @@
 
 <div class="container">
     <div class="row mb-3">
-        <span class="h1" th:text="#{validation.result.title}">Result</span>
+        <h1 th:text="#{validate.result.title}">Result</h1>
     </div>
 
-    <div class="row">
-        <div class="col">
-            <p><strong th:text="#{validate.result.status}">Status</strong></p>
-        </div>
-        <div class="col-8">
-            <p>
-                <span th:text="${validationResult.status}">GRANTED</span>
-                <span class="mx-1" th:if="${validationResult.statusString}" th:text="'(' + ${validationResult.statusString} + ')'">(OK)</span>
-            </p>
-        </div>
-    </div>
+    <section>
+        <h2 th:text="#{validate.result.general.title}">General</h2>
 
-    <div class="row" th:if="${validationResult.generationTime}">
-        <div class="col">
-            <p><strong th:text="#{validate.result.generation-time}">Generation Time</strong></p>
-        </div>
-        <div class="col-8">
-            <p th:text="${#temporals.formatISO(validationResult.generationTime)}">2021-12-22T13:37:00Z</p>
-        </div>
-    </div>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <th scope="row" th:text="#{validate.result.status}">Status</th>
+                <td>
+                    <span th:text="${validationResult.status}">GRANTED</span>
+                    <span class="mx-1" th:if="${validationResult.statusString}" th:text="'(' + ${validationResult.statusString} + ')'">(OK)</span>
+                </td>
+            </tr>
+
+            <tr th:if="${validationResult.generationTime}">
+                <th scope="row" th:text="#{validate.result.generation-time}">Gen Time</th>
+                <td th:text="${#temporals.formatISO(validationResult.generationTime)}">2021-12-22T13:37:00Z</td>
+            </tr>
+
+            <tr>
+                <th scope="row" th:text="#{validate.result.hash-algorithm}">Algorithm</th>
+                <td th:text="${validationResult.hashAlgorithm}">SHA512</td>
+            </tr>
+
+            <tr>
+                <th scope="row">
+                    <span th:text="#{validate.result.serial}">Serial Number</span>
+                    <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right"
+                       th:title="#{validate.result.serial.description}"></i>
+                </th>
+                <td th:text="${validationResult.serialNumber}">123456789</td>
+            </tr>
+
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2 th:text="#{validate.result.signing.title}">Signing</h2>
+
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <th scope="row">
+                    <span th:text="#{validate.result.signed-by-this-tsa}">Signed by this TSA?</span>
+                    <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right"
+                       th:title="#{validate.result.signed-by-this-tsa.description}"></i>
+                </th>
+                <td>
+                    <i class="bi" th:classappend="${validationResult.signedByThisTsa}? 'bi-check-circle' : 'bi-x-circle'"></i>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
 
 </div>
+
+<script th:replace="fragments/tooltip-initializer :: tooltip-initializer"></script>
 
 </body>
 </html>

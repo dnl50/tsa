@@ -1,4 +1,4 @@
-package dev.mieser.tsa.web.model;
+package dev.mieser.tsa.web.dto;
 
 import dev.mieser.tsa.web.validator.Base64Encoded;
 import lombok.Getter;

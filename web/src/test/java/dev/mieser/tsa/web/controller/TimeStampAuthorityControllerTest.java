@@ -1,4 +1,4 @@
-package dev.mieser.tsa.web;
+package dev.mieser.tsa.web.controller;
 
 import dev.mieser.tsa.domain.TimestampResponseData;
 import dev.mieser.tsa.integration.api.IssueTimeStampService;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TimeStampAuthorityController.class)
 class TimeStampAuthorityControllerTest {
 
-    private static final String QUERY_CONTENT_TYPE = "application/timestamp-query";
+    private static final String REQUEST_CONTENT_TYPE = "application/timestamp-query";
 
     private static final String REPLY_CONTENT_TYPE = "application/timestamp-reply";
 
@@ -71,7 +71,7 @@ class TimeStampAuthorityControllerTest {
         // when / then
         mockMvc.perform(post("/")
                         .content(requestContent)
-                        .contentType(QUERY_CONTENT_TYPE)
+                        .contentType(REQUEST_CONTENT_TYPE)
                         .accept(REPLY_CONTENT_TYPE))
                 .andExpect(status().isOk())
                 .andExpect(header().stringValues(CONTENT_TYPE, REPLY_CONTENT_TYPE));
@@ -96,14 +96,14 @@ class TimeStampAuthorityControllerTest {
         // when / then
         mockMvc.perform(post("/")
                         .content(requestContent)
-                        .contentType(QUERY_CONTENT_TYPE)
+                        .contentType(REQUEST_CONTENT_TYPE)
                         .accept(REPLY_CONTENT_TYPE))
                 .andExpect(status().isOk())
                 .andExpect(content().bytes(responseContent));
     }
 
-    @MethodSource("exceptionToStatusCodeProvider")
     @ParameterizedTest
+    @MethodSource("exceptionToStatusCodeProvider")
     void mapsExceptionToExpectedStatusCode(RuntimeException exception, HttpStatus expectedStatus) throws Exception {
         // given
         byte[] requestContent = "TSP request".getBytes(UTF_8);
@@ -113,7 +113,7 @@ class TimeStampAuthorityControllerTest {
         // when / then
         mockMvc.perform(post("/")
                         .content(requestContent)
-                        .contentType(QUERY_CONTENT_TYPE)
+                        .contentType(REQUEST_CONTENT_TYPE)
                         .accept(REPLY_CONTENT_TYPE))
                 .andExpect(status().is(expectedStatus.value()));
     }
