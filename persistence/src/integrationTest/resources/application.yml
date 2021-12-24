@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: "jdbc:h2:mem:"
+  jpa:
+    hibernate:
+      ddl-auto: create

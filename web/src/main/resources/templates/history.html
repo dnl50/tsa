@@ -13,6 +13,9 @@
         <thead>
         <tr>
             <th th:text="#{history.column.serial}">Serial</th>
+            <th th:text="#{history.column.algorithm}">Algorithm</th>
+            <th th:text="#{history.column.status}">Status</th>
+            <th th:text="#{history.column.status-string}">Status String</th>
         </tr>
         </thead>
     </table>
@@ -35,7 +38,10 @@
                 }
             },
             "columns": [
-                {"data": "serialNumber"}
+                {"data": "serialNumber"},
+                {"data": "request.hashAlgorithm"},
+                {"data": "status"},
+                {"data": "statusString"}
             ]
         });
     });

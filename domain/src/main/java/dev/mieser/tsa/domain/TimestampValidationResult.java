@@ -57,7 +57,7 @@ public class TimestampValidationResult {
      * <p/>
      * May be null when the certificate was not included in the response.
      */
-    private final SigningCertificateInformation certificateInformation;
+    private final SigningCertificateInformation signingCertificateInformation;
 
     /**
      * A flag whether the response was signed by the certificate which is currently in use.

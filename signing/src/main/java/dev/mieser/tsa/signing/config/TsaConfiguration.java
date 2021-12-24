@@ -9,10 +9,7 @@ import dev.mieser.tsa.signing.TspParser;
 import dev.mieser.tsa.signing.TspValidator;
 import dev.mieser.tsa.signing.api.TimeStampAuthority;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
-import dev.mieser.tsa.signing.cert.ClasspathCertificateLoader;
-import dev.mieser.tsa.signing.cert.FileSystemCertificateLoader;
-import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
-import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
+import dev.mieser.tsa.signing.cert.*;
 import dev.mieser.tsa.signing.mapper.TimestampResponseMapper;
 import dev.mieser.tsa.signing.mapper.TimestampVerificationResultMapper;
 import dev.mieser.tsa.signing.serial.RandomSerialNumberGenerator;
@@ -38,7 +35,7 @@ public class TsaConfiguration {
     @Bean
     TimeStampValidator timeStampValidator(SigningCertificateLoader signingCertificateLoader, DateConverter dateConverter) {
         return new BouncyCastleTimeStampValidator(tspParser(), signingCertificateLoader, publicKeyAnalyzer(),
-                new TimestampVerificationResultMapper(dateConverter), tspValidator());
+                new TimestampVerificationResultMapper(dateConverter, signingCertificateExtractor()), tspValidator());
     }
 
     @Bean
@@ -54,6 +51,11 @@ public class TsaConfiguration {
     @Bean
     TspValidator tspValidator() {
         return new TspValidator();
+    }
+
+    @Bean
+    SigningCertificateExtractor signingCertificateExtractor() {
+        return new SigningCertificateExtractor();
     }
 
     @Bean

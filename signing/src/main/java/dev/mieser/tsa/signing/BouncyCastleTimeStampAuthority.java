@@ -18,17 +18,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
 import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.tsp.*;
+import org.bouncycastle.util.CollectionStore;
+import org.bouncycastle.util.Store;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.PrivateKey;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -106,6 +112,8 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
             SignerInfoGenerator signerInfoGenerator = buildSignerInfoGenerator();
             var timeStampTokenGenerator =
                     new TimeStampTokenGenerator(signerInfoGenerator, signerCertDigestCalculator, new ASN1ObjectIdentifier(tsaProperties.getPolicyOid()));
+            timeStampTokenGenerator.addCertificates(tokenGeneratorCertificateStore());
+
             this.timeStampResponseGenerator = new TimeStampResponseGenerator(timeStampTokenGenerator, acceptedHashAlgorithmIdentifiers());
 
             log.info("Successfully initialized TSA. Tokens are issued under policy OID '{}'. The following hash algorithms are accepted: {}",
@@ -168,6 +176,14 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
         return tsaProperties.getAcceptedHashAlgorithms().stream()
                 .map(HashAlgorithm::getObjectIdentifier)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * @return A store of {@link X509CertificateHolder X.509 Certificates} which will be included when the {@code certReq} Flag is set.
+     */
+    private Store<X509CertificateHolder> tokenGeneratorCertificateStore() throws IOException, CertificateEncodingException {
+        X509CertificateHolder signingCertificate = new X509CertificateHolder(signingCertificateLoader.loadCertificate().getEncoded());
+        return new CollectionStore<>(List.of(signingCertificate));
     }
 
 }
