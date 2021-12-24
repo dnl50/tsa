@@ -63,6 +63,33 @@
                     <i class="bi" th:classappend="${validationResult.signedByThisTsa}? 'bi-check-circle' : 'bi-x-circle'"></i>
                 </td>
             </tr>
+
+            <tr>
+                <th scope="row">
+                    <span th:text="#{validate.result.signing-cert-included}">Signed by this TSA?</span>
+                    <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right"
+                       th:title="#{validate.result.signing-cert-included.description}"></i>
+                </th>
+                <td>
+                    <i class="bi" th:classappend="${validationResult.signingCertificateInformation}? 'bi-check-circle' : 'bi-x-circle'"></i>
+                </td>
+            </tr>
+
+            <tr th:if="${validationResult.signingCertificateInformation}">
+                <th scope="row" th:text="#{validate.result.certificate-issuer}">Issuer</th>
+                <td th:text="${validationResult.signingCertificateInformation.issuer}">123456789</td>
+            </tr>
+
+            <tr th:if="${validationResult.signingCertificateInformation}">
+                <th scope="row" th:text="#{validate.result.certificate-serial}">Serial</th>
+                <td th:text="${validationResult.signingCertificateInformation.serialNumber}">123456789</td>
+            </tr>
+
+            <tr th:if="${validationResult.signingCertificateInformation}">
+                <th scope="row" th:text="#{validate.result.certificate-expiration-date}">Expiration</th>
+                <td th:text=" ${#temporals.formatISO(validationResult.signingCertificateInformation.expirationDate)}">2021-12-24T13:54:25Z</td>
+            </tr>
+
             </tbody>
         </table>
     </section>

@@ -2,8 +2,8 @@ package dev.mieser.tsa.signing.cert;
 
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.ess.ESSCertID;
@@ -16,6 +16,7 @@ import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Selector;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import static org.bouncycastle.asn1.nist.NISTObjectIdentifiers.id_sha256;
@@ -31,7 +32,13 @@ import static org.bouncycastle.asn1.x509.X509ObjectIdentifiers.id_SHA1;
 @Slf4j
 public class SigningCertificateExtractor {
 
-    // TODO: JavaDoc
+    /**
+     * @param timeStampResponse The response to extract the signing certificate from, not {@code null}.
+     * @return The signing certificate in case certificates are included in the specified response or {@link Optional#empty()}, when no timestamp token
+     * is present or no certificates are included in the response.
+     * @throws InvalidTspResponseException When certificates are included in the response, but the signing certificate referenced in the {@code ESSCertID}/{@code ESSCertIDv2}
+     *                                     is not included.
+     */
     public Optional<X509CertificateHolder> extractSigningCertificate(TimeStampResponse timeStampResponse) {
         TimeStampToken timeStampToken = timeStampResponse.getTimeStampToken();
         if (!containsCertificates(timeStampToken)) {
@@ -39,13 +46,16 @@ public class SigningCertificateExtractor {
             return Optional.empty();
         }
 
-        Pair<AlgorithmIdentifier, byte[]> algorithmIdentifierPair = essCertIdHash(timeStampToken);
+        SigningCertificateIdentifier signingCertificateIdentifier = essCertIdHash(timeStampToken);
         Selector<X509CertificateHolder> signingCertificateSelector =
-                new HashBasedCertificateSelector(algorithmIdentifierPair.getLeft(), algorithmIdentifierPair.getRight());
+                new HashBasedCertificateSelector(signingCertificateIdentifier.algorithmIdentifier, signingCertificateIdentifier.hash);
 
-        return timeStampToken.getCertificates().getMatches(signingCertificateSelector)
-                .stream()
-                .findAny();
+        Collection<X509CertificateHolder> matchingCertificates = timeStampToken.getCertificates().getMatches(signingCertificateSelector);
+        if (matchingCertificates.isEmpty()) {
+            throw new InvalidTspResponseException("The signing certificate is not contained in the response, thus violating RFC 3161.");
+        }
+
+        return Optional.of(matchingCertificates.iterator().next());
     }
 
     /**
@@ -62,7 +72,7 @@ public class SigningCertificateExtractor {
      * in the {@code ESSCertID}/{@code ESSCertIDv2} attribute.
      * @throws InvalidTspResponseException When the TimeStamp Token violates RFC constraints.
      */
-    private Pair<AlgorithmIdentifier, byte[]> essCertIdHash(TimeStampToken timeStampToken) {
+    private SigningCertificateIdentifier essCertIdHash(TimeStampToken timeStampToken) {
         if (hasSignedAttribute(timeStampToken, id_aa_signingCertificate)) {
             log.debug("Signed 'SigningCertificate' attribute present in timestamp token. Using SHA-1 in accordance with RFC 2634.");
             return essCertIdHashFromSigningCertificate(timeStampToken);
@@ -88,15 +98,16 @@ public class SigningCertificateExtractor {
      * @return A pair of the hash algorithm identifier and the hash of the signing certificate.
      * @throws InvalidTspResponseException When the timestamp token contains multiple {@code ESSCertID} identifiers.
      */
-    private Pair<AlgorithmIdentifier, byte[]> essCertIdHashFromSigningCertificate(TimeStampToken timeStampToken) {
+    private SigningCertificateIdentifier essCertIdHashFromSigningCertificate(TimeStampToken timeStampToken) {
         Attribute signingCertificateAttribute = timeStampToken.getSignedAttributes().get(id_aa_signingCertificate);
-        SigningCertificate signingCertificate = SigningCertificate.getInstance(signingCertificateAttribute.getAttrValues());
+        ASN1Sequence signingCertificateSequence = (ASN1Sequence) signingCertificateAttribute.getAttrValues().getObjectAt(0);
+        SigningCertificate signingCertificate = SigningCertificate.getInstance(signingCertificateSequence);
         ESSCertID[] certificateIdentifiers = signingCertificate.getCerts();
         if (certificateIdentifiers.length > 1) {
             throw new InvalidTspResponseException("Multiple ESSCertID identifiers present.");
         }
 
-        return Pair.of(new AlgorithmIdentifier(id_SHA1), certificateIdentifiers[0].getCertHash());
+        return new SigningCertificateIdentifier(new AlgorithmIdentifier(id_SHA1), certificateIdentifiers[0].getCertHash());
     }
 
     /**
@@ -104,9 +115,11 @@ public class SigningCertificateExtractor {
      * @return A pair of the hash algorithm identifier and the hash of the signing certificate.
      * @throws InvalidTspResponseException When the timestamp token contains multiple {@code ESSCertIDv2} identifiers.
      */
-    private Pair<AlgorithmIdentifier, byte[]> essCertIdHashFromSigningCertificateV2(TimeStampToken timeStampToken) {
+    private SigningCertificateIdentifier essCertIdHashFromSigningCertificateV2(TimeStampToken timeStampToken) {
         Attribute signingCertificateAttribute = timeStampToken.getSignedAttributes().get(id_aa_signingCertificateV2);
-        SigningCertificateV2 signingCertificate = SigningCertificateV2.getInstance(new DLSequence(signingCertificateAttribute.getAttributeValues()));
+        ASN1Sequence attributeValues = new DLSequence(signingCertificateAttribute.getAttributeValues());
+        ASN1Sequence signingCertificateSequence = (ASN1Sequence) attributeValues.getObjectAt(0);
+        SigningCertificateV2 signingCertificate = SigningCertificateV2.getInstance(signingCertificateSequence);
         ESSCertIDv2[] certificateIdentifiers = signingCertificate.getCerts();
         if (certificateIdentifiers.length > 1) {
             throw new InvalidTspResponseException("Multiple ESSCertIDv2 identifiers present.");
@@ -116,10 +129,20 @@ public class SigningCertificateExtractor {
         byte[] hash = certificateIdentifiers[0].getCertHash();
         if (hashAlgorithm == null) {
             log.debug("No hash algorithm in ESSCertIDv2 identifier present. Using SHA-256 in accordance with RFC 5035.");
-            return Pair.of(new AlgorithmIdentifier(id_sha256), hash);
+            return new SigningCertificateIdentifier(new AlgorithmIdentifier(id_sha256), hash);
         }
 
-        return Pair.of(hashAlgorithm, hash);
+        return new SigningCertificateIdentifier(hashAlgorithm, hash);
+    }
+
+    /**
+     * Encapsulates the required information to identify the signing certificate.
+     *
+     * @param algorithmIdentifier The hash algorithm identifier, not {@code null}.
+     * @param hash                The hash value of the signing certificate, not {@code null}.
+     */
+    private record SigningCertificateIdentifier(AlgorithmIdentifier algorithmIdentifier, byte[] hash) {
+
     }
 
 }
