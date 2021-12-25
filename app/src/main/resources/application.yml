@@ -3,6 +3,9 @@ server:
   error:
     whitelabel:
       enabled: false
+spring:
+  jpa:
+    open-in-view: false
 tsa:
   certificate:
     path: "classpath:dev/mieser/tsa/app/rsa.p12"
