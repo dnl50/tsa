@@ -1,6 +1,6 @@
 plugins {
     `java-convention`
-    id("org.springframework.boot") version "2.5.6"
+    id("org.springframework.boot") version "2.6.2"
 }
 
 dependencies {
