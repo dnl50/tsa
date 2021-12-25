@@ -85,7 +85,7 @@ class TspResponseEntityRepositoryTest {
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(ZonedDateTime.parse("2021-11-13T21:29:13Z"))
-                .serialNumber("1675")
+                .serialNumber(3315L)
                 .request(requestEntity)
                 .asnEncoded("cmVz")
                 .build();

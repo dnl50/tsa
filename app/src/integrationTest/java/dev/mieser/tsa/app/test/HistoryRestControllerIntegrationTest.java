@@ -40,7 +40,7 @@ public class HistoryRestControllerIntegrationTest {
     void returnsResponseHistoryInExpectedOrder() throws Exception {
         // given
         DatatablesPagingRequest pagingRequest = DatatablesPagingRequest.builder()
-                .draw(1337)
+                .draw(1)
                 .length(100)
                 .start(0)
                 .columns(List.of(new Column("serialNumber", "serialNumber")))
@@ -58,9 +58,35 @@ public class HistoryRestControllerIntegrationTest {
                 .assertThat()
                 .statusCode(SC_OK)
                 .rootPath("data")
-                .body("size()", is(5));
+                .body("size()", is(5))
+                .body("id", is(List.of(4, 5, 3, 2, 1)));
+    }
 
-        // TODO: assert correct order of IDs
+    @Test
+    void returnsResponseHistoryWithExpectedPage() throws Exception {
+        // given
+        DatatablesPagingRequest pagingRequest = DatatablesPagingRequest.builder()
+                .draw(1337)
+                .length(1)
+                .start(2)
+                .columns(List.of(new Column("id", "id")))
+                .build();
+
+        // when / then
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(pagingRequest))
+                .when()
+                .post("/api/history")
+                .then()
+                .assertThat()
+                .statusCode(SC_OK)
+                .body("draw", is(1337))
+                .body("recordsTotal", is(5))
+                .body("recordsFiltered", is(5))
+                .body("data.size()", is(1))
+                .body("data.id", is(List.of(3)));
     }
 
 }

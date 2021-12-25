@@ -1,18 +1,25 @@
 package dev.mieser.tsa.signing.serial;
 
-import java.math.BigInteger;
+import lombok.RequiredArgsConstructor;
+
 import java.security.SecureRandom;
+import java.util.function.Supplier;
 
 /**
- * {@link SerialNumberGenerator} generating random serial numbers.
+ * {@link SerialNumberGenerator} generating random serial numbers. There is a low chance that the same serial is generated twice.
  */
+@RequiredArgsConstructor
 public class RandomSerialNumberGenerator implements SerialNumberGenerator {
 
-    private final SecureRandom secureRandom = new SecureRandom();
+    private final Supplier<Long> randomValueSupplier;
+
+    public RandomSerialNumberGenerator() {
+        this(() -> new SecureRandom().nextLong());
+    }
 
     @Override
-    public BigInteger generateSerialNumber() {
-        return BigInteger.valueOf(secureRandom.nextLong());
+    public long generateSerialNumber() {
+        return randomValueSupplier.get();
     }
 
 }

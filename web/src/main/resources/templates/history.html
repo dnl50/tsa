@@ -16,6 +16,11 @@
             <th th:text="#{history.column.algorithm}">Algorithm</th>
             <th th:text="#{history.column.status}">Status</th>
             <th th:text="#{history.column.status-string}">Status String</th>
+            <th>
+                <span th:text="#{history.column.reception-time}">Reception Time</span>
+                <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                   th:title="#{history.column.reception-time.description}"></i>
+            </th>
         </tr>
         </thead>
     </table>
@@ -41,11 +46,14 @@
                 {"data": "serialNumber"},
                 {"data": "request.hashAlgorithm"},
                 {"data": "status"},
-                {"data": "statusString"}
+                {"data": "statusString"},
+                {"data": "receptionTime"},
             ]
         });
     });
 </script>
+
+<script th:replace="fragments/tooltip-initializer :: tooltip-initializer"></script>
 
 </body>
 </html>

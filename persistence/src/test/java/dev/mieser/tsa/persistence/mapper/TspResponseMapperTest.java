@@ -38,7 +38,8 @@ class TspResponseMapperTest {
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(generationTime)
-                .serialNumber("1675")
+                .receptionTime(generationTime)
+                .serialNumber(5749L)
                 .request(requestEntity)
                 .asnEncoded("cmVz")
                 .build();
@@ -61,7 +62,8 @@ class TspResponseMapperTest {
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(generationTime)
-                .serialNumber(BigInteger.valueOf(5749L))
+                .receptionTime(generationTime)
+                .serialNumber(5749L)
                 .request(expectedRequestData)
                 .asnEncoded("res".getBytes(UTF_8))
                 .build();
@@ -88,7 +90,8 @@ class TspResponseMapperTest {
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(generationTime)
-                .serialNumber(BigInteger.valueOf(5749L))
+                .receptionTime(generationTime)
+                .serialNumber(5749L)
                 .request(requestData)
                 .asnEncoded("res".getBytes(UTF_8))
                 .build();
@@ -111,7 +114,8 @@ class TspResponseMapperTest {
                 .statusString("test")
                 .failureInfo(12)
                 .generationTime(generationTime)
-                .serialNumber("1675")
+                .receptionTime(generationTime)
+                .serialNumber(5749L)
                 .request(expectedRequestEntity)
                 .asnEncoded("cmVz")
                 .build();

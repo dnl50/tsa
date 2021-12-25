@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 
 @Data
@@ -21,6 +23,7 @@ public class TspResponseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private ResponseStatus status;
 
@@ -28,14 +31,18 @@ public class TspResponseEntity {
 
     private Integer failureInfo;
 
+    @NotNull
+    private ZonedDateTime receptionTime;
+
     private ZonedDateTime generationTime;
 
-    private String serialNumber;
+    private Long serialNumber;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "REQUEST_ID")
     private TspRequestEntity request;
 
+    @NotEmpty
     private String asnEncoded;
 
 }

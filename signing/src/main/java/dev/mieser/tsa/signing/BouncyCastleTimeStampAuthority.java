@@ -33,6 +33,7 @@ import java.math.BigInteger;
 import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -93,10 +94,11 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
 
     private TimestampResponseData generateTspResponse(TimeStampRequest timeStampRequest) {
         try {
-            BigInteger tspResponseSerial = serialNumberGenerator.generateSerialNumber();
-            TimeStampResponse tspResponse = timeStampResponseGenerator.generate(timeStampRequest, tspResponseSerial, currentDateTimeService.now());
+            BigInteger tspResponseSerial = BigInteger.valueOf(serialNumberGenerator.generateSerialNumber());
+            Date receptionTime = currentDateTimeService.now();
+            TimeStampResponse tspResponse = timeStampResponseGenerator.generate(timeStampRequest, tspResponseSerial, receptionTime);
             log.info("Successfully signed TSP request. TSP request serial number: {}", tspResponseSerial);
-            return timestampResponseMapper.map(timeStampRequest, tspResponse);
+            return timestampResponseMapper.map(timeStampRequest, tspResponse, receptionTime);
         } catch (TSPException tspException) {
             throw new TspResponseException("Could not sign TSP request.", tspException);
         }

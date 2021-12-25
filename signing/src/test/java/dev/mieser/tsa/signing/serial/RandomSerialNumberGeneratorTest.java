@@ -2,21 +2,25 @@ package dev.mieser.tsa.signing.serial;
 
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
+import java.security.SecureRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RandomSerialNumberGeneratorTest {
 
-    private final RandomSerialNumberGenerator testSubject = new RandomSerialNumberGenerator();
+    private final RandomSerialNumberGenerator testSubject;
+
+    RandomSerialNumberGeneratorTest() {
+        this.testSubject = new RandomSerialNumberGenerator(() -> 10L);
+    }
 
     @Test
-    void generateSerialNumberDoesNotReturnNull() {
+    void generateSerialNumberReturnsExpectedSerial() {
         // given / when
-        BigInteger serial = testSubject.generateSerialNumber();
+        long serial = testSubject.generateSerialNumber();
 
         // then
-        assertThat(serial).isNotNull();
+        assertThat(serial).isEqualTo(10L);
     }
 
 }
