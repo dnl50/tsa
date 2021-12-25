@@ -35,7 +35,7 @@ public class TsaConfiguration {
     @Bean
     TimeStampValidator timeStampValidator(SigningCertificateLoader signingCertificateLoader, DateConverter dateConverter) {
         return new BouncyCastleTimeStampValidator(tspParser(), signingCertificateLoader, publicKeyAnalyzer(),
-                new TimestampVerificationResultMapper(dateConverter, signingCertificateExtractor()), tspValidator());
+                new TimestampVerificationResultMapper(dateConverter), tspValidator(), signingCertificateExtractor());
     }
 
     @Bean

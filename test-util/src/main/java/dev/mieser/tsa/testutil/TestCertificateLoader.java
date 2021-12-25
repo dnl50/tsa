@@ -10,6 +10,7 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -27,12 +28,16 @@ public class TestCertificateLoader {
 
     private static ECPrivateKey ecPrivateKey;
 
+    private static X509Certificate dsaCertificate;
+
+    private static DSAPrivateKey dsaPrivateKey;
+
     private TestCertificateLoader() {
         // only static util methods
     }
 
     /**
-     * @return An RSA certificate which has an <i>Extended Key Usage</i> Extension marked as critical which contains {@code id-kp-timeStamping} as its only <i>KeyPurposeId</i>.
+     * @return A RSA certificate which has an <i>Extended Key Usage</i> Extension marked as critical which contains {@code id-kp-timeStamping} as its only <i>KeyPurposeId</i>.
      * @see #loadRsaPrivateKey()
      */
     public static synchronized X509Certificate loadRsaCertificate() {
@@ -53,6 +58,30 @@ public class TestCertificateLoader {
         }
 
         return rsaPrivateKey;
+    }
+
+    /**
+     * @return A DSA certificate which has an <i>Extended Key Usage</i> Extension marked as critical which contains {@code id-kp-timeStamping} as its only <i>KeyPurposeId</i>.
+     * @see #loadDsaPrivateKey()
+     */
+    public static synchronized X509Certificate loadDsaCertificate() {
+        if (dsaCertificate == null) {
+            dsaCertificate = loadCertificateFromClasspath("/dsa/cert.pem");
+        }
+
+        return dsaCertificate;
+    }
+
+    /**
+     * @return The corresponding DSA private key.
+     * @see #loadDsaCertificate()
+     */
+    public static synchronized DSAPrivateKey loadDsaPrivateKey() {
+        if (dsaPrivateKey == null) {
+            dsaPrivateKey = loadPrivateKeyFromClasspath("/dsa/key.pem", "DSA");
+        }
+
+        return dsaPrivateKey;
     }
 
     /**

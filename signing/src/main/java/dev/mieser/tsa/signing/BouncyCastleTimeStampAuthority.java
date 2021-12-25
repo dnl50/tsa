@@ -38,8 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static dev.mieser.tsa.signing.cert.PublicKeyAlgorithm.EC;
-import static dev.mieser.tsa.signing.cert.PublicKeyAlgorithm.RSA;
+import static dev.mieser.tsa.signing.cert.PublicKeyAlgorithm.*;
 import static java.lang.String.format;
 
 /**
@@ -49,7 +48,7 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
 
-    private static final Set<PublicKeyAlgorithm> SUPPORTED_PUBLIC_KEY_ALGORITHMS = EnumSet.of(RSA, EC);
+    private static final Set<PublicKeyAlgorithm> SUPPORTED_PUBLIC_KEY_ALGORITHMS = EnumSet.of(DSA, RSA, EC);
 
     private final TsaProperties tsaProperties;
 
@@ -142,31 +141,36 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
     private SignerInfoGenerator buildSignerInfoGenerator() throws Exception {
         X509Certificate signingCertificate = signingCertificateLoader.loadCertificate();
         PublicKeyAlgorithm publicKeyAlgorithm = publicKeyAnalyzer.publicKeyAlgorithm(signingCertificate);
-        if (!hasSupportedPublicKeyAlgorithm(signingCertificate)) {
+        if (!isSupportedPublicKeyAlgorithm(publicKeyAlgorithm)) {
             throw new TsaInitializationException(format("Public Key algorithm '%s' is not supported.", publicKeyAlgorithm.getJcaName()));
         }
 
         PrivateKey signingPrivateKey = signingCertificateLoader.loadPrivateKey();
-        String signingAlgorithmName = bouncyCastleSigningAlgorithmName(publicKeyAlgorithm);
+        String signingAlgorithmName = bouncyCastleSignatureAlgorithmName(publicKeyAlgorithm);
         log.info("Public key algorithm is '{}', using signing algorithm '{}'.", publicKeyAlgorithm.getJcaName(), signingAlgorithmName);
 
         return new JcaSimpleSignerInfoGeneratorBuilder().build(signingAlgorithmName, signingPrivateKey, signingCertificate);
     }
 
     /**
-     * @param signingCertificate The certificate which containing the public key used to sign the TSP requests with, not {@code null}.
+     * @param publicKeyAlgorithm The algorithm of the public key whose corresponding private key is used to sign the TSP requests with, not {@code null}.
      * @return {@code true}, iff the public key's algorithm is supported by this TSA.
      */
-    private boolean hasSupportedPublicKeyAlgorithm(X509Certificate signingCertificate) {
-        return SUPPORTED_PUBLIC_KEY_ALGORITHMS.contains(publicKeyAnalyzer.publicKeyAlgorithm(signingCertificate));
+    private boolean isSupportedPublicKeyAlgorithm(PublicKeyAlgorithm publicKeyAlgorithm) {
+        return SUPPORTED_PUBLIC_KEY_ALGORITHMS.contains(publicKeyAlgorithm);
     }
 
     /**
-     * @param publicKeyAlgorithm The algorithm of the public key, not {@code null}.
+     * @param publicKeyAlgorithm The algorithm of the public key whose corresponding private key is used to sign the TSP requests with, not {@code null}.
      * @return The name of the Bouncy Castle signature algorithm used to sign TSP requests.
      */
-    private String bouncyCastleSigningAlgorithmName(PublicKeyAlgorithm publicKeyAlgorithm) {
-        return format("%swith%s", tsaProperties.getSigningDigestAlgorithm().name(), publicKeyAlgorithm.getJcaName());
+    private String bouncyCastleSignatureAlgorithmName(PublicKeyAlgorithm publicKeyAlgorithm) {
+        String signatureAlgorithmSuffix = switch (publicKeyAlgorithm) {
+            case EC -> "ECDSA";
+            case RSA, DSA -> publicKeyAlgorithm.getJcaName();
+        };
+
+        return format("%swith%s", tsaProperties.getSigningDigestAlgorithm().name(), signatureAlgorithmSuffix);
     }
 
     /**

@@ -7,6 +7,7 @@ import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
+import dev.mieser.tsa.signing.cert.SigningCertificateExtractor;
 import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
 import dev.mieser.tsa.signing.mapper.TimestampVerificationResultMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.bouncycastle.operator.ContentVerifierProvider;
 import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.bc.BcDSAContentVerifierProviderBuilder;
 import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
 import org.bouncycastle.operator.bc.BcECContentVerifierProviderBuilder;
 import org.bouncycastle.operator.bc.BcRSAContentVerifierProviderBuilder;
@@ -46,6 +48,8 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
 
     private final TspValidator tspValidator;
 
+    private final SigningCertificateExtractor signingCertificateExtractor;
+
     private SignerInformationVerifier signerInformationVerifier;
 
     @Override
@@ -60,12 +64,24 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
         verifyInitialized();
 
         TimeStampResponse timeStampResponse = tspParser.parseResponse(tspResponseInputStream);
-        ASN1ObjectIdentifier hashAlgorithmOid = timeStampResponse.getTimeStampToken().getTimeStampInfo().getMessageImprintAlgOID();
-        if (!tspValidator.isKnownHashAlgorithm(hashAlgorithmOid)) {
-            throw new UnknownHashAlgorithmException(format("Unknown hash algorithm OID '%s'.", hashAlgorithmOid.getId()));
-        }
 
-        return timestampVerificationResultMapper.map(timeStampResponse, wasSignedByThisTsa(timeStampResponse));
+        verifyHashAlgorithmIsKnown(timeStampResponse);
+        X509CertificateHolder signingCertificate = signingCertificateExtractor.extractSigningCertificate(timeStampResponse).orElse(null);
+
+        return timestampVerificationResultMapper.map(timeStampResponse, signingCertificate, wasSignedByThisTsa(timeStampResponse));
+    }
+
+    /**
+     * @param timeStampResponse The response to check, not {@code null}.
+     * @throws UnknownHashAlgorithmException When the response contains a token which references an unknown hash algorithm.
+     */
+    private void verifyHashAlgorithmIsKnown(TimeStampResponse timeStampResponse) {
+        if (containsTimeStampToken(timeStampResponse)) {
+            ASN1ObjectIdentifier hashAlgorithmOid = timeStampResponse.getTimeStampToken().getTimeStampInfo().getMessageImprintAlgOID();
+            if (!tspValidator.isKnownHashAlgorithm(hashAlgorithmOid)) {
+                throw new UnknownHashAlgorithmException(format("Unknown hash algorithm OID '%s'.", hashAlgorithmOid.getId()));
+            }
+        }
     }
 
     /**
@@ -79,6 +95,13 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
         }
     }
 
+    private boolean containsTimeStampToken(TimeStampResponse timeStampResponse) {
+        return timeStampResponse.getTimeStampToken() != null;
+    }
+
+    /**
+     * @return The signature verifier backed by the {@link SigningCertificateLoader current} certificate.
+     */
     private ContentVerifierProvider buildContentVerifierProvider() {
         try {
             X509Certificate signingCertificate = signingCertificateLoader.loadCertificate();
@@ -90,7 +113,8 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
                         .build(signingCertificateHolder);
                 case EC -> new BcECContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
                         .build(signingCertificateHolder);
-                default -> throw new TsaInitializationException(format("Public key algorithm '%s' is not supported.", publicKeyAlgorithm.getJcaName()));
+                case DSA -> new BcDSAContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
+                        .build(signingCertificateHolder);
             };
 
         } catch (IOException | CertificateEncodingException | OperatorCreationException e) {
@@ -98,7 +122,15 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
         }
     }
 
+    /**
+     * @param timeStampResponse The response to check, not {@code null}.
+     * @return {@code true}, iff the response contains a token which was signed by this TSA.
+     */
     private boolean wasSignedByThisTsa(TimeStampResponse timeStampResponse) {
+        if (!containsTimeStampToken(timeStampResponse)) {
+            return false;
+        }
+
         try {
             timeStampResponse.getTimeStampToken().validate(signerInformationVerifier);
             return true;

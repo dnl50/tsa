@@ -16,4 +16,5 @@ dependencies {
     integrationTestImplementation("io.rest-assured:rest-assured")
     integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
     integrationTestImplementation("org.bouncycastle:bcpkix-jdk15on:1.70")
+    integrationTestImplementation("com.fasterxml.jackson.core:jackson-databind")
 }
