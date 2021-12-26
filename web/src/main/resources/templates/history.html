@@ -7,9 +7,26 @@
 
 <div th:replace="fragments/navbar.html :: navbar"></div>
 
+<div id="hashValueModal" class="modal fade" tabindex="-1" aria-labelledby="hashValueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="hashValueModalLabel" class="modal-title" th:text="#{history.hash-modal.title}">Hash</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <span class="text-break font-monospace" id="hashValueModalContent">dynamically replaced by jQuery onClick Handler</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{history.hash-modal.close}">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
 
-    <table id="history" class="table table-striped table-responsive">
+    <table id="history" class="table table-hover table-striped table-responsive">
         <thead>
         <tr>
             <th th:text="#{history.column.serial}">Serial</th>
@@ -21,6 +38,7 @@
                 <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
                    th:title="#{history.column.reception-time.description}"></i>
             </th>
+            <th th:text="#{history.column.hash}">Hash</th>
         </tr>
         </thead>
     </table>
@@ -29,8 +47,9 @@
 
 <script th:inline="javascript">
     $(document).ready(function () {
-        $('table#history').DataTable({
+        const historyTable = $('table#history').DataTable({
             "searching": false,
+            "pageLength": 50,
             "processing": true,
             "serverSide": true,
             "ajax": {
@@ -48,7 +67,20 @@
                 {"data": "status"},
                 {"data": "statusString"},
                 {"data": "receptionTime"},
+                {
+                    "sortable": false,
+                    "data": null,
+                    "defaultContent": '<a href="#" class="link-info">[(#{history.hash-modal.show})]</a>'
+                }
             ]
+        });
+
+        $('table#history tbody').on('click', 'a', function () {
+            const clickedRow = historyTable.row($(this).parents('tr'))
+            const base64Hash = clickedRow.data().request.hash
+
+            $('#hashValueModalContent').text(base64Hash)
+            $('#hashValueModal').modal('show');
         });
     });
 </script>

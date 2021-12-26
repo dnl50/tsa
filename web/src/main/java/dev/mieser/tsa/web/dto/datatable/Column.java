@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-
 /**
  * DTO encapsulating parts of the column information included in a <a href="https://datatables.net">Datatables</a> AJAX request.
  *
@@ -26,7 +24,6 @@ public class Column {
     /**
      * The column's data source.
      */
-    @NotEmpty
     private String data;
 
 }
