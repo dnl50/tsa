@@ -3,7 +3,7 @@
 
 <head th:replace="fragments/head :: head (#{history.page-title})"></head>
 
-<body>
+<body class="bg-light">
 
 <div th:replace="fragments/navbar.html :: navbar"></div>
 
@@ -18,7 +18,7 @@
         <table class="table table-striped">
             <tbody>
             <tr>
-                <th scope="row" th:text="#{validate.result.status}">Status</th>
+                <th scope="row" class="w-25" th:text="#{validate.result.status}">Status</th>
                 <td>
                     <span th:text="${validationResult.status}">GRANTED</span>
                     <span class="mx-1" th:if="${validationResult.statusString}" th:text="'(' + ${validationResult.statusString} + ')'">(OK)</span>
@@ -26,13 +26,8 @@
             </tr>
 
             <tr th:if="${validationResult.generationTime}">
-                <th scope="row" th:text="#{validate.result.generation-time}">Gen Time</th>
+                <th scope="row" class="w-25" th:text="#{validate.result.generation-time}">Gen Time</th>
                 <td th:text="${#temporals.formatISO(validationResult.generationTime)}">2021-12-22T13:37:00Z</td>
-            </tr>
-
-            <tr>
-                <th scope="row" th:text="#{validate.result.hash-algorithm}">Algorithm</th>
-                <td th:text="${validationResult.hashAlgorithm}">SHA512</td>
             </tr>
 
             <tr>
@@ -42,6 +37,22 @@
                        th:title="#{validate.result.serial.description}"></i>
                 </th>
                 <td th:text="${validationResult.serialNumber}">123456789</td>
+            </tr>
+
+            <tr>
+                <th scope="row" class="w-25" th:text="#{validate.result.hash-algorithm}">Algorithm</th>
+                <td th:text="${validationResult.hashAlgorithm}">SHA512</td>
+            </tr>
+
+            <tr>
+                <th scope="row" class="w-25">
+                    <span th:text="#{validate.result.hash}">Hash</span>
+                    <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right"
+                       th:title="#{validate.result.hash.description}"></i>
+                </th>
+                <td>
+                    <span class="text-break font-monospace" th:text="${{validationResult.hash}}">HASH1234</span>
+                </td>
             </tr>
 
             </tbody>
@@ -54,7 +65,7 @@
         <table class="table table-striped">
             <tbody>
             <tr>
-                <th scope="row">
+                <th scope="row" class="w-25">
                     <span th:text="#{validate.result.signed-by-this-tsa}">Signed by this TSA?</span>
                     <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right"
                        th:title="#{validate.result.signed-by-this-tsa.description}"></i>
@@ -65,7 +76,7 @@
             </tr>
 
             <tr>
-                <th scope="row">
+                <th scope="row" class="w-25">
                     <span th:text="#{validate.result.signing-cert-included}">Signed by this TSA?</span>
                     <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right"
                        th:title="#{validate.result.signing-cert-included.description}"></i>
@@ -76,17 +87,17 @@
             </tr>
 
             <tr th:if="${validationResult.signingCertificateInformation}">
-                <th scope="row" th:text="#{validate.result.certificate-issuer}">Issuer</th>
+                <th scope="row" class="w-25" th:text="#{validate.result.certificate-issuer}">Issuer</th>
                 <td th:text="${validationResult.signingCertificateInformation.issuer}">123456789</td>
             </tr>
 
             <tr th:if="${validationResult.signingCertificateInformation}">
-                <th scope="row" th:text="#{validate.result.certificate-serial}">Serial</th>
+                <th scope="row" class="w-25" th:text="#{validate.result.certificate-serial}">Serial</th>
                 <td th:text="${validationResult.signingCertificateInformation.serialNumber}">123456789</td>
             </tr>
 
             <tr th:if="${validationResult.signingCertificateInformation}">
-                <th scope="row" th:text="#{validate.result.certificate-expiration-date}">Expiration</th>
+                <th scope="row" class="w-25" th:text="#{validate.result.certificate-expiration-date}">Expiration</th>
                 <td th:text=" ${#temporals.formatISO(validationResult.signingCertificateInformation.expirationDate)}">2021-12-24T13:54:25Z</td>
             </tr>
 
