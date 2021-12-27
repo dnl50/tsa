@@ -1,5 +1,6 @@
 package dev.mieser.tsa.persistence.entity;
 
+import dev.mieser.tsa.domain.FailureInfo;
 import dev.mieser.tsa.domain.ResponseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +30,8 @@ public class TspResponseEntity {
 
     private String statusString;
 
-    private Integer failureInfo;
+    @Enumerated(EnumType.STRING)
+    private FailureInfo failureInfo;
 
     @NotNull
     private ZonedDateTime receptionTime;

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+import static dev.mieser.tsa.domain.FailureInfo.BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -83,7 +84,7 @@ class TspResponseEntityRepositoryTest {
         return TspResponseEntity.builder()
                 .status(ResponseStatus.REJECTION)
                 .statusString("test")
-                .failureInfo(12)
+                .failureInfo(BAD_REQUEST)
                 .generationTime(ZonedDateTime.parse("2021-11-13T21:29:13Z"))
                 .serialNumber(3315L)
                 .request(requestEntity)

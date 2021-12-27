@@ -5,7 +5,6 @@ import dev.mieser.tsa.domain.TimestampRequestData;
 import dev.mieser.tsa.domain.TimestampResponseData;
 import lombok.RequiredArgsConstructor;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.cmp.PKIFailureInfo;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
 
@@ -38,7 +37,7 @@ public class TimestampResponseMapper extends AbstractTspMapper {
         return TimestampResponseData.builder()
                 .status(mapToResponseStatus(timeStampResponse.getStatus()))
                 .statusString(timeStampResponse.getStatusString())
-                .failureInfo(mapIfNotNull(timeStampResponse.getFailInfo(), PKIFailureInfo::intValue))
+                .failureInfo(mapIfNotNull(timeStampResponse.getFailInfo(), failInfo -> mapToFailureInfo(failInfo.intValue())))
                 .serialNumber(
                         mapIfNotNull(timeStampResponse.getTimeStampToken(), timeStampToken -> timeStampToken.getTimeStampInfo().getSerialNumber().longValue()))
                 .request(requestData)

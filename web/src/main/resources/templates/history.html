@@ -24,24 +24,29 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container-fluid">
 
-    <table id="history" class="table table-hover table-striped table-responsive">
-        <thead>
-        <tr>
-            <th th:text="#{history.column.serial}">Serial</th>
-            <th th:text="#{history.column.algorithm}">Algorithm</th>
-            <th th:text="#{history.column.status}">Status</th>
-            <th th:text="#{history.column.status-string}">Status String</th>
-            <th>
-                <span th:text="#{history.column.reception-time}">Reception Time</span>
-                <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
-                   th:title="#{history.column.reception-time.description}"></i>
-            </th>
-            <th th:text="#{history.column.hash}">Hash</th>
-        </tr>
-        </thead>
-    </table>
+    <div class="row">
+        <div class="col col-xxl-11 mx-auto">
+            <table id="history" class="table table-hover align-middle table-striped">
+                <thead>
+                <tr>
+                    <th th:text="#{history.column.serial}">Serial</th>
+                    <th th:text="#{history.column.algorithm}">Algorithm</th>
+                    <th th:text="#{history.column.status}">Status</th>
+                    <th th:text="#{history.column.status-string}">Status String</th>
+                    <th th:text="#{history.column.fail-info}">Failure Code</th>
+                    <th>
+                        <span th:text="#{history.column.reception-time}">Reception Time</span>
+                        <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                           th:title="#{history.column.reception-time.description}"></i>
+                    </th>
+                    <th th:text="#{history.column.hash}">Hash</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
 
 </div>
 
@@ -66,6 +71,7 @@
                 {"data": "request.hashAlgorithm"},
                 {"data": "status"},
                 {"data": "statusString"},
+                {"data": "failureInfo"},
                 {"data": "receptionTime"},
                 {
                     "sortable": false,

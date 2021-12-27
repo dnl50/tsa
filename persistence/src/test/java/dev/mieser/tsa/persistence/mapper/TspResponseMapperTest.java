@@ -12,6 +12,8 @@ import org.mapstruct.factory.Mappers;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
 
+import static dev.mieser.tsa.domain.FailureInfo.BAD_ALGORITHM;
+import static dev.mieser.tsa.domain.FailureInfo.SYSTEM_FAILURE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +38,7 @@ class TspResponseMapperTest {
         TspResponseEntity responseEntity = TspResponseEntity.builder()
                 .status(ResponseStatus.REJECTION)
                 .statusString("test")
-                .failureInfo(12)
+                .failureInfo(SYSTEM_FAILURE)
                 .generationTime(generationTime)
                 .receptionTime(generationTime)
                 .serialNumber(5749L)
@@ -60,7 +62,7 @@ class TspResponseMapperTest {
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
                 .status(ResponseStatus.REJECTION)
                 .statusString("test")
-                .failureInfo(12)
+                .failureInfo(SYSTEM_FAILURE)
                 .generationTime(generationTime)
                 .receptionTime(generationTime)
                 .serialNumber(5749L)
@@ -88,7 +90,7 @@ class TspResponseMapperTest {
         TimestampResponseData responseData = TimestampResponseData.builder()
                 .status(ResponseStatus.REJECTION)
                 .statusString("test")
-                .failureInfo(12)
+                .failureInfo(BAD_ALGORITHM)
                 .generationTime(generationTime)
                 .receptionTime(generationTime)
                 .serialNumber(5749L)
@@ -112,7 +114,7 @@ class TspResponseMapperTest {
         TspResponseEntity expectedResponseEntity = TspResponseEntity.builder()
                 .status(ResponseStatus.REJECTION)
                 .statusString("test")
-                .failureInfo(12)
+                .failureInfo(BAD_ALGORITHM)
                 .generationTime(generationTime)
                 .receptionTime(generationTime)
                 .serialNumber(5749L)

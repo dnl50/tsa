@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import static dev.mieser.tsa.domain.FailureInfo.BAD_ALGORITHM;
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA256;
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -87,7 +88,7 @@ class TimestampResponseMapperTest {
 
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
                 .status(ResponseStatus.REJECTION)
-                .failureInfo(PKIFailureInfo.badAlg)
+                .failureInfo(BAD_ALGORITHM)
                 .statusString(statusString)
                 .request(expectedRequestData)
                 .asnEncoded(asnEncodedResponse)

@@ -5,6 +5,7 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -66,13 +67,13 @@ class HashBasedCertificateSelectorTest {
     }
 
     @Test
+    @Disabled("problems with spying output stream")
     void matchThrowsExceptionWhenDigestOutputStreamCannotBeClosed(@Mock DigestCalculator digestCalculatorMock, @Mock X509CertificateHolder certificateMock)
             throws Exception {
         // given
         var testSubject = new HashBasedCertificateSelector(SHA256_IDENTIFIER, new byte[0], digestCalculatorProviderMock);
         IOException thrownException = new IOException("error!!1!");
 
-        // TODO: problems with spying output stream
         OutputStream outputStreamSpy = spy(new ByteArrayOutputStream());
 
         given(digestCalculatorProviderMock.get(SHA256_IDENTIFIER)).willReturn(digestCalculatorMock);
