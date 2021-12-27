@@ -338,6 +338,35 @@ class BouncyCastleTimeStampAuthorityTest {
         }
 
         @Test
+        void doesNotIncludesSigningCertificateWhenNotRequested() throws Exception {
+            // given
+            var imprint = new MessageImprint(new AlgorithmIdentifier(new ASN1ObjectIdentifier(SHA256.getObjectIdentifier())), SHA_256_HASH);
+            var tspRequest = new TimeStampRequest(new TimeStampReq(imprint, null, new ASN1Integer(ONE), ASN1Boolean.FALSE, null));
+            var tspRequestInputStream = new ByteArrayInputStream(tspRequest.getEncoded());
+            Date receptionTime = new Date();
+
+            X509Certificate certificate = loadEcCertificate();
+            ECPrivateKey privateKey = loadEcPrivateKey();
+
+            given(tspParserMock.parseRequest(tspRequestInputStream)).willReturn(tspRequest);
+            given(tspValidatorMock.isKnownHashAlgorithm(tspRequest.getMessageImprintAlgOID())).willReturn(true);
+            given(serialNumberGeneratorMock.generateSerialNumber()).willReturn(1L);
+            given(currentDateTimeServiceMock.now()).willReturn(receptionTime);
+
+            BouncyCastleTimeStampAuthority testSubject = createInitializedTestSubject(new TsaProperties(), EC, certificate, privateKey);
+
+            // when
+            testSubject.signRequest(tspRequestInputStream);
+
+            // then
+            ArgumentCaptor<TimeStampResponse> tspResponseCaptor = ArgumentCaptor.forClass(TimeStampResponse.class);
+            then(timestampResponseMapperMock).should().map(eq(tspRequest), tspResponseCaptor.capture(), eq(receptionTime));
+
+            TimeStampResponse generatedTspResponse = tspResponseCaptor.getValue();
+            assertThat(generatedTspResponse.getTimeStampToken().getCertificates().getMatches(null)).isEmpty();
+        }
+
+        @Test
         void includesSigningCertificateWhenRequested() throws Exception {
             // given
             TimeStampRequest tspRequest = createSha256TimestampRequest();
