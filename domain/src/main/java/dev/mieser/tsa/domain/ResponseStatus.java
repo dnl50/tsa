@@ -29,7 +29,7 @@ public enum ResponseStatus {
     /**
      * The integer representation of the status.
      */
-    private final int intValue;
+    private final int value;
 
     /**
      * @param value The value the corresponding {@link ResponseStatus} should be returned for.
@@ -37,7 +37,7 @@ public enum ResponseStatus {
      */
     public static Optional<ResponseStatus> fromIntValue(int value) {
         return EnumSet.allOf(ResponseStatus.class).stream()
-                .filter(status -> status.intValue == value)
+                .filter(status -> status.value == value)
                 .findFirst();
     }
 

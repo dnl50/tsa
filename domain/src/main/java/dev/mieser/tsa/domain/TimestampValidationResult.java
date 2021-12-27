@@ -23,7 +23,7 @@ public class TimestampValidationResult {
     /**
      * The reason why the request was rejected. {@code null} when the request was signed successfully.
      */
-    private final Integer failureInfo;
+    private final FailureInfo failureInfo;
 
     /**
      * The time the TSP request was received.

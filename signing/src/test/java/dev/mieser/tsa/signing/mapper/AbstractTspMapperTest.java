@@ -1,5 +1,6 @@
 package dev.mieser.tsa.signing.mapper;
 
+import dev.mieser.tsa.domain.FailureInfo;
 import dev.mieser.tsa.domain.HashAlgorithm;
 import dev.mieser.tsa.domain.ResponseStatus;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -11,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.util.function.Function;
 
+import static dev.mieser.tsa.domain.FailureInfo.BAD_REQUEST;
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
 import static dev.mieser.tsa.domain.ResponseStatus.GRANTED;
 import static dev.mieser.tsa.signing.mapper.AbstractTspMapper.AsnEncodingConverter;
@@ -104,7 +106,7 @@ class AbstractTspMapperTest {
     @Test
     void mapToResponseStatusReturnsExpectedStatus() {
         // given / when
-        ResponseStatus responseStatus = testSubject.mapToResponseStatus(0);
+        ResponseStatus responseStatus = testSubject.mapToResponseStatus(GRANTED.getValue());
 
         // then
         assertThat(responseStatus).isEqualTo(GRANTED);
@@ -116,6 +118,26 @@ class AbstractTspMapperTest {
         assertThatIllegalStateException()
                 .isThrownBy(() -> testSubject.mapToResponseStatus(-1))
                 .withMessage("Unknown status '-1'.");
+    }
+
+    @Test
+    void mapToFailureInfoThrowsExceptionWhenNoConstantDefined() {
+        // given
+        int unknownFailureInfo = 0;
+
+        // when / then
+        assertThatIllegalStateException()
+                .isThrownBy(() -> testSubject.mapToFailureInfo(unknownFailureInfo))
+                .withMessage("Unknown PKI Failure Info '0'.");
+    }
+
+    @Test
+    void mapToFailureInfoReturnsExpectedFailureInfo() {
+        // given / when
+        FailureInfo actualFailureInfo = testSubject.mapToFailureInfo(BAD_REQUEST.getValue());
+
+        // then
+        assertThat(actualFailureInfo).isEqualTo(BAD_REQUEST);
     }
 
     private static class AbstractTspMapperImpl extends AbstractTspMapper {

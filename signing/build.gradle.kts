@@ -14,6 +14,8 @@ dependencies {
     implementation("org.apache.commons:commons-lang3")
 
     testImplementation(project(":test-util"))
+    testImplementation("org.apache.commons:commons-lang3")
+    testImplementation("commons-codec:commons-codec")
 
     integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
     integrationTestImplementation("org.hibernate.validator:hibernate-validator")
