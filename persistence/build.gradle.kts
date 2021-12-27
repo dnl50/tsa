@@ -11,6 +11,7 @@ dependencies {
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("org.mapstruct:mapstruct:1.4.2.Final")
     implementation("commons-codec:commons-codec")
+    implementation("org.flywaydb:flyway-core")
 
     integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
 

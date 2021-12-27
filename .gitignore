@@ -16,3 +16,6 @@ out
 *.ipr
 *.iws
 *.iml
+
+# H2 File
+db
