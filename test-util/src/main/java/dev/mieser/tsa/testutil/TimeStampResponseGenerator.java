@@ -19,10 +19,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static dev.mieser.tsa.domain.ResponseStatus.GRANTED;
 import static dev.mieser.tsa.domain.ResponseStatus.GRANTED_WITH_MODS;
@@ -86,9 +83,10 @@ public class TimeStampResponseGenerator {
                 List.of(new X509CertificateHolder(responseProperties.getSigningCertificate().getEncoded())) :
                 emptyList();
         Store<X509CertificateHolder> certificateStore = new CollectionStore<>(certificates);
+        AttributeTable signedAttributes = responseProperties.getSignedAttributes() != null ? responseProperties.getSignedAttributes() : new AttributeTable(new Hashtable<>());
 
         given(timeStampTokenMock.getCertificates()).willReturn(certificateStore);
-        given(timeStampTokenMock.getSignedAttributes()).willReturn(responseProperties.getSignedAttributes());
+        given(timeStampTokenMock.getSignedAttributes()).willReturn(signedAttributes);
 
         given(timeStampTokenMock.getTimeStampInfo()).willReturn(timeStampTokenInfoMock);
         given(timeStampResponseMock.getTimeStampToken()).willReturn(timeStampTokenMock);

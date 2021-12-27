@@ -52,7 +52,7 @@ public class SigningCertificateExtractor {
 
         Collection<X509CertificateHolder> matchingCertificates = timeStampToken.getCertificates().getMatches(signingCertificateSelector);
         if (matchingCertificates.isEmpty()) {
-            throw new InvalidTspResponseException("The signing certificate is not contained in the response, thus violating RFC 3161.");
+            throw new InvalidTspResponseException("The signing certificate is not contained in the response, thus violating RFC 3161 / RFC 5816.");
         }
 
         return Optional.of(matchingCertificates.iterator().next());
@@ -104,7 +104,7 @@ public class SigningCertificateExtractor {
         SigningCertificate signingCertificate = SigningCertificate.getInstance(signingCertificateSequence);
         ESSCertID[] certificateIdentifiers = signingCertificate.getCerts();
         if (certificateIdentifiers.length > 1) {
-            throw new InvalidTspResponseException("Multiple ESSCertID identifiers present.");
+            throw new InvalidTspResponseException("Multiple ESSCertID identifiers present thus violating RFC 3161.");
         }
 
         return new SigningCertificateIdentifier(new AlgorithmIdentifier(id_SHA1), certificateIdentifiers[0].getCertHash());
@@ -122,7 +122,7 @@ public class SigningCertificateExtractor {
         SigningCertificateV2 signingCertificate = SigningCertificateV2.getInstance(signingCertificateSequence);
         ESSCertIDv2[] certificateIdentifiers = signingCertificate.getCerts();
         if (certificateIdentifiers.length > 1) {
-            throw new InvalidTspResponseException("Multiple ESSCertIDv2 identifiers present.");
+            throw new InvalidTspResponseException("Multiple ESSCertIDv2 identifiers present thus violating RFC 5816.");
         }
 
         AlgorithmIdentifier hashAlgorithm = certificateIdentifiers[0].getHashAlgorithm();
