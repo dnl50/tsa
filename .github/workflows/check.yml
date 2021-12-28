@@ -3,8 +3,8 @@ name: Check
 on:
   push:
     branches:
-     - master
-     - develop
+      - master
+      - develop
   pull_request:
     branches:
       - master
@@ -27,9 +27,6 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-
-      - name: Check Formatting
-        run: ./gradlew spotlessCheck
 
       - name: Run Gradle 'check' Task
         run: ./gradlew check
