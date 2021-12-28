@@ -25,6 +25,11 @@
                 </td>
             </tr>
 
+            <tr th:if="${validationResult.failureInfo}">
+                <th scope="row" class="w-25" th:text="#{validate.result.failure-info}">Failure Info</th>
+                <td th:text="${validationResult.failureInfo}">BAD_ALGORITHM</td>
+            </tr>
+
             <tr th:if="${validationResult.generationTime}">
                 <th scope="row" class="w-25" th:text="#{validate.result.generation-time}">Gen Time</th>
                 <td th:text="${#temporals.formatISO(validationResult.generationTime)}">2021-12-22T13:37:00Z</td>

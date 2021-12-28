@@ -2,6 +2,8 @@ package dev.mieser.tsa.app.test;
 
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA256;
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
+import static dev.mieser.tsa.domain.ResponseStatus.GRANTED;
+import static dev.mieser.tsa.domain.ResponseStatus.REJECTION;
 import static io.restassured.RestAssured.given;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.repeat;
@@ -57,7 +59,7 @@ class TimeStampAuthorityControllerIntegrationTest {
             .body().asByteArray();
 
         var tspResponse = new TimeStampResponse(asnEncodedRspResponse);
-        assertThat(tspResponse.getStatus()).isEqualTo(0);
+        assertThat(tspResponse.getStatus()).isEqualTo(GRANTED.getValue());
     }
 
     @Test
@@ -98,7 +100,7 @@ class TimeStampAuthorityControllerIntegrationTest {
             .body().asByteArray();
 
         var tspResponse = new TimeStampResponse(asnEncodedRspResponse);
-        assertThat(tspResponse.getStatus()).isEqualTo(2);
+        assertThat(tspResponse.getStatus()).isEqualTo(REJECTION.getValue());
     }
 
     @Test
