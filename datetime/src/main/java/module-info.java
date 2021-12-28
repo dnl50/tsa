@@ -4,6 +4,7 @@ module tsa.currenttime {
     requires spring.context;
 
     exports dev.mieser.tsa.datetime.api;
+
     exports dev.mieser.tsa.datetime.config;
 
     opens dev.mieser.tsa.datetime.config;

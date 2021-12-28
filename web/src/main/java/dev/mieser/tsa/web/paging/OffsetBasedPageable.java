@@ -1,6 +1,7 @@
 package dev.mieser.tsa.web.paging;
 
 import lombok.EqualsAndHashCode;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -17,9 +18,12 @@ public class OffsetBasedPageable implements Pageable {
     private final Sort sort;
 
     /**
-     * @param offset   The number of items to skip. Must be greater than or equal to zero.
-     * @param pageSize The number of items on each page. Must be greater than or equal to one.
-     * @param sort     The sorting to user. May be {@code null}.
+     * @param offset
+     *     The number of items to skip. Must be greater than or equal to zero.
+     * @param pageSize
+     *     The number of items on each page. Must be greater than or equal to one.
+     * @param sort
+     *     The sorting to user. May be {@code null}.
      */
     public OffsetBasedPageable(long offset, int pageSize, Sort sort) {
         if (offset < 0) {

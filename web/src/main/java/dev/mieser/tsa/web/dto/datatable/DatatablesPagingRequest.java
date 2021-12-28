@@ -1,17 +1,19 @@
 package dev.mieser.tsa.web.dto.datatable;
 
+import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Positive;
-import java.util.List;
-
 /**
- * DTO encapsulating part of the request parameters sent by <a href="https://datatables.net">Datatables</a> AJAX requests. Searching is not supported.
+ * DTO encapsulating part of the request parameters sent by <a href="https://datatables.net">Datatables</a> AJAX
+ * requests. Searching is not supported.
  *
  * @see DatatablesPage
  */

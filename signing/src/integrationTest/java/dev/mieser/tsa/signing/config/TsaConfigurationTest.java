@@ -1,8 +1,7 @@
 package dev.mieser.tsa.signing.config;
 
-import dev.mieser.tsa.signing.cert.ClasspathCertificateLoader;
-import dev.mieser.tsa.signing.cert.FileSystemCertificateLoader;
-import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +10,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import dev.mieser.tsa.signing.cert.ClasspathCertificateLoader;
+import dev.mieser.tsa.signing.cert.FileSystemCertificateLoader;
+import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
 
 public class TsaConfigurationTest {
 
@@ -23,7 +24,8 @@ public class TsaConfigurationTest {
 
         private final SigningCertificateLoader signingCertificateLoader;
 
-        @Autowired ClasspathCertificateLoaderConfiguration(SigningCertificateLoader signingCertificateLoader) {
+        @Autowired
+        ClasspathCertificateLoaderConfiguration(SigningCertificateLoader signingCertificateLoader) {
             this.signingCertificateLoader = signingCertificateLoader;
         }
 
@@ -43,7 +45,8 @@ public class TsaConfigurationTest {
 
         private final SigningCertificateLoader signingCertificateLoader;
 
-        @Autowired FileSystemCertificateLoaderConfiguration(SigningCertificateLoader signingCertificateLoader) {
+        @Autowired
+        FileSystemCertificateLoaderConfiguration(SigningCertificateLoader signingCertificateLoader) {
             this.signingCertificateLoader = signingCertificateLoader;
         }
 

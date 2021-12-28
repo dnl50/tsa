@@ -1,12 +1,12 @@
 package dev.mieser.tsa.signing.cert;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
 
 class ClasspathCertificateLoaderTest {
 
@@ -16,7 +16,8 @@ class ClasspathCertificateLoaderTest {
         var testSubject = new ClasspathCertificateLoader("dev/mieser/tsa/signing/cert/unprotected.p12", "password".toCharArray());
 
         // when
-        byte[] actualPkcs12Container = readToByteArrayAndClose(testSubject.pkcs12InputStream("dev/mieser/tsa/signing/cert/unprotected.p12"));
+        byte[] actualPkcs12Container = readToByteArrayAndClose(
+            testSubject.pkcs12InputStream("dev/mieser/tsa/signing/cert/unprotected.p12"));
 
         // then
         byte[] expectedPkcs12Container = readToByteArrayAndClose(getClass().getResourceAsStream("unprotected.p12"));

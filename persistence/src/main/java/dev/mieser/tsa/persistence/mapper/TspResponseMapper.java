@@ -1,16 +1,17 @@
 package dev.mieser.tsa.persistence.mapper;
 
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
+import static org.apache.commons.codec.binary.Base64.encodeBase64String;
+
+import java.math.BigInteger;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 import dev.mieser.tsa.domain.TimestampRequestData;
 import dev.mieser.tsa.domain.TimestampResponseData;
 import dev.mieser.tsa.persistence.entity.TspRequestEntity;
 import dev.mieser.tsa.persistence.entity.TspResponseEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-
-import java.math.BigInteger;
-
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
-import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 
 /**
  * Mapstruct {@link Mapper} to map between domain objects and entities.

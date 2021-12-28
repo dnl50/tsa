@@ -1,16 +1,17 @@
 package dev.mieser.tsa.persistence.entity;
 
-import dev.mieser.tsa.domain.FailureInfo;
-import dev.mieser.tsa.domain.ResponseStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.ZonedDateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.time.ZonedDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import dev.mieser.tsa.domain.FailureInfo;
+import dev.mieser.tsa.domain.ResponseStatus;
 
 @Data
 @Entity

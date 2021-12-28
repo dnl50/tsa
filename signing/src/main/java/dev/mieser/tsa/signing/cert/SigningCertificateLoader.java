@@ -11,13 +11,15 @@ public interface SigningCertificateLoader {
 
     /**
      * @return The X.509 certificate which should be used to sign the TSP requests.
-     * @throws IOException When an error occurs while reading the certificate.
+     * @throws IOException
+     *     When an error occurs while reading the certificate.
      */
     X509Certificate loadCertificate() throws IOException;
 
     /**
      * @return The corresponding private key.
-     * @throws IOException When an error occurs while reading the private key.
+     * @throws IOException
+     *     When an error occurs while reading the private key.
      */
     PrivateKey loadPrivateKey() throws IOException;
 

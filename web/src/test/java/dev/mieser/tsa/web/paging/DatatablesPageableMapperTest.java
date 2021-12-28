@@ -1,16 +1,17 @@
 package dev.mieser.tsa.web.paging;
 
-import dev.mieser.tsa.web.dto.datatable.Column;
-import dev.mieser.tsa.web.dto.datatable.DatatablesPagingRequest;
-import dev.mieser.tsa.web.dto.datatable.Order;
-import dev.mieser.tsa.web.dto.datatable.SortDirection;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import dev.mieser.tsa.web.dto.datatable.Column;
+import dev.mieser.tsa.web.dto.datatable.DatatablesPagingRequest;
+import dev.mieser.tsa.web.dto.datatable.Order;
+import dev.mieser.tsa.web.dto.datatable.SortDirection;
 
 class DatatablesPageableMapperTest {
 
@@ -20,10 +21,10 @@ class DatatablesPageableMapperTest {
     void applyReturnsUnsortedPageableWhenNoOrderSpecified() {
         // given
         DatatablesPagingRequest request = DatatablesPagingRequest.builder()
-                .start(25)
-                .length(50)
-                .columns(List.of(new Column("name", "data")))
-                .build();
+            .start(25)
+            .length(50)
+            .columns(List.of(new Column("name", "data")))
+            .build();
 
         // when
         Pageable mappedPageable = testSubject.apply(request);
@@ -36,11 +37,11 @@ class DatatablesPageableMapperTest {
     void applyReturnsPageableWithExpectedSorting() {
         // given
         DatatablesPagingRequest request = DatatablesPagingRequest.builder()
-                .start(10)
-                .length(25)
-                .columns(List.of(new Column("first-name", "first-data"), new Column("second-name", "second-data")))
-                .order(List.of(new Order(0, SortDirection.ASC), new Order(1, SortDirection.DESC)))
-                .build();
+            .start(10)
+            .length(25)
+            .columns(List.of(new Column("first-name", "first-data"), new Column("second-name", "second-data")))
+            .order(List.of(new Order(0, SortDirection.ASC), new Order(1, SortDirection.DESC)))
+            .build();
 
         // when
         Pageable mappedPageable = testSubject.apply(request);

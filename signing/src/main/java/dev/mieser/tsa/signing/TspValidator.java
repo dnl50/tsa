@@ -1,7 +1,8 @@
 package dev.mieser.tsa.signing;
 
-import dev.mieser.tsa.domain.HashAlgorithm;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+
+import dev.mieser.tsa.domain.HashAlgorithm;
 
 /**
  * Service for validating TSP requests/responses.
@@ -9,7 +10,8 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 public class TspValidator {
 
     /**
-     * @param algorithmIdentifier The OID to check, not {@code null}.
+     * @param algorithmIdentifier
+     *     The OID to check, not {@code null}.
      * @return {@code true} iff a {@link HashAlgorithm} with the specified OID exists.
      */
     public boolean isKnownHashAlgorithm(ASN1ObjectIdentifier algorithmIdentifier) {

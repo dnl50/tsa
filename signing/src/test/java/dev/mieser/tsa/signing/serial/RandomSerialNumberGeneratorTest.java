@@ -1,10 +1,8 @@
 package dev.mieser.tsa.signing.serial;
 
-import org.junit.jupiter.api.Test;
-
-import java.security.SecureRandom;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 class RandomSerialNumberGeneratorTest {
 

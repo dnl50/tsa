@@ -1,9 +1,9 @@
 package dev.mieser.tsa.domain;
 
+import java.time.ZonedDateTime;
+
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.ZonedDateTime;
 
 /**
  * Encapsulates the TSP response data as well as the TSP request data.

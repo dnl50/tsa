@@ -1,8 +1,8 @@
 package dev.mieser.tsa.integration.api;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
-
 import java.io.InputStream;
+
+import dev.mieser.tsa.domain.TimestampResponseData;
 
 /**
  * @see dev.mieser.tsa.signing.api.TimeStampAuthority

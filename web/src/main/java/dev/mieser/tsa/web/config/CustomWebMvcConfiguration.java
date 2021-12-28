@@ -1,6 +1,7 @@
 package dev.mieser.tsa.web.config;
 
-import dev.mieser.tsa.web.formatter.Base64Formatter;
+import static java.util.Locale.ENGLISH;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -8,7 +9,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
-import static java.util.Locale.ENGLISH;
+import dev.mieser.tsa.web.formatter.Base64Formatter;
 
 @Configuration
 class CustomWebMvcConfiguration implements WebMvcConfigurer {

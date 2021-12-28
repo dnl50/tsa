@@ -1,9 +1,18 @@
 package dev.mieser.tsa.signing.mapper;
 
-import dev.mieser.tsa.datetime.api.DateConverter;
-import dev.mieser.tsa.domain.ResponseStatus;
-import dev.mieser.tsa.domain.TimestampRequestData;
-import dev.mieser.tsa.domain.TimestampResponseData;
+import static dev.mieser.tsa.domain.FailureInfo.BAD_ALGORITHM;
+import static dev.mieser.tsa.domain.HashAlgorithm.SHA256;
+import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.given;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.time.ZonedDateTime;
+import java.util.Date;
+
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cmp.PKIFailureInfo;
 import org.bouncycastle.asn1.cmp.PKIStatus;
@@ -16,18 +25,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.time.ZonedDateTime;
-import java.util.Date;
-
-import static dev.mieser.tsa.domain.FailureInfo.BAD_ALGORITHM;
-import static dev.mieser.tsa.domain.HashAlgorithm.SHA256;
-import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.mockito.BDDMockito.given;
+import dev.mieser.tsa.datetime.api.DateConverter;
+import dev.mieser.tsa.domain.ResponseStatus;
+import dev.mieser.tsa.domain.TimestampRequestData;
+import dev.mieser.tsa.domain.TimestampResponseData;
 
 @ExtendWith(MockitoExtension.class)
 class TimestampResponseMapperTest {
@@ -43,7 +44,7 @@ class TimestampResponseMapperTest {
 
     @Test
     void mapThrowsExceptionWhenTspRequestCannotBeConvertedToAsnObject(@Mock TimeStampRequest timeStampRequestMock,
-            @Mock TimeStampResponse timeStampResponseMock) throws IOException {
+        @Mock TimeStampResponse timeStampResponseMock) throws IOException {
         // given
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
         Date receptionTime = new Date();
@@ -55,14 +56,14 @@ class TimestampResponseMapperTest {
 
         // when / then
         assertThatIllegalStateException()
-                .isThrownBy(() -> testSubject.map(timeStampRequestMock, timeStampResponseMock, receptionTime))
-                .withMessage("Error converting object to ASN.1.")
-                .withCause(thrownException);
+            .isThrownBy(() -> testSubject.map(timeStampRequestMock, timeStampResponseMock, receptionTime))
+            .withMessage("Error converting object to ASN.1.")
+            .withCause(thrownException);
     }
 
     @Test
-    void mapMapsUnsuccessfulResponseToExpectedObject(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampResponse timeStampResponseMock)
-            throws IOException {
+    void mapMapsUnsuccessfulResponseToExpectedObject(@Mock TimeStampRequest timeStampRequestMock,
+        @Mock TimeStampResponse timeStampResponseMock) throws IOException {
         // given
         var statusString = "Unsupported Hash Algorithm";
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
@@ -79,28 +80,30 @@ class TimestampResponseMapperTest {
         given(dateConverterMock.toZonedDateTime(receptionTimeAsDate)).willReturn(receptionTime);
 
         // when
-        TimestampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock, receptionTimeAsDate);
+        TimestampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock,
+            receptionTimeAsDate);
 
         // then
         TimestampRequestData expectedRequestData = TimestampRequestData.builder()
-                .hashAlgorithm(SHA256)
-                .build();
+            .hashAlgorithm(SHA256)
+            .build();
 
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
-                .status(ResponseStatus.REJECTION)
-                .failureInfo(BAD_ALGORITHM)
-                .statusString(statusString)
-                .request(expectedRequestData)
-                .asnEncoded(asnEncodedResponse)
-                .receptionTime(receptionTime)
-                .build();
+            .status(ResponseStatus.REJECTION)
+            .failureInfo(BAD_ALGORITHM)
+            .statusString(statusString)
+            .request(expectedRequestData)
+            .asnEncoded(asnEncodedResponse)
+            .receptionTime(receptionTime)
+            .build();
 
         assertThat(actualResponseData).isEqualTo(expectedResponseData);
     }
 
     @Test
-    void mapMapsSuccessfulResponseToExpectedObject(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampToken timeStampTokenMock,
-            @Mock TimeStampTokenInfo tokenInfoMock, @Mock TimeStampResponse timeStampResponseMock) throws IOException {
+    void mapMapsSuccessfulResponseToExpectedObject(@Mock TimeStampRequest timeStampRequestMock,
+        @Mock TimeStampToken timeStampTokenMock,
+        @Mock TimeStampTokenInfo tokenInfoMock, @Mock TimeStampResponse timeStampResponseMock) throws IOException {
         // given
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
         byte[] asnEncodedResponse = "TSP response".getBytes(UTF_8);
@@ -126,23 +129,24 @@ class TimestampResponseMapperTest {
 
         // then
         TimestampRequestData expectedRequestData = TimestampRequestData.builder()
-                .hashAlgorithm(SHA256)
-                .build();
+            .hashAlgorithm(SHA256)
+            .build();
 
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
-                .status(ResponseStatus.GRANTED)
-                .serialNumber(responseSerialNumber)
-                .generationTime(genTime)
-                .receptionTime(genTime)
-                .request(expectedRequestData)
-                .asnEncoded(asnEncodedResponse)
-                .build();
+            .status(ResponseStatus.GRANTED)
+            .serialNumber(responseSerialNumber)
+            .generationTime(genTime)
+            .receptionTime(genTime)
+            .request(expectedRequestData)
+            .asnEncoded(asnEncodedResponse)
+            .build();
 
         assertThat(actualResponseData).isEqualTo(expectedResponseData);
     }
 
     @Test
-    void mapMapsRequestData(@Mock TimeStampRequest timeStampRequestMock, @Mock TimeStampResponse timeStampResponseMock) throws IOException {
+    void mapMapsRequestData(@Mock TimeStampRequest timeStampRequestMock,
+        @Mock TimeStampResponse timeStampResponseMock) throws IOException {
         // given
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA512.getObjectIdentifier());
         byte[] asnEncodedRequest = "TSP request".getBytes(UTF_8);
@@ -161,23 +165,24 @@ class TimestampResponseMapperTest {
         given(dateConverterMock.toZonedDateTime(receptionTimeAsDate)).willReturn(receptionTime);
 
         // when
-        TimestampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock, receptionTimeAsDate);
+        TimestampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock,
+            receptionTimeAsDate);
 
         // then
         TimestampRequestData expectedRequestData = TimestampRequestData.builder()
-                .nonce(nonce)
-                .hashAlgorithm(SHA512)
-                .tsaPolicyId(policyOid)
-                .hash(hash)
-                .certificateRequested(true)
-                .asnEncoded(asnEncodedRequest)
-                .build();
+            .nonce(nonce)
+            .hashAlgorithm(SHA512)
+            .tsaPolicyId(policyOid)
+            .hash(hash)
+            .certificateRequested(true)
+            .asnEncoded(asnEncodedRequest)
+            .build();
 
         TimestampResponseData expectedResponseData = TimestampResponseData.builder()
-                .status(ResponseStatus.GRANTED)
-                .request(expectedRequestData)
-                .receptionTime(receptionTime)
-                .build();
+            .status(ResponseStatus.GRANTED)
+            .request(expectedRequestData)
+            .receptionTime(receptionTime)
+            .build();
 
         assertThat(actualResponseData).isEqualTo(expectedResponseData);
     }

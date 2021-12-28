@@ -1,12 +1,12 @@
 package dev.mieser.tsa.web.formatter;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Locale;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+
+import java.util.Locale;
+
+import org.junit.jupiter.api.Test;
 
 class Base64FormatterTest {
 
@@ -19,8 +19,8 @@ class Base64FormatterTest {
 
         // when / then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> testSubject.parse(illegalBase64, Locale.GERMAN))
-                .withMessage("Not a valid Base64 string.");
+            .isThrownBy(() -> testSubject.parse(illegalBase64, Locale.GERMAN))
+            .withMessage("Not a valid Base64 string.");
     }
 
     @Test

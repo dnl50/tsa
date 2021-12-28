@@ -1,19 +1,20 @@
 package dev.mieser.tsa.integration;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
-import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
-import dev.mieser.tsa.signing.api.TimeStampAuthority;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
+import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
+import dev.mieser.tsa.signing.api.TimeStampAuthority;
 
 @ExtendWith(MockitoExtension.class)
 class IssueTimeStampServiceImplTest {
@@ -24,7 +25,8 @@ class IssueTimeStampServiceImplTest {
 
     private final IssueTimeStampServiceImpl testSubject;
 
-    IssueTimeStampServiceImplTest(@Mock TimeStampAuthority timeStampAuthorityMock, @Mock TspResponseDataRepository responseDataRepositoryMock) {
+    IssueTimeStampServiceImplTest(@Mock TimeStampAuthority timeStampAuthorityMock,
+        @Mock TspResponseDataRepository responseDataRepositoryMock) {
         this.timeStampAuthorityMock = timeStampAuthorityMock;
         this.responseDataRepositoryMock = responseDataRepositoryMock;
 

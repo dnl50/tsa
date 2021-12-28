@@ -1,16 +1,17 @@
 package dev.mieser.tsa.web.validator;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
+import java.util.Locale;
+import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.util.Locale;
-import java.util.Set;
 
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class Base64EncodingValidatorIntegrationTest {
 

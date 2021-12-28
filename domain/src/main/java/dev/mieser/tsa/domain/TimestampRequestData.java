@@ -1,12 +1,13 @@
 package dev.mieser.tsa.domain;
 
+import java.math.BigInteger;
+
 import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigInteger;
-
 /**
- * Holds the Information which is included in a {@code TimeStampReq} as defined in <a href="https://www.ietf.org/rfc/rfc3161.txt">RFC3161</a>.
+ * Holds the Information which is included in a {@code TimeStampReq} as defined in
+ * <a href="https://www.ietf.org/rfc/rfc3161.txt">RFC3161</a>.
  */
 @Data
 @Builder

@@ -1,5 +1,11 @@
 package dev.mieser.tsa.web.paging;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -8,30 +14,24 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-
 class OffsetBasedPageableTest {
 
     @ParameterizedTest
-    @ValueSource(longs = {-1337L, -10L, -1L})
+    @ValueSource(longs = { -1337L, -10L, -1L })
     void constructorThrowsExceptionWhenOffsetIsInvalid(long illegalOffset) {
         // given / when / then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new OffsetBasedPageable(illegalOffset, 15, null))
-                .withMessage("Offset cannot be less than zero.");
+            .isThrownBy(() -> new OffsetBasedPageable(illegalOffset, 15, null))
+            .withMessage("Offset cannot be less than zero.");
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {-1337, -1, 0})
+    @ValueSource(ints = { -1337, -1, 0 })
     void constructorThrowsExceptionWhenPageSizeIsInvalid(int illegalPageSize) {
         // given / when / then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new OffsetBasedPageable(15L, illegalPageSize, null))
-                .withMessage("Page size must be greater than or equal to one.");
+            .isThrownBy(() -> new OffsetBasedPageable(15L, illegalPageSize, null))
+            .withMessage("Page size must be greater than or equal to one.");
     }
 
     @MethodSource("offsetAndPageSizeToPageNumber")
@@ -164,19 +164,17 @@ class OffsetBasedPageableTest {
 
     static Stream<Arguments> offsetAndPageSizeToPageNumber() {
         return Stream.of(
-                arguments(0L, 1, 0),
-                arguments(1L, 1, 1),
-                arguments(10L, 5, 2),
-                arguments(10L, 7, 1)
-        );
+            arguments(0L, 1, 0),
+            arguments(1L, 1, 1),
+            arguments(10L, 5, 2),
+            arguments(10L, 7, 1));
     }
 
     static Stream<Arguments> offsetAndPageSizeToPrevious() {
         return Stream.of(
-                arguments(10L, 7, true),
-                arguments(7L, 7, true),
-                arguments(3L, 7, false)
-        );
+            arguments(10L, 7, true),
+            arguments(7L, 7, true),
+            arguments(3L, 7, false));
     }
 
 }

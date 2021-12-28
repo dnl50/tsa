@@ -1,16 +1,16 @@
 package dev.mieser.tsa.signing.cert;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class PublicKeyAlgorithmTest {
 
@@ -18,8 +18,8 @@ class PublicKeyAlgorithmTest {
     void fromJcaNameThrowsExceptionWhenAlgorithmIsNull() {
         // given / when / then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> PublicKeyAlgorithm.fromJcaName(null))
-                .withMessage("JCA name cannot be blank.");
+            .isThrownBy(() -> PublicKeyAlgorithm.fromJcaName(null))
+            .withMessage("JCA name cannot be blank.");
     }
 
     @Test
@@ -30,8 +30,8 @@ class PublicKeyAlgorithmTest {
         // when / then
         // given / when / then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> PublicKeyAlgorithm.fromJcaName(jcaName))
-                .withMessage("JCA name cannot be blank.");
+            .isThrownBy(() -> PublicKeyAlgorithm.fromJcaName(jcaName))
+            .withMessage("JCA name cannot be blank.");
     }
 
     @Test
@@ -67,10 +67,9 @@ class PublicKeyAlgorithmTest {
 
     static Stream<Arguments> enumToJcaName() {
         return Stream.of(
-                arguments(PublicKeyAlgorithm.DSA, "DSA"),
-                arguments(PublicKeyAlgorithm.RSA, "RSA"),
-                arguments(PublicKeyAlgorithm.EC, "EC")
-        );
+            arguments(PublicKeyAlgorithm.DSA, "DSA"),
+            arguments(PublicKeyAlgorithm.RSA, "RSA"),
+            arguments(PublicKeyAlgorithm.EC, "EC"));
     }
 
 }

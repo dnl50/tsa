@@ -1,7 +1,7 @@
 package dev.mieser.tsa.signing.cert;
 
-import org.bouncycastle.util.io.pem.PemReader;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,8 +12,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import org.bouncycastle.util.io.pem.PemReader;
+import org.junit.jupiter.api.Test;
 
 class Pkcs12SigningCertificateLoaderTest {
 
@@ -84,8 +84,8 @@ class Pkcs12SigningCertificateLoaderTest {
 
         // when / then
         assertThatIllegalStateException()
-                .isThrownBy(testSubject::loadCertificate)
-                .withMessage("PKCS#12 key store not found at '/unknown-file.p12'.");
+            .isThrownBy(testSubject::loadCertificate)
+            .withMessage("PKCS#12 key store not found at '/unknown-file.p12'.");
     }
 
     private PrivateKey loadPrivateKey() throws Exception {

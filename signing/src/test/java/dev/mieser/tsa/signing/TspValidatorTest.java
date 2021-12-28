@@ -1,10 +1,10 @@
 package dev.mieser.tsa.signing;
 
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.junit.jupiter.api.Test;
-
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.junit.jupiter.api.Test;
 
 class TspValidatorTest {
 

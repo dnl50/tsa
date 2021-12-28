@@ -1,18 +1,19 @@
 package dev.mieser.tsa.web;
 
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-
-import static java.util.Collections.emptyMap;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @ExtendWith(MockitoExtension.class)
 class CustomErrorViewResolverTest {
@@ -26,8 +27,8 @@ class CustomErrorViewResolverTest {
 
         // when / then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> testSubject.resolveErrorView(servletRequestMock, HttpStatus.FORBIDDEN, emptyModel))
-                .withMessage("HTTP Status Code not present in model.");
+            .isThrownBy(() -> testSubject.resolveErrorView(servletRequestMock, HttpStatus.FORBIDDEN, emptyModel))
+            .withMessage("HTTP Status Code not present in model.");
     }
 
     @Test

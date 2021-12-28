@@ -1,6 +1,15 @@
 package dev.mieser.tsa.app.test;
 
-import io.restassured.RestAssured;
+import static dev.mieser.tsa.domain.HashAlgorithm.SHA256;
+import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
+import static io.restassured.RestAssured.given;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
 import org.bouncycastle.asn1.ASN1Boolean;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.tsp.MessageImprint;
@@ -12,15 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
-import static dev.mieser.tsa.domain.HashAlgorithm.SHA256;
-import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
-import static io.restassured.RestAssured.given;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.lang3.StringUtils.repeat;
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
-import static org.apache.http.HttpStatus.SC_OK;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class TimeStampAuthorityControllerIntegrationTest {
@@ -45,15 +46,15 @@ class TimeStampAuthorityControllerIntegrationTest {
 
         // when / then
         byte[] asnEncodedRspResponse = given()
-                .contentType("application/timestamp-query")
-                .accept("application/timestamp-reply")
-                .body(tspRequest.getEncoded())
-                .when()
-                .post("/")
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body().asByteArray();
+            .contentType("application/timestamp-query")
+            .accept("application/timestamp-reply")
+            .body(tspRequest.getEncoded())
+            .when()
+            .post("/")
+            .then()
+            .statusCode(SC_OK)
+            .extract()
+            .body().asByteArray();
 
         var tspResponse = new TimeStampResponse(asnEncodedRspResponse);
         assertThat(tspResponse.getStatus()).isEqualTo(0);
@@ -68,13 +69,13 @@ class TimeStampAuthorityControllerIntegrationTest {
 
         // when / then
         given()
-                .contentType("application/timestamp-query")
-                .accept("application/timestamp-reply")
-                .body(tspRequest.getEncoded())
-                .when()
-                .post("/")
-                .then()
-                .statusCode(SC_BAD_REQUEST);
+            .contentType("application/timestamp-query")
+            .accept("application/timestamp-reply")
+            .body(tspRequest.getEncoded())
+            .when()
+            .post("/")
+            .then()
+            .statusCode(SC_BAD_REQUEST);
     }
 
     @Test
@@ -86,15 +87,15 @@ class TimeStampAuthorityControllerIntegrationTest {
 
         // when / then
         byte[] asnEncodedRspResponse = given()
-                .contentType("application/timestamp-query")
-                .accept("application/timestamp-reply")
-                .body(tspRequest.getEncoded())
-                .when()
-                .post("/")
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body().asByteArray();
+            .contentType("application/timestamp-query")
+            .accept("application/timestamp-reply")
+            .body(tspRequest.getEncoded())
+            .when()
+            .post("/")
+            .then()
+            .statusCode(SC_OK)
+            .extract()
+            .body().asByteArray();
 
         var tspResponse = new TimeStampResponse(asnEncodedRspResponse);
         assertThat(tspResponse.getStatus()).isEqualTo(2);
@@ -107,13 +108,13 @@ class TimeStampAuthorityControllerIntegrationTest {
 
         // when / then
         given()
-                .contentType("application/timestamp-query")
-                .accept("application/timestamp-reply")
-                .body(wronglyFormattedRequest)
-                .when()
-                .post("/")
-                .then()
-                .statusCode(SC_BAD_REQUEST);
+            .contentType("application/timestamp-query")
+            .accept("application/timestamp-reply")
+            .body(wronglyFormattedRequest)
+            .when()
+            .post("/")
+            .then()
+            .statusCode(SC_BAD_REQUEST);
     }
 
 }

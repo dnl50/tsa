@@ -1,17 +1,15 @@
 package dev.mieser.tsa.signing;
 
-import dev.mieser.tsa.domain.TimestampValidationResult;
-import dev.mieser.tsa.signing.api.TimeStampValidator;
-import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
-import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
-import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
-import dev.mieser.tsa.signing.cert.PublicKeyAlgorithm;
-import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
-import dev.mieser.tsa.signing.cert.SigningCertificateExtractor;
-import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
-import dev.mieser.tsa.signing.mapper.TimestampVerificationResultMapper;
+import static java.lang.String.format;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.DefaultCMSSignatureAlgorithmNameGenerator;
@@ -27,12 +25,16 @@ import org.bouncycastle.operator.bc.BcRSAContentVerifierProviderBuilder;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampResponse;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
-
-import static java.lang.String.format;
+import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.signing.api.TimeStampValidator;
+import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
+import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
+import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
+import dev.mieser.tsa.signing.cert.PublicKeyAlgorithm;
+import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
+import dev.mieser.tsa.signing.cert.SigningCertificateExtractor;
+import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
+import dev.mieser.tsa.signing.mapper.TimestampVerificationResultMapper;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,9 +56,9 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
 
     @Override
     public void initialize() {
-        this.signerInformationVerifier =
-                new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(), new DefaultSignatureAlgorithmIdentifierFinder(),
-                        buildContentVerifierProvider(), new BcDigestCalculatorProvider());
+        this.signerInformationVerifier = new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(),
+            new DefaultSignatureAlgorithmIdentifierFinder(),
+            buildContentVerifierProvider(), new BcDigestCalculatorProvider());
     }
 
     @Override
@@ -66,18 +68,23 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
         TimeStampResponse timeStampResponse = tspParser.parseResponse(tspResponseInputStream);
 
         verifyHashAlgorithmIsKnown(timeStampResponse);
-        X509CertificateHolder signingCertificate = signingCertificateExtractor.extractSigningCertificate(timeStampResponse).orElse(null);
+        X509CertificateHolder signingCertificate = signingCertificateExtractor.extractSigningCertificate(timeStampResponse)
+            .orElse(null);
 
-        return timestampVerificationResultMapper.map(timeStampResponse, signingCertificate, wasSignedByThisTsa(timeStampResponse));
+        return timestampVerificationResultMapper.map(timeStampResponse, signingCertificate,
+            wasSignedByThisTsa(timeStampResponse));
     }
 
     /**
-     * @param timeStampResponse The response to check, not {@code null}.
-     * @throws UnknownHashAlgorithmException When the response contains a token which references an unknown hash algorithm.
+     * @param timeStampResponse
+     *     The response to check, not {@code null}.
+     * @throws UnknownHashAlgorithmException
+     *     When the response contains a token which references an unknown hash algorithm.
      */
     private void verifyHashAlgorithmIsKnown(TimeStampResponse timeStampResponse) {
         if (containsTimeStampToken(timeStampResponse)) {
-            ASN1ObjectIdentifier hashAlgorithmOid = timeStampResponse.getTimeStampToken().getTimeStampInfo().getMessageImprintAlgOID();
+            ASN1ObjectIdentifier hashAlgorithmOid = timeStampResponse.getTimeStampToken().getTimeStampInfo()
+                .getMessageImprintAlgOID();
             if (!tspValidator.isKnownHashAlgorithm(hashAlgorithmOid)) {
                 throw new UnknownHashAlgorithmException(format("Unknown hash algorithm OID '%s'.", hashAlgorithmOid.getId()));
             }
@@ -87,7 +94,8 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
     /**
      * Verifies that the validator is initialized.
      *
-     * @throws TsaNotInitializedException When the {@link #initialize()} method has not yet been executed.
+     * @throws TsaNotInitializedException
+     *     When the {@link #initialize()} method has not yet been executed.
      */
     private void verifyInitialized() {
         if (signerInformationVerifier == null) {
@@ -109,12 +117,12 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
             var signingCertificateHolder = new X509CertificateHolder(signingCertificate.getEncoded());
 
             return switch (publicKeyAlgorithm) {
-                case RSA -> new BcRSAContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
-                        .build(signingCertificateHolder);
-                case EC -> new BcECContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
-                        .build(signingCertificateHolder);
-                case DSA -> new BcDSAContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
-                        .build(signingCertificateHolder);
+            case RSA -> new BcRSAContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
+                .build(signingCertificateHolder);
+            case EC -> new BcECContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
+                .build(signingCertificateHolder);
+            case DSA -> new BcDSAContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
+                .build(signingCertificateHolder);
             };
 
         } catch (IOException | CertificateEncodingException | OperatorCreationException e) {
@@ -123,7 +131,8 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
     }
 
     /**
-     * @param timeStampResponse The response to check, not {@code null}.
+     * @param timeStampResponse
+     *     The response to check, not {@code null}.
      * @return {@code true}, iff the response contains a token which was signed by this TSA.
      */
     private boolean wasSignedByThisTsa(TimeStampResponse timeStampResponse) {

@@ -1,12 +1,13 @@
 package dev.mieser.tsa.signing.serial;
 
-import lombok.RequiredArgsConstructor;
-
 import java.security.SecureRandom;
 import java.util.function.Supplier;
 
+import lombok.RequiredArgsConstructor;
+
 /**
- * {@link SerialNumberGenerator} generating random serial numbers. There is a low chance that the same serial is generated twice.
+ * {@link SerialNumberGenerator} generating random serial numbers. There is a low chance that the same serial is
+ * generated twice.
  */
 @RequiredArgsConstructor
 public class RandomSerialNumberGenerator implements SerialNumberGenerator {

@@ -1,15 +1,16 @@
 package dev.mieser.tsa.web.paging;
 
-import dev.mieser.tsa.web.dto.datatable.Column;
-import dev.mieser.tsa.web.dto.datatable.DatatablesPagingRequest;
-import dev.mieser.tsa.web.dto.datatable.Order;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import dev.mieser.tsa.web.dto.datatable.Column;
+import dev.mieser.tsa.web.dto.datatable.DatatablesPagingRequest;
+import dev.mieser.tsa.web.dto.datatable.Order;
 
 /**
  * Mapper {@link Function} to map {@link DatatablesPagingRequest}s to Spring Data {@link Pageable}s.
@@ -30,8 +31,8 @@ public class DatatablesPageableMapper implements Function<DatatablesPagingReques
 
         List<Column> columns = pagingRequest.getColumns();
         List<Sort.Order> pageableOrder = orders.stream()
-                .map(order -> mapOrder(columns, order))
-                .collect(Collectors.toList());
+            .map(order -> mapOrder(columns, order))
+            .collect(Collectors.toList());
 
         return Sort.by(pageableOrder);
     }
@@ -41,8 +42,8 @@ public class DatatablesPageableMapper implements Function<DatatablesPagingReques
         String sortProperty = column.getData();
 
         return switch (order.getDir()) {
-            case ASC -> Sort.Order.asc(sortProperty);
-            case DESC -> Sort.Order.desc(sortProperty);
+        case ASC -> Sort.Order.asc(sortProperty);
+        case DESC -> Sort.Order.desc(sortProperty);
         };
     }
 

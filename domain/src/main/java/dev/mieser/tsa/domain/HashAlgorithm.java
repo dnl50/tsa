@@ -1,10 +1,10 @@
 package dev.mieser.tsa.domain;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.util.EnumSet;
 import java.util.Optional;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * All supported hash algorithms.
@@ -25,14 +25,15 @@ public enum HashAlgorithm {
     private final String objectIdentifier;
 
     /**
-     * @param oid The object identifier (OID) of the algorithm.
-     * @return An {@link Optional} containing the hash algorithm with the specified OID or {@link Optional#empty()},
-     * if no such algorithm is defined.
+     * @param oid
+     *     The object identifier (OID) of the algorithm.
+     * @return An {@link Optional} containing the hash algorithm with the specified OID or {@link Optional#empty()}, if no
+     * such algorithm is defined.
      */
     public static Optional<HashAlgorithm> fromObjectIdentifier(String oid) {
         return EnumSet.allOf(HashAlgorithm.class).stream()
-                .filter(hashAlgorithm -> hashAlgorithm.objectIdentifier.equals(oid))
-                .findFirst();
+            .filter(hashAlgorithm -> hashAlgorithm.objectIdentifier.equals(oid))
+            .findFirst();
     }
 
 }

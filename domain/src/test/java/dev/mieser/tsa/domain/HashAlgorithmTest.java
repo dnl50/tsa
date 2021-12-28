@@ -1,16 +1,16 @@
 package dev.mieser.tsa.domain;
 
+import static dev.mieser.tsa.domain.HashAlgorithm.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import static dev.mieser.tsa.domain.HashAlgorithm.*;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class HashAlgorithmTest {
 
@@ -38,10 +38,9 @@ class HashAlgorithmTest {
 
     static Stream<Arguments> oidToAlgorithmProvider() {
         return Stream.of(
-                arguments("1.3.14.3.2.26", SHA1),
-                arguments("2.16.840.1.101.3.4.2.1", SHA256),
-                arguments("2.16.840.1.101.3.4.2.3", SHA512)
-        );
+            arguments("1.3.14.3.2.26", SHA1),
+            arguments("2.16.840.1.101.3.4.2.1", SHA256),
+            arguments("2.16.840.1.101.3.4.2.3", SHA512));
     }
 
 }

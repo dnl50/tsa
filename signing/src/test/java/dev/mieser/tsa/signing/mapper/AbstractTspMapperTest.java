@@ -1,17 +1,5 @@
 package dev.mieser.tsa.signing.mapper;
 
-import dev.mieser.tsa.domain.FailureInfo;
-import dev.mieser.tsa.domain.HashAlgorithm;
-import dev.mieser.tsa.domain.ResponseStatus;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.IOException;
-import java.util.function.Function;
-
 import static dev.mieser.tsa.domain.FailureInfo.BAD_REQUEST;
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
 import static dev.mieser.tsa.domain.ResponseStatus.GRANTED;
@@ -23,6 +11,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
+
+import java.io.IOException;
+import java.util.function.Function;
+
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import dev.mieser.tsa.domain.FailureInfo;
+import dev.mieser.tsa.domain.HashAlgorithm;
+import dev.mieser.tsa.domain.ResponseStatus;
 
 @ExtendWith(MockitoExtension.class)
 class AbstractTspMapperTest {
@@ -36,8 +37,8 @@ class AbstractTspMapperTest {
 
         // when / then
         assertThatIllegalStateException()
-                .isThrownBy(() -> testSubject.mapToHashAlgorithm(md5Oid))
-                .withMessage("Unknown hash algorithm with OID '1.2.840.113549.2.5'.");
+            .isThrownBy(() -> testSubject.mapToHashAlgorithm(md5Oid))
+            .withMessage("Unknown hash algorithm with OID '1.2.840.113549.2.5'.");
     }
 
     @Test
@@ -67,7 +68,7 @@ class AbstractTspMapperTest {
 
         given(mapperFunctionMock.apply(value)).willReturn(1337);
 
-        //  when
+        // when
         Integer mappedValue = testSubject.mapIfNotNull(value, mapperFunctionMock);
 
         // then
@@ -75,7 +76,8 @@ class AbstractTspMapperTest {
     }
 
     @Test
-    void asnEncodedThrowsExceptionWhenObjectCannotBeConvertedToAsn(@Mock AsnEncodingConverter<String> asnEncodingConverterMock) throws IOException {
+    void asnEncodedThrowsExceptionWhenObjectCannotBeConvertedToAsn(
+        @Mock AsnEncodingConverter<String> asnEncodingConverterMock) throws IOException {
         // given
         String value = "test";
         var thrownException = new IOException("error!!!1!");
@@ -84,9 +86,9 @@ class AbstractTspMapperTest {
 
         // when / then
         assertThatIllegalStateException()
-                .isThrownBy(() -> testSubject.asnEncoded(value, asnEncodingConverterMock))
-                .withMessage("Error converting object to ASN.1.")
-                .withCause(thrownException);
+            .isThrownBy(() -> testSubject.asnEncoded(value, asnEncodingConverterMock))
+            .withMessage("Error converting object to ASN.1.")
+            .withCause(thrownException);
     }
 
     @Test
@@ -94,7 +96,8 @@ class AbstractTspMapperTest {
         // given
         String value = "test";
 
-        given(asnEncodingConverterMock.convertToAsn(value)).willAnswer(invocation -> ((String) invocation.getArgument(0)).getBytes(UTF_8));
+        given(asnEncodingConverterMock.convertToAsn(value))
+            .willAnswer(invocation -> ((String) invocation.getArgument(0)).getBytes(UTF_8));
 
         // when
         byte[] asnEncodedValue = testSubject.asnEncoded(value, asnEncodingConverterMock);
@@ -116,8 +119,8 @@ class AbstractTspMapperTest {
     void mapToResponseStatusThrowsExceptionWhenNoStatusIsDefined() {
         // given / when / then
         assertThatIllegalStateException()
-                .isThrownBy(() -> testSubject.mapToResponseStatus(-1))
-                .withMessage("Unknown status '-1'.");
+            .isThrownBy(() -> testSubject.mapToResponseStatus(-1))
+            .withMessage("Unknown status '-1'.");
     }
 
     @Test
@@ -127,8 +130,8 @@ class AbstractTspMapperTest {
 
         // when / then
         assertThatIllegalStateException()
-                .isThrownBy(() -> testSubject.mapToFailureInfo(unknownFailureInfo))
-                .withMessage("Unknown PKI Failure Info '0'.");
+            .isThrownBy(() -> testSubject.mapToFailureInfo(unknownFailureInfo))
+            .withMessage("Unknown PKI Failure Info '0'.");
     }
 
     @Test

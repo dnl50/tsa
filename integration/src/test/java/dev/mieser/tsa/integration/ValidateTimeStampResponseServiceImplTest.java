@@ -1,21 +1,22 @@
 package dev.mieser.tsa.integration;
 
-import dev.mieser.tsa.domain.TimestampValidationResult;
-import dev.mieser.tsa.signing.api.TimeStampValidator;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.InputStream;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+
+import java.io.InputStream;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.signing.api.TimeStampValidator;
 
 @ExtendWith(MockitoExtension.class)
 class ValidateTimeStampResponseServiceImplTest {

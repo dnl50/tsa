@@ -1,11 +1,12 @@
 package dev.mieser.tsa.web.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.mieser.tsa.domain.TimestampResponseData;
-import dev.mieser.tsa.integration.api.QueryTimeStampResponseService;
-import dev.mieser.tsa.web.dto.datatable.Column;
-import dev.mieser.tsa.web.dto.datatable.DatatablesPagingRequest;
-import dev.mieser.tsa.web.paging.DatatablesPageableMapper;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,12 +19,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.integration.api.QueryTimeStampResponseService;
+import dev.mieser.tsa.web.dto.datatable.Column;
+import dev.mieser.tsa.web.dto.datatable.DatatablesPagingRequest;
+import dev.mieser.tsa.web.paging.DatatablesPageableMapper;
 
 @WebMvcTest
 @ContextConfiguration(classes = HistoryRestController.class)
@@ -37,7 +39,8 @@ class HistoryRestControllerTest {
 
     private final MockMvc mockMvc;
 
-    @Autowired HistoryRestControllerTest(MockMvc mockMvc) {
+    @Autowired
+    HistoryRestControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
 
@@ -47,14 +50,14 @@ class HistoryRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         TimestampResponseData timestampResponse = TimestampResponseData.builder()
-                .serialNumber(10L)
-                .build();
+            .serialNumber(10L)
+            .build();
         DatatablesPagingRequest pagingRequest = DatatablesPagingRequest.builder()
-                .draw(12)
-                .start(0)
-                .length(1)
-                .columns(List.of(new Column("name", "data")))
-                .build();
+            .draw(12)
+            .start(0)
+            .length(1)
+            .columns(List.of(new Column("name", "data")))
+            .build();
         Pageable mappedPageable = PageRequest.of(0, 1);
         Page<TimestampResponseData> page = new PageImpl<>(List.of(timestampResponse), mappedPageable, 1337);
 
@@ -63,15 +66,15 @@ class HistoryRestControllerTest {
 
         // when / then
         mockMvc.perform(post("/api/history")
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(pagingRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.draw").value("12"))
-                .andExpect(jsonPath("$.recordsTotal").value("1337"))
-                .andExpect(jsonPath("$.recordsFiltered").value("1337"))
-                .andExpect(jsonPath("$.data.length()").value("1"))
-                .andExpect(jsonPath("$.data[0].serialNumber").value("10"));
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(pagingRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.draw").value("12"))
+            .andExpect(jsonPath("$.recordsTotal").value("1337"))
+            .andExpect(jsonPath("$.recordsFiltered").value("1337"))
+            .andExpect(jsonPath("$.data.length()").value("1"))
+            .andExpect(jsonPath("$.data[0].serialNumber").value("10"));
     }
 
 }

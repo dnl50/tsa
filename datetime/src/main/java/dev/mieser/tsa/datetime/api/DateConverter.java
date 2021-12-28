@@ -9,7 +9,8 @@ import java.util.Date;
 public interface DateConverter {
 
     /**
-     * @param date The date to convert.
+     * @param date
+     *     The date to convert.
      * @return The {@link ZonedDateTime} representation of the specified date.
      */
     ZonedDateTime toZonedDateTime(Date date);

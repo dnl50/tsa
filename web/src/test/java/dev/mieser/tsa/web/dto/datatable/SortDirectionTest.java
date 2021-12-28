@@ -1,15 +1,15 @@
 package dev.mieser.tsa.web.dto.datatable;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class SortDirectionTest {
 
@@ -23,8 +23,8 @@ class SortDirectionTest {
     void fromDirectionThrowsExceptionWhenNoEnumConstantIsPresent() {
         // given / when / then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> SortDirection.fromDirection("unknown"))
-                .withMessage("No direction constant found for 'unknown'.");
+            .isThrownBy(() -> SortDirection.fromDirection("unknown"))
+            .withMessage("No direction constant found for 'unknown'.");
     }
 
     @ParameterizedTest
@@ -45,9 +45,8 @@ class SortDirectionTest {
 
     static Stream<Arguments> directionToEnumConstant() {
         return Stream.of(
-                arguments("asc", SortDirection.ASC),
-                arguments("desc", SortDirection.DESC)
-        );
+            arguments("asc", SortDirection.ASC),
+            arguments("desc", SortDirection.DESC));
     }
 
 }

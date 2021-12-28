@@ -1,5 +1,6 @@
 plugins {
     `java-convention`
+    `spotless-config`
 }
 
 val webResource by configurations.creating

@@ -1,6 +1,14 @@
 package dev.mieser.tsa.signing.cert;
 
+import static java.util.Arrays.copyOf;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+
 import lombok.RequiredArgsConstructor;
+
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.operator.DigestCalculator;
@@ -8,13 +16,6 @@ import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
 import org.bouncycastle.util.Selector;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-
-import static java.util.Arrays.copyOf;
 
 /**
  * {@link Selector} which selects a {@link X509CertificateHolder X.509 Certificate} with a specific hash value.

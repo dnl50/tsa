@@ -1,20 +1,5 @@
 package dev.mieser.tsa.testutil;
 
-import dev.mieser.tsa.testutil.TimeStampResponseGenerator.ResponseProperties;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.tsp.TimeStampResponse;
-import org.bouncycastle.tsp.TimeStampToken;
-import org.bouncycastle.tsp.TimeStampTokenInfo;
-import org.junit.jupiter.api.Test;
-
-import java.math.BigInteger;
-import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.Hashtable;
-
 import static dev.mieser.tsa.domain.FailureInfo.BAD_ALGORITHM;
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA256;
 import static dev.mieser.tsa.domain.ResponseStatus.*;
@@ -26,24 +11,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.math.BigInteger;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.Hashtable;
+
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.tsp.TimeStampResponse;
+import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.tsp.TimeStampTokenInfo;
+import org.junit.jupiter.api.Test;
+
+import dev.mieser.tsa.testutil.TimeStampResponseGenerator.ResponseProperties;
+
 class TimeStampResponseGeneratorTest {
 
     @Test
     void throwsExceptionWhenPropertiesIsNull() {
         // given / when / then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> generateTimeStampResponseMock(null))
-                .withMessage("Properties cannot be null.");
+            .isThrownBy(() -> generateTimeStampResponseMock(null))
+            .withMessage("Properties cannot be null.");
     }
 
     @Test
     void generatesExpectedResponseWithoutToken() throws Exception {
         // given
         ResponseProperties rejectedResponseProperties = ResponseProperties.builder()
-                .status(REJECTION)
-                .statusString("Algorithm not supported")
-                .failureInfo(BAD_ALGORITHM)
-                .build();
+            .status(REJECTION)
+            .statusString("Algorithm not supported")
+            .failureInfo(BAD_ALGORITHM)
+            .build();
 
         // when
         TimeStampResponse generatedResponseMock = generateTimeStampResponseMock(rejectedResponseProperties);
@@ -65,15 +66,15 @@ class TimeStampResponseGeneratorTest {
         AttributeTable emptyAttributeTable = new AttributeTable(new Hashtable<>());
 
         ResponseProperties grantedResponseProperties = ResponseProperties.builder()
-                .status(GRANTED)
-                .statusString("OK")
-                .nonce(BigInteger.TEN)
-                .hashAlgorithm(SHA256)
-                .hash(sha256Hash)
-                .serialNumber(12345)
-                .genTime(genTime)
-                .signedAttributes(emptyAttributeTable)
-                .build();
+            .status(GRANTED)
+            .statusString("OK")
+            .nonce(BigInteger.TEN)
+            .hashAlgorithm(SHA256)
+            .hash(sha256Hash)
+            .serialNumber(12345)
+            .genTime(genTime)
+            .signedAttributes(emptyAttributeTable)
+            .build();
 
         // when
         TimeStampResponse generatedResponseMock = generateTimeStampResponseMock(grantedResponseProperties);
@@ -89,8 +90,10 @@ class TimeStampResponseGeneratorTest {
             softly.assertThat(timeStampToken.getCertificates().getMatches(null)).isEmpty();
             softly.assertThat(timeStampToken.getSignedAttributes()).isEqualTo(emptyAttributeTable);
 
-            softly.assertThat(timeStampInfo.getMessageImprintAlgOID()).isEqualTo(new ASN1ObjectIdentifier(SHA256.getObjectIdentifier()));
-            softly.assertThat(timeStampInfo.getHashAlgorithm()).isEqualTo(new AlgorithmIdentifier(new ASN1ObjectIdentifier(SHA256.getObjectIdentifier())));
+            softly.assertThat(timeStampInfo.getMessageImprintAlgOID())
+                .isEqualTo(new ASN1ObjectIdentifier(SHA256.getObjectIdentifier()));
+            softly.assertThat(timeStampInfo.getHashAlgorithm())
+                .isEqualTo(new AlgorithmIdentifier(new ASN1ObjectIdentifier(SHA256.getObjectIdentifier())));
             softly.assertThat(timeStampInfo.getMessageImprintDigest()).isEqualTo(sha256Hash);
             softly.assertThat(timeStampInfo.getSerialNumber()).isEqualTo(12345);
             softly.assertThat(timeStampInfo.getGenTime()).isEqualTo(genTime);
@@ -104,13 +107,13 @@ class TimeStampResponseGeneratorTest {
         X509Certificate signingCertificate = loadRsaCertificate();
 
         ResponseProperties grantedResponseProperties = ResponseProperties.builder()
-                .status(GRANTED_WITH_MODS)
-                .hashAlgorithm(SHA256)
-                .hash(repeat("a", 32).getBytes(UTF_8))
-                .serialNumber(12345)
-                .genTime(new Date())
-                .signingCertificate(signingCertificate)
-                .build();
+            .status(GRANTED_WITH_MODS)
+            .hashAlgorithm(SHA256)
+            .hash(repeat("a", 32).getBytes(UTF_8))
+            .serialNumber(12345)
+            .genTime(new Date())
+            .signingCertificate(signingCertificate)
+            .build();
 
         // when
         TimeStampResponse generatedResponseMock = generateTimeStampResponseMock(grantedResponseProperties);
@@ -118,7 +121,8 @@ class TimeStampResponseGeneratorTest {
         // then
         TimeStampToken timeStampToken = generatedResponseMock.getTimeStampToken();
 
-        assertThat(timeStampToken.getCertificates().getMatches(null)).map(X509CertificateHolder::getEncoded).containsExactly(signingCertificate.getEncoded());
+        assertThat(timeStampToken.getCertificates().getMatches(null)).map(X509CertificateHolder::getEncoded)
+            .containsExactly(signingCertificate.getEncoded());
     }
 
 }

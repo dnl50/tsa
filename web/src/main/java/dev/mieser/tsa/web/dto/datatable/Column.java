@@ -6,7 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO encapsulating parts of the column information included in a <a href="https://datatables.net">Datatables</a> AJAX request.
+ * DTO encapsulating parts of the column information included in a <a href="https://datatables.net">Datatables</a> AJAX
+ * request.
  *
  * @see DatatablesPagingRequest
  */

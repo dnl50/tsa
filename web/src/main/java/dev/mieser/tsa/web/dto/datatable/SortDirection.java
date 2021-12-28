@@ -1,10 +1,10 @@
 package dev.mieser.tsa.web.dto.datatable;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import static java.lang.String.format;
 
 import java.util.EnumSet;
 
-import static java.lang.String.format;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  * The sort directions
@@ -18,9 +18,11 @@ public enum SortDirection {
     /**
      * Jackson factory method to map the lower-case names of Datatables to enum constants.
      *
-     * @param direction The name of the enum constant to return.
+     * @param direction
+     *     The name of the enum constant to return.
      * @return The corresponding enum constant or {@code null}, when the specified direction is {@code null}.
-     * @throws IllegalArgumentException When no enum constant was found.
+     * @throws IllegalArgumentException
+     *     When no enum constant was found.
      */
     @JsonCreator
     public static SortDirection fromDirection(String direction) {
@@ -29,9 +31,9 @@ public enum SortDirection {
         }
 
         return EnumSet.allOf(SortDirection.class).stream()
-                .filter(sortDirection -> sortDirection.name().equalsIgnoreCase(direction))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(format("No direction constant found for '%s'.", direction)));
+            .filter(sortDirection -> sortDirection.name().equalsIgnoreCase(direction))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(format("No direction constant found for '%s'.", direction)));
     }
 
 }

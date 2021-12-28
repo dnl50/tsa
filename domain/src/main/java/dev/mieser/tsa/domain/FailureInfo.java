@@ -1,14 +1,15 @@
 package dev.mieser.tsa.domain;
 
+import java.util.EnumSet;
+import java.util.Optional;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.EnumSet;
-import java.util.Optional;
-
 /**
- * Enumeration of all {@code PKIFailureInfo} values a TSA should support according to <a href="https://datatracker.ietf.org/doc/html/rfc3161.html">RFC 3161</a>.
+ * Enumeration of all {@code PKIFailureInfo} values a TSA should support according to
+ * <a href="https://datatracker.ietf.org/doc/html/rfc3161.html">RFC 3161</a>.
  */
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -36,13 +37,15 @@ public enum FailureInfo {
     private final int value;
 
     /**
-     * @param value The value to get the corresponding  {@link FailureInfo} constant for.
-     * @return The corresponding {@link FailureInfo} constant or {@link Optional#empty()} when no constant with the specified value is defined.
+     * @param value
+     *     The value to get the corresponding {@link FailureInfo} constant for.
+     * @return The corresponding {@link FailureInfo} constant or {@link Optional#empty()} when no constant with the
+     * specified value is defined.
      */
     public static Optional<FailureInfo> fromIntValue(int value) {
         return EnumSet.allOf(FailureInfo.class).stream()
-                .filter(failureInfo -> failureInfo.value == value)
-                .findFirst();
+            .filter(failureInfo -> failureInfo.value == value)
+            .findFirst();
     }
 
 }

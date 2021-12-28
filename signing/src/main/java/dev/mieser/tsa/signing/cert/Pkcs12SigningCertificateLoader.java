@@ -1,6 +1,7 @@
 package dev.mieser.tsa.signing.cert;
 
-import lombok.RequiredArgsConstructor;
+import static java.lang.String.format;
+import static java.util.Collections.list;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,8 +9,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import static java.lang.String.format;
-import static java.util.Collections.list;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 abstract class Pkcs12SigningCertificateLoader implements SigningCertificateLoader {
@@ -39,9 +39,11 @@ abstract class Pkcs12SigningCertificateLoader implements SigningCertificateLoade
     }
 
     /**
-     * @param path The path to the PKCS#12 file, not empty.
+     * @param path
+     *     The path to the PKCS#12 file, not empty.
      * @return An input stream used to read the PKCS#12 file from.
-     * @throws IOException When an error occurs opening the input stream.
+     * @throws IOException
+     *     When an error occurs opening the input stream.
      */
     abstract InputStream pkcs12InputStream(String path) throws IOException;
 
@@ -111,14 +113,17 @@ abstract class Pkcs12SigningCertificateLoader implements SigningCertificateLoade
     }
 
     /**
-     * Interface abstraction of the {@link KeyStore#getCertificate(String)} and {@link KeyStore#getKey(String, char[])} methods.
+     * Interface abstraction of the {@link KeyStore#getCertificate(String)} and {@link KeyStore#getKey(String, char[])}
+     * methods.
      *
-     * @param <T> The type of the certificate or key to be abstracted from the {@link KeyStore}.
+     * @param <T>
+     *     The type of the certificate or key to be abstracted from the {@link KeyStore}.
      */
     @FunctionalInterface
     private interface KeystoreEntryExtractor<T> {
 
-        T extractEntry(KeyStore keyStore, String alias) throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException;
+        T extractEntry(KeyStore keyStore,
+            String alias) throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException;
 
     }
 

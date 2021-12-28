@@ -1,10 +1,20 @@
 package dev.mieser.tsa.web.controller;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
-import dev.mieser.tsa.integration.api.IssueTimeStampService;
-import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
-import dev.mieser.tsa.signing.api.exception.TspResponseException;
-import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,20 +27,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.stream.Stream;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.integration.api.IssueTimeStampService;
+import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
+import dev.mieser.tsa.signing.api.exception.TspResponseException;
+import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 
 @WebMvcTest
 @ContextConfiguration(classes = TimeStampAuthorityController.class)
@@ -45,7 +46,8 @@ class TimeStampAuthorityControllerTest {
     @MockBean
     private IssueTimeStampService issueTimeStampServiceMock;
 
-    @Autowired TimeStampAuthorityControllerTest(MockMvc mockMvc) {
+    @Autowired
+    TimeStampAuthorityControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
 
@@ -53,7 +55,7 @@ class TimeStampAuthorityControllerTest {
     void doesNotAcceptOtherContentTypes() throws Exception {
         // given / when / then
         mockMvc.perform(post("/").contentType(APPLICATION_JSON))
-                .andExpect(status().isUnsupportedMediaType());
+            .andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
@@ -63,18 +65,18 @@ class TimeStampAuthorityControllerTest {
         byte[] responseContent = "TSP response".getBytes(UTF_8);
 
         TimestampResponseData issuedResponse = TimestampResponseData.builder()
-                .asnEncoded(responseContent)
-                .build();
+            .asnEncoded(responseContent)
+            .build();
 
         given(issueTimeStampServiceMock.signTimestampRequest(any())).willReturn(issuedResponse);
 
         // when / then
         mockMvc.perform(post("/")
-                        .content(requestContent)
-                        .contentType(REQUEST_CONTENT_TYPE)
-                        .accept(REPLY_CONTENT_TYPE))
-                .andExpect(status().isOk())
-                .andExpect(header().stringValues(CONTENT_TYPE, REPLY_CONTENT_TYPE));
+            .content(requestContent)
+            .contentType(REQUEST_CONTENT_TYPE)
+            .accept(REPLY_CONTENT_TYPE))
+            .andExpect(status().isOk())
+            .andExpect(header().stringValues(CONTENT_TYPE, REPLY_CONTENT_TYPE));
     }
 
     @Test
@@ -84,8 +86,8 @@ class TimeStampAuthorityControllerTest {
         byte[] responseContent = "TSP response".getBytes(UTF_8);
 
         TimestampResponseData issuedResponse = TimestampResponseData.builder()
-                .asnEncoded(responseContent)
-                .build();
+            .asnEncoded(responseContent)
+            .build();
 
         given(issueTimeStampServiceMock.signTimestampRequest(any())).willAnswer(invocation -> {
             InputStream actualStream = invocation.getArgument(0);
@@ -95,11 +97,11 @@ class TimeStampAuthorityControllerTest {
 
         // when / then
         mockMvc.perform(post("/")
-                        .content(requestContent)
-                        .contentType(REQUEST_CONTENT_TYPE)
-                        .accept(REPLY_CONTENT_TYPE))
-                .andExpect(status().isOk())
-                .andExpect(content().bytes(responseContent));
+            .content(requestContent)
+            .contentType(REQUEST_CONTENT_TYPE)
+            .accept(REPLY_CONTENT_TYPE))
+            .andExpect(status().isOk())
+            .andExpect(content().bytes(responseContent));
     }
 
     @ParameterizedTest
@@ -112,18 +114,17 @@ class TimeStampAuthorityControllerTest {
 
         // when / then
         mockMvc.perform(post("/")
-                        .content(requestContent)
-                        .contentType(REQUEST_CONTENT_TYPE)
-                        .accept(REPLY_CONTENT_TYPE))
-                .andExpect(status().is(expectedStatus.value()));
+            .content(requestContent)
+            .contentType(REQUEST_CONTENT_TYPE)
+            .accept(REPLY_CONTENT_TYPE))
+            .andExpect(status().is(expectedStatus.value()));
     }
 
     static Stream<Arguments> exceptionToStatusCodeProvider() {
         return Stream.of(
-                arguments(new InvalidTspRequestException("Test", new IllegalStateException()), BAD_REQUEST),
-                arguments(new UnknownHashAlgorithmException("Test"), BAD_REQUEST),
-                arguments(new TspResponseException("Test", new IllegalStateException()), INTERNAL_SERVER_ERROR)
-        );
+            arguments(new InvalidTspRequestException("Test", new IllegalStateException()), BAD_REQUEST),
+            arguments(new UnknownHashAlgorithmException("Test"), BAD_REQUEST),
+            arguments(new TspResponseException("Test", new IllegalStateException()), INTERNAL_SERVER_ERROR));
     }
 
 }

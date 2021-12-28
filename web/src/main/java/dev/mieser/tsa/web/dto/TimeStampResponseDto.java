@@ -1,10 +1,10 @@
 package dev.mieser.tsa.web.dto;
 
-import dev.mieser.tsa.web.validator.Base64Encoded;
+import javax.validation.constraints.NotEmpty;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotEmpty;
+import dev.mieser.tsa.web.validator.Base64Encoded;
 
 /**
  * DTO encapsulating information about TSP responses.

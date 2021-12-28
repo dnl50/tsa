@@ -1,13 +1,13 @@
 package dev.mieser.tsa.signing.cert;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.*;
 import java.nio.file.Files;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class FileSystemCertificateLoaderTest {
 
@@ -30,7 +30,8 @@ class FileSystemCertificateLoaderTest {
 
     private File copyResourceToDirectory(String resourcePath, File dir) throws IOException {
         File temporaryFile = Files.createTempFile(dir.toPath(), "container", ".p12").toFile();
-        try (InputStream resourceInputStream = getClass().getResourceAsStream(resourcePath); OutputStream fos = new FileOutputStream(temporaryFile)) {
+        try (InputStream resourceInputStream = getClass().getResourceAsStream(resourcePath);
+            OutputStream fos = new FileOutputStream(temporaryFile)) {
             IOUtils.copy(resourceInputStream, fos);
         }
 

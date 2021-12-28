@@ -1,13 +1,14 @@
 package dev.mieser.tsa.app;
 
-import dev.mieser.tsa.signing.api.TimeStampAuthority;
-import dev.mieser.tsa.signing.api.TimeStampValidator;
+import static org.mockito.BDDMockito.then;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.BDDMockito.then;
+import dev.mieser.tsa.signing.api.TimeStampAuthority;
+import dev.mieser.tsa.signing.api.TimeStampValidator;
 
 @ExtendWith(MockitoExtension.class)
 class TsaServiceInitializerTest {

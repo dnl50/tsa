@@ -1,16 +1,17 @@
 package dev.mieser.tsa.web.dto.datatable;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * <a href="https://datatables.net">Datatables</a> paging response.
  *
- * @param <T> The type of the data.
+ * @param <T>
+ *     The type of the data.
  * @see DatatablesPagingRequest
  */
 @Data
@@ -30,7 +31,7 @@ public class DatatablesPage<T> {
     private long recordsTotal;
 
     /**
-     * The number of records  after filtering.
+     * The number of records after filtering.
      */
     private long recordsFiltered;
 

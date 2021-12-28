@@ -1,10 +1,10 @@
 package dev.mieser.tsa.domain;
 
-import lombok.Builder;
-import lombok.Data;
-
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
+
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder

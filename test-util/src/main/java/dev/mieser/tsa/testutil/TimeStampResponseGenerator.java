@@ -1,9 +1,20 @@
 package dev.mieser.tsa.testutil;
 
-import dev.mieser.tsa.domain.FailureInfo;
-import dev.mieser.tsa.domain.HashAlgorithm;
-import dev.mieser.tsa.domain.ResponseStatus;
+import static dev.mieser.tsa.domain.ResponseStatus.GRANTED;
+import static dev.mieser.tsa.domain.ResponseStatus.GRANTED_WITH_MODS;
+import static java.util.Collections.emptyList;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+import java.util.*;
+
 import lombok.*;
+
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cmp.PKIFailureInfo;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -15,18 +26,9 @@ import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Store;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
-import java.util.*;
-
-import static dev.mieser.tsa.domain.ResponseStatus.GRANTED;
-import static dev.mieser.tsa.domain.ResponseStatus.GRANTED_WITH_MODS;
-import static java.util.Collections.emptyList;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.withSettings;
+import dev.mieser.tsa.domain.FailureInfo;
+import dev.mieser.tsa.domain.HashAlgorithm;
+import dev.mieser.tsa.domain.ResponseStatus;
 
 /**
  * Utility class to generate Time Stamp Response Mocks. Only supports a subset of the fields in a response.
@@ -40,7 +42,8 @@ public class TimeStampResponseGenerator {
     private static final Set<ResponseStatus> STATUS_WITH_TOKEN = EnumSet.of(GRANTED, GRANTED_WITH_MODS);
 
     /**
-     * @param responseProperties The properties to use to build the response, not {@code null}.
+     * @param responseProperties
+     *     The properties to use to build the response, not {@code null}.
      * @return A Bouncy Castle Time Stamp Response Mock returning the specified values.
      */
     public static TimeStampResponse generateTimeStampResponseMock(ResponseProperties responseProperties) {
@@ -55,10 +58,13 @@ public class TimeStampResponseGenerator {
         }
     }
 
-    private static TimeStampResponse generateTimeStampResponseInternal(ResponseProperties responseProperties) throws IOException, CertificateEncodingException {
+    private static TimeStampResponse generateTimeStampResponseInternal(
+        ResponseProperties responseProperties) throws IOException, CertificateEncodingException {
         TimeStampResponse timeStampResponseMock = mock(TimeStampResponse.class, withSettings().lenient());
 
-        PKIFailureInfo failureInfo = responseProperties.getFailureInfo() != null ? new PKIFailureInfo(responseProperties.getFailureInfo().getValue()) : null;
+        PKIFailureInfo failureInfo = responseProperties.getFailureInfo() != null
+            ? new PKIFailureInfo(responseProperties.getFailureInfo().getValue())
+            : null;
 
         given(timeStampResponseMock.getStatus()).willReturn(responseProperties.getStatus().getValue());
         given(timeStampResponseMock.getStatusString()).willReturn(responseProperties.getStatusString());
@@ -70,7 +76,8 @@ public class TimeStampResponseGenerator {
 
         TimeStampTokenInfo timeStampTokenInfoMock = mock(TimeStampTokenInfo.class, withSettings().lenient());
 
-        ASN1ObjectIdentifier hashAlgorithmIdentifier = new ASN1ObjectIdentifier(responseProperties.getHashAlgorithm().getObjectIdentifier());
+        ASN1ObjectIdentifier hashAlgorithmIdentifier = new ASN1ObjectIdentifier(
+            responseProperties.getHashAlgorithm().getObjectIdentifier());
         given(timeStampTokenInfoMock.getMessageImprintAlgOID()).willReturn(hashAlgorithmIdentifier);
         given(timeStampTokenInfoMock.getHashAlgorithm()).willReturn(new AlgorithmIdentifier(hashAlgorithmIdentifier));
         given(timeStampTokenInfoMock.getMessageImprintDigest()).willReturn(responseProperties.getHash());
@@ -79,11 +86,13 @@ public class TimeStampResponseGenerator {
         given(timeStampTokenInfoMock.getNonce()).willReturn(responseProperties.getNonce());
 
         TimeStampToken timeStampTokenMock = mock(TimeStampToken.class, withSettings().lenient());
-        List<X509CertificateHolder> certificates = responseProperties.getSigningCertificate() != null ?
-                List.of(new X509CertificateHolder(responseProperties.getSigningCertificate().getEncoded())) :
-                emptyList();
+        List<X509CertificateHolder> certificates = responseProperties.getSigningCertificate() != null
+            ? List.of(new X509CertificateHolder(responseProperties.getSigningCertificate().getEncoded()))
+            : emptyList();
         Store<X509CertificateHolder> certificateStore = new CollectionStore<>(certificates);
-        AttributeTable signedAttributes = responseProperties.getSignedAttributes() != null ? responseProperties.getSignedAttributes() : new AttributeTable(new Hashtable<>());
+        AttributeTable signedAttributes = responseProperties.getSignedAttributes() != null
+            ? responseProperties.getSignedAttributes()
+            : new AttributeTable(new Hashtable<>());
 
         given(timeStampTokenMock.getCertificates()).willReturn(certificateStore);
         given(timeStampTokenMock.getSignedAttributes()).willReturn(signedAttributes);

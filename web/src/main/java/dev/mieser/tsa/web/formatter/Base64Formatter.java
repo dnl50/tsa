@@ -1,9 +1,9 @@
 package dev.mieser.tsa.web.formatter;
 
+import java.util.Locale;
+
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.format.Formatter;
-
-import java.util.Locale;
 
 /**
  * {@link Formatter} to encode/decode byte Arrays to/from Base64 Strings.

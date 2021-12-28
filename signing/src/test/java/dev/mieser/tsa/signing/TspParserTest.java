@@ -1,7 +1,17 @@
 package dev.mieser.tsa.signing;
 
-import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
-import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
+import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+import java.io.ByteArrayInputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1Boolean;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -15,17 +25,8 @@ import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-
-import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
+import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 
 class TspParserTest {
 
@@ -39,8 +40,8 @@ class TspParserTest {
 
         // when / then
         assertThatExceptionOfType(InvalidTspRequestException.class)
-                .isThrownBy(() -> testSubject.parseRequest(tspRequestInputStream))
-                .withMessage("Could not parse TSP request.");
+            .isThrownBy(() -> testSubject.parseRequest(tspRequestInputStream))
+            .withMessage("Could not parse TSP request.");
     }
 
     @Test
@@ -60,7 +61,8 @@ class TspParserTest {
     void parseRequestDoesNotCloseInputStream() throws IOException {
         // given
         TimeStampReq timeStampRequest = createTimeStampRequest();
-        CloseAwareInputStream tspRequestInputStream = new CloseAwareInputStream(new ByteArrayInputStream(timeStampRequest.getEncoded()));
+        CloseAwareInputStream tspRequestInputStream = new CloseAwareInputStream(
+            new ByteArrayInputStream(timeStampRequest.getEncoded()));
 
         // when
         testSubject.parseRequest(tspRequestInputStream);
@@ -77,8 +79,8 @@ class TspParserTest {
 
         // when / then
         assertThatExceptionOfType(InvalidTspResponseException.class)
-                .isThrownBy(() -> testSubject.parseResponse(tspResponseInputStream))
-                .withMessage("Could not parse TSP response");
+            .isThrownBy(() -> testSubject.parseResponse(tspResponseInputStream))
+            .withMessage("Could not parse TSP response");
     }
 
     @Test
@@ -98,7 +100,8 @@ class TspParserTest {
     void parseResponseDoesNotCloseInputStream() throws IOException {
         // given
         TimeStampResp timeStampResponse = parseTimeStampResponse();
-        CloseAwareInputStream tspResponseInputStream = new CloseAwareInputStream(new ByteArrayInputStream(timeStampResponse.getEncoded()));
+        CloseAwareInputStream tspResponseInputStream = new CloseAwareInputStream(
+            new ByteArrayInputStream(timeStampResponse.getEncoded()));
 
         // when
         testSubject.parseResponse(tspResponseInputStream);
@@ -128,7 +131,8 @@ class TspParserTest {
     }
 
     /**
-     * @implNote Spying an Input Stream causes the input stream to return -1 when calling the {@code read()} methods (Java 17.0.1, Mockito 4.0.0).
+     * @implNote Spying an Input Stream causes the input stream to return -1 when calling the {@code read()} methods (Java
+     * 17.0.1, Mockito 4.0.0).
      */
     private static class CloseAwareInputStream extends FilterInputStream {
 

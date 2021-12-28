@@ -1,7 +1,14 @@
 package dev.mieser.tsa.signing.cert;
 
-import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
+import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.id_aa_signingCertificate;
+import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.id_aa_signingCertificateV2;
+import static org.bouncycastle.asn1.x509.X509ObjectIdentifiers.id_SHA1;
+
+import java.util.Collection;
+import java.util.Optional;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DLSequence;
@@ -16,27 +23,25 @@ import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Selector;
 
-import java.util.Collection;
-import java.util.Optional;
-
-import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.id_aa_signingCertificate;
-import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.id_aa_signingCertificateV2;
-import static org.bouncycastle.asn1.x509.X509ObjectIdentifiers.id_SHA1;
+import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 
 /**
- * Extracts the {@link X509CertificateHolder X.509 Certificate} whose corresponding private key was used to sign a TSP Response. As specified in
- * <a href="https://datatracker.ietf.org/doc/html/rfc3161.html">RFC 3161</a> (and <a href="https://datatracker.ietf.org/doc/html/rfc5816">RFC 5816</a>), the
- * public key certificate whose key was used to sign the response with is referenced in the {@code SigningCertificate}/{@code SigningCertificateV2} attribute.
+ * Extracts the {@link X509CertificateHolder X.509 Certificate} whose corresponding private key was used to sign a TSP
+ * Response. As specified in <a href="https://datatracker.ietf.org/doc/html/rfc3161.html">RFC 3161</a> (and
+ * <a href="https://datatracker.ietf.org/doc/html/rfc5816">RFC 5816</a>), the public key certificate whose key was used
+ * to sign the response with is referenced in the {@code SigningCertificate}/{@code SigningCertificateV2} attribute.
  */
 @Slf4j
 public class SigningCertificateExtractor {
 
     /**
-     * @param timeStampResponse The response to extract the signing certificate from, not {@code null}.
-     * @return The signing certificate in case certificates are included in the specified response or {@link Optional#empty()}, when no timestamp token
-     * is present or no certificates are included in the response.
-     * @throws InvalidTspResponseException When certificates are included in the response, but the signing certificate referenced in the {@code ESSCertID}/{@code ESSCertIDv2}
-     *                                     is not included.
+     * @param timeStampResponse
+     *     The response to extract the signing certificate from, not {@code null}.
+     * @return The signing certificate in case certificates are included in the specified response or
+     * {@link Optional#empty()}, when no timestamp token is present or no certificates are included in the response.
+     * @throws InvalidTspResponseException
+     *     When certificates are included in the response, but the signing certificate referenced in the
+     *     {@code ESSCertID}/{@code ESSCertIDv2} is not included.
      */
     public Optional<X509CertificateHolder> extractSigningCertificate(TimeStampResponse timeStampResponse) {
         TimeStampToken timeStampToken = timeStampResponse.getTimeStampToken();
@@ -46,19 +51,22 @@ public class SigningCertificateExtractor {
         }
 
         SigningCertificateIdentifier signingCertificateIdentifier = essCertIdHash(timeStampToken);
-        Selector<X509CertificateHolder> signingCertificateSelector =
-                new HashBasedCertificateSelector(signingCertificateIdentifier.algorithmIdentifier, signingCertificateIdentifier.hash);
+        Selector<X509CertificateHolder> signingCertificateSelector = new HashBasedCertificateSelector(
+            signingCertificateIdentifier.algorithmIdentifier, signingCertificateIdentifier.hash);
 
-        Collection<X509CertificateHolder> matchingCertificates = timeStampToken.getCertificates().getMatches(signingCertificateSelector);
+        Collection<X509CertificateHolder> matchingCertificates = timeStampToken.getCertificates()
+            .getMatches(signingCertificateSelector);
         if (matchingCertificates.isEmpty()) {
-            throw new InvalidTspResponseException("The signing certificate is not contained in the response, thus violating RFC 3161 / RFC 5816.");
+            throw new InvalidTspResponseException(
+                "The signing certificate is not contained in the response, thus violating RFC 3161 / RFC 5816.");
         }
 
         return Optional.of(matchingCertificates.iterator().next());
     }
 
     /**
-     * @param timeStampToken The timestamp token to check.
+     * @param timeStampToken
+     *     The timestamp token to check.
      * @return {@code true}, iff the token is not {@code null} and contains certificates.
      */
     private boolean containsCertificates(TimeStampToken timeStampToken) {
@@ -66,14 +74,17 @@ public class SigningCertificateExtractor {
     }
 
     /**
-     * @param timeStampToken The Time Stamp Token to extract the algorithm identifier from, not {@code null}.
-     * @return The Object Identifier (OID) of the hash algorithm which was used to calculate the hash of the public key certificate with, which is included
-     * in the {@code ESSCertID}/{@code ESSCertIDv2} attribute.
-     * @throws InvalidTspResponseException When the TimeStamp Token violates RFC constraints.
+     * @param timeStampToken
+     *     The Time Stamp Token to extract the algorithm identifier from, not {@code null}.
+     * @return The Object Identifier (OID) of the hash algorithm which was used to calculate the hash of the public key
+     * certificate with, which is included in the {@code ESSCertID}/{@code ESSCertIDv2} attribute.
+     * @throws InvalidTspResponseException
+     *     When the TimeStamp Token violates RFC constraints.
      */
     private SigningCertificateIdentifier essCertIdHash(TimeStampToken timeStampToken) {
         if (hasSignedAttribute(timeStampToken, id_aa_signingCertificate)) {
-            log.debug("Signed 'SigningCertificate' attribute present in timestamp token. Using SHA-1 in accordance with RFC 2634.");
+            log.debug(
+                "Signed 'SigningCertificate' attribute present in timestamp token. Using SHA-1 in accordance with RFC 2634.");
             return essCertIdHashFromSigningCertificate(timeStampToken);
         } else if (hasSignedAttribute(timeStampToken, id_aa_signingCertificateV2)) {
             log.debug("Signed 'SigningCertificateV2' attribute present.");
@@ -81,11 +92,12 @@ public class SigningCertificateExtractor {
         }
 
         throw new InvalidTspResponseException(
-                "The timestamp token neither contains a signed 'SigningCertificate' nor a signed 'SigningCertificateV2' attribute.");
+            "The timestamp token neither contains a signed 'SigningCertificate' nor a signed 'SigningCertificateV2' attribute.");
     }
 
     /**
-     * @param timeStampToken The timestamp token to check, not {@code null}.
+     * @param timeStampToken
+     *     The timestamp token to check, not {@code null}.
      * @return {@code true}, iff the timestamp token has a signed attribute with the specified OID.
      */
     private boolean hasSignedAttribute(TimeStampToken timeStampToken, ASN1ObjectIdentifier attributeIdentifier) {
@@ -93,9 +105,11 @@ public class SigningCertificateExtractor {
     }
 
     /**
-     * @param timeStampToken The timestamp token which has a signed {@code SigningCertificate} (RFC 2634) attribute, not {@code null}.
+     * @param timeStampToken
+     *     The timestamp token which has a signed {@code SigningCertificate} (RFC 2634) attribute, not {@code null}.
      * @return A pair of the hash algorithm identifier and the hash of the signing certificate.
-     * @throws InvalidTspResponseException When the timestamp token contains multiple {@code ESSCertID} identifiers.
+     * @throws InvalidTspResponseException
+     *     When the timestamp token contains multiple {@code ESSCertID} identifiers.
      */
     private SigningCertificateIdentifier essCertIdHashFromSigningCertificate(TimeStampToken timeStampToken) {
         Attribute signingCertificateAttribute = timeStampToken.getSignedAttributes().get(id_aa_signingCertificate);
@@ -110,9 +124,11 @@ public class SigningCertificateExtractor {
     }
 
     /**
-     * @param timeStampToken The timestamp token which has a signed {@code SigningCertificateV2} (RFC 5035) attribute, not {@code null}.
+     * @param timeStampToken
+     *     The timestamp token which has a signed {@code SigningCertificateV2} (RFC 5035) attribute, not {@code null}.
      * @return A pair of the hash algorithm identifier and the hash of the signing certificate.
-     * @throws InvalidTspResponseException When the timestamp token contains multiple {@code ESSCertIDv2} identifiers.
+     * @throws InvalidTspResponseException
+     *     When the timestamp token contains multiple {@code ESSCertIDv2} identifiers.
      */
     private SigningCertificateIdentifier essCertIdHashFromSigningCertificateV2(TimeStampToken timeStampToken) {
         Attribute signingCertificateAttribute = timeStampToken.getSignedAttributes().get(id_aa_signingCertificateV2);
@@ -133,8 +149,10 @@ public class SigningCertificateExtractor {
     /**
      * Encapsulates the required information to identify the signing certificate.
      *
-     * @param algorithmIdentifier The hash algorithm identifier, not {@code null}.
-     * @param hash                The hash value of the signing certificate, not {@code null}.
+     * @param algorithmIdentifier
+     *     The hash algorithm identifier, not {@code null}.
+     * @param hash
+     *     The hash value of the signing certificate, not {@code null}.
      */
     private record SigningCertificateIdentifier(AlgorithmIdentifier algorithmIdentifier, byte[] hash) {
 

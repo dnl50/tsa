@@ -1,15 +1,16 @@
 package dev.mieser.tsa.web.dto.datatable;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
 /**
- * DTO encapsulating sorting information which is part of a <a href="https://datatables.net">Datatables</a> AJAX request.
+ * DTO encapsulating sorting information which is part of a <a href="https://datatables.net">Datatables</a> AJAX
+ * request.
  *
  * @see DatatablesPagingRequest
  */

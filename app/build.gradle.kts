@@ -2,6 +2,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     `java-convention`
+    `spotless-config`
     id("org.springframework.boot") version "2.6.2"
 }
 

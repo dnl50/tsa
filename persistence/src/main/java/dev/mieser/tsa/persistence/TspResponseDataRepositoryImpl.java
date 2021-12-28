@@ -1,14 +1,16 @@
 package dev.mieser.tsa.persistence;
 
+import java.util.Optional;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import dev.mieser.tsa.domain.TimestampResponseData;
 import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
 import dev.mieser.tsa.persistence.entity.TspResponseEntity;
 import dev.mieser.tsa.persistence.mapper.TspResponseMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.util.Optional;
 
 /**
  * {@link TspResponseDataRepository} using a Spring Data JPA Repository to persist the data.

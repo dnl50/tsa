@@ -1,8 +1,12 @@
 package dev.mieser.tsa.persistence;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
-import dev.mieser.tsa.persistence.entity.TspResponseEntity;
-import dev.mieser.tsa.persistence.mapper.TspResponseMapper;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willReturn;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -10,12 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willReturn;
+import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.persistence.entity.TspResponseEntity;
+import dev.mieser.tsa.persistence.mapper.TspResponseMapper;
 
 @ExtendWith(MockitoExtension.class)
 class TspResponseDataRepositoryImplTest {
@@ -26,7 +27,8 @@ class TspResponseDataRepositoryImplTest {
 
     private final TspResponseDataRepositoryImpl testSubject;
 
-    TspResponseDataRepositoryImplTest(@Mock TspResponseMapper tspResponseMapperMock, @Mock TspResponseEntityRepository repositoryMock) {
+    TspResponseDataRepositoryImplTest(@Mock TspResponseMapper tspResponseMapperMock,
+        @Mock TspResponseEntityRepository repositoryMock) {
         this.tspResponseMapperMock = tspResponseMapperMock;
         this.repositoryMock = repositoryMock;
 
@@ -84,7 +86,8 @@ class TspResponseDataRepositoryImplTest {
     }
 
     @Test
-    void findAllReturnsPagedResponses(@Mock Page<TspResponseEntity> entityPageMock, @Mock Page<TimestampResponseData> domainPageMock) {
+    void findAllReturnsPagedResponses(@Mock Page<TspResponseEntity> entityPageMock,
+        @Mock Page<TimestampResponseData> domainPageMock) {
         // given
         PageRequest pageRequest = PageRequest.of(1, 10);
 
