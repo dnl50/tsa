@@ -19,7 +19,6 @@ import org.bouncycastle.util.Selector;
 import java.util.Collection;
 import java.util.Optional;
 
-import static org.bouncycastle.asn1.nist.NISTObjectIdentifiers.id_sha256;
 import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.id_aa_signingCertificate;
 import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.id_aa_signingCertificateV2;
 import static org.bouncycastle.asn1.x509.X509ObjectIdentifiers.id_SHA1;
@@ -127,10 +126,6 @@ public class SigningCertificateExtractor {
 
         AlgorithmIdentifier hashAlgorithm = certificateIdentifiers[0].getHashAlgorithm();
         byte[] hash = certificateIdentifiers[0].getCertHash();
-        if (hashAlgorithm == null) {
-            log.debug("No hash algorithm in ESSCertIDv2 identifier present. Using SHA-256 in accordance with RFC 5035.");
-            return new SigningCertificateIdentifier(new AlgorithmIdentifier(id_sha256), hash);
-        }
 
         return new SigningCertificateIdentifier(hashAlgorithm, hash);
     }
