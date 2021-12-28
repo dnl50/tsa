@@ -16,7 +16,7 @@ public class TimeStampResponseDto {
     /**
      * The Base64 encoding of an ASN.1 DER encoded TSP response.
      */
-    @NotEmpty
+    @NotEmpty(message = "{dev.mieser.tsa.web.dto.TimeStampResponseDto.notEmpty}")
     @Base64Encoded
     private String base64EncodedResponse;
 
