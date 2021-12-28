@@ -56,7 +56,7 @@ public class HashBasedCertificateSelector implements Selector<X509CertificateHol
     }
 
     @Override
-    public Object clone() {
+    public HashBasedCertificateSelector clone() {
         return new HashBasedCertificateSelector(algorithmIdentifier, copyOf(hash, hash.length));
     }
 

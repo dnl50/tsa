@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.bouncycastle.asn1.nist.NISTObjectIdentifiers.id_sha256;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -123,6 +124,21 @@ class HashBasedCertificateSelectorTest {
 
         // then
         assertThat(matches).isFalse();
+    }
+
+    @Test
+    void cloneReturnsNewInstance() {
+        // given
+        var testSubject = new HashBasedCertificateSelector(SHA256_IDENTIFIER, "sha256 of cert".getBytes(UTF_8), digestCalculatorProviderMock);
+
+        // when
+        HashBasedCertificateSelector clonedSelector = testSubject.clone();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(clonedSelector).isNotNull();
+            softly.assertThat(clonedSelector).isNotSameAs(testSubject);
+        });
     }
 
 }
