@@ -20,7 +20,7 @@ dependencies {
     integrationTestImplementation("org.bouncycastle:bcpkix-jdk15on:1.70")
     integrationTestImplementation("com.fasterxml.jackson.core:jackson-databind")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:2.6.2")
 }
 
 tasks.getByName<BootRun>("bootRun") {
