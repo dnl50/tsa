@@ -24,7 +24,7 @@ import dev.mieser.tsa.domain.HashAlgorithm;
 public class TsaProperties {
 
     /**
-     * The hash algorithm which is used to calculate the TSA's certificate identifier ({@code ESSCertID}).
+     * The hash algorithm which is used to calculate the TSA's certificate identifier ({@code ESSCertIDv2}).
      * <p/>
      * {@link HashAlgorithm#SHA256} is used by default. Cannot be {@code null}.
      */
