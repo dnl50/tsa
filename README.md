@@ -30,7 +30,16 @@ _TODO_
 
 ## Configuration
 
-_TODO_
+All Parameters must be prefixed with `tsa.`.
+
+| Parameter Name           | Mandatory | Default Value        | Description                                                                                                                                                                                                               |
+|--------------------------|-----------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ess-cert-id-algorithm    | No        | SHA256               | The hash algorithm which is used to calculate the TSA's certificate identifier (ESSCertIDv2).                                                                                                                             |
+| signing-digest-algorithm | No        | SHA256               | The hash algorithm which is used to calculate the TSP requests digest, which will be signed by the TSA.                                                                                                                   |
+| accepted-hash-algorithms | No        | SHA1, SHA256, SHA512 | Comma-separated list of hash algorithms which are accepted by the Time Stamp Authority.                                                                                                                                   |
+| policy-oid               | No        | 1.2                  | The OID of the policy under which the TSP responses are produced.                                                                                                                                                         |
+| certificate.path         | Yes       |                      | The path to load the PKCS#12 archive containing the certificate and private key used to sign TSP requests. Prefixing  the path with "classpath:" will result in the PKCS#12 archive from being loaded from the classpath. |
+| certificate.password     | No        |                      | The password of the PKCS#12 archive.                                                                                                                                                                                      |
 
 ## Issuing a signing certificate
 
@@ -39,8 +48,8 @@ an [Extended Key Usage](https://datatracker.ietf.org/doc/html/rfc5280#section-4.
 The only `KeyPurposeId` present in the sequence must be `id-kp-timeStamping` (OID `1.3.6.1.5.5.7.3.8`).
 
 The following parameter can be added to the OpenSSL x509 utility to add the required critical _Extended Key Usage_
-extension:
+extension when creating a self-signed certificate:
 
 ```bash
-openssl x509 ... -extensions extendedKeyUsage=critical,timeStamping
+openssl x509 ... -addext extendedKeyUsage=critical,timeStamping
 ```

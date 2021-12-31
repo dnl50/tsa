@@ -4,3 +4,6 @@ spring:
   h2:
     console:
       enabled: true
+tsa:
+  certificate:
+    path: "classpath:dev/mieser/tsa/app/rsa.p12"
