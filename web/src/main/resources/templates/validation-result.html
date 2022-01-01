@@ -91,6 +91,25 @@
                 </td>
             </tr>
 
+            <tr th:if="${validationResult.signingCertificateIdentifier}">
+                <th scope="row" class="w-25" th:text="#{validate.result.cert-hash-algorithm-oid}">OID</th>
+                <td>
+                    <a th:href="'http://oid-info.com/get/' + ${validationResult.signingCertificateIdentifier.hashAlgorithmOid}"
+                       th:text="${validationResult.signingCertificateIdentifier.hashAlgorithmOid}">1.2.3.4.5</a>
+                </td>
+            </tr>
+
+            <tr th:if="${validationResult.signingCertificateIdentifier}">
+                <th scope="row" class="w-25">
+                    <span th:text="#{validate.result.cert-hash}">Signing Cert Hash</span>
+                    <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right"
+                       th:title="#{validate.result.cert-hash.description}"></i>
+                </th>
+                <td>
+                    <span class="text-break font-monospace" th:text="${{validationResult.signingCertificateIdentifier.hash}}">HASH1234</span>
+                </td>
+            </tr>
+
             <tr th:if="${validationResult.signingCertificateInformation}">
                 <th scope="row" class="w-25" th:text="#{validate.result.certificate-issuer}">Issuer</th>
                 <td th:text="${validationResult.signingCertificateInformation.issuer}">123456789</td>

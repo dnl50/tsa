@@ -30,10 +30,7 @@ import dev.mieser.tsa.signing.api.TimeStampValidator;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
-import dev.mieser.tsa.signing.cert.PublicKeyAlgorithm;
-import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
-import dev.mieser.tsa.signing.cert.SigningCertificateExtractor;
-import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
+import dev.mieser.tsa.signing.cert.*;
 import dev.mieser.tsa.signing.mapper.TimestampVerificationResultMapper;
 
 @Slf4j
@@ -68,7 +65,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
         TimeStampResponse timeStampResponse = tspParser.parseResponse(tspResponseInputStream);
 
         verifyHashAlgorithmIsKnown(timeStampResponse);
-        X509CertificateHolder signingCertificate = signingCertificateExtractor.extractSigningCertificate(timeStampResponse)
+        SigningCertificateHolder signingCertificate = signingCertificateExtractor.extractSigningCertificate(timeStampResponse)
             .orElse(null);
 
         return timestampVerificationResultMapper.map(timeStampResponse, signingCertificate,

@@ -53,9 +53,16 @@ public class TimestampValidationResult {
     private final byte[] hash;
 
     /**
-     * General information about the certificate which was used to
+     * The identifier of the signing certificate.
      * <p/>
-     * May be null when the certificate was not included in the response.
+     * May be null when the response does not contain a time stamp token.
+     */
+    private final SigningCertificateIdentifier signingCertificateIdentifier;
+
+    /**
+     * General information of the certificate which was used to sign the request.
+     * <p/>
+     * May be null when the signing certificate was not included in the response.
      */
     private final SigningCertificateInformation signingCertificateInformation;
 

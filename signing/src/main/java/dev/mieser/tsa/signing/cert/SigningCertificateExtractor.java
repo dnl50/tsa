@@ -38,39 +38,41 @@ public class SigningCertificateExtractor {
      * @param timeStampResponse
      *     The response to extract the signing certificate from, not {@code null}.
      * @return The signing certificate in case certificates are included in the specified response or
-     * {@link Optional#empty()}, when no timestamp token is present or no certificates are included in the response.
+     * {@link Optional#empty()}, when no timestamp token is present.
      * @throws InvalidTspResponseException
      *     When certificates are included in the response, but the signing certificate referenced in the
      *     {@code ESSCertID}/{@code ESSCertIDv2} is not included.
      */
-    public Optional<X509CertificateHolder> extractSigningCertificate(TimeStampResponse timeStampResponse) {
+    public Optional<SigningCertificateHolder> extractSigningCertificate(TimeStampResponse timeStampResponse) {
         TimeStampToken timeStampToken = timeStampResponse.getTimeStampToken();
-        if (!containsCertificates(timeStampToken)) {
-            log.debug("The timestamp token does not contain certificates.");
+        if (timeStampToken == null) {
+            log.debug("The response does not contain a time stamp token.");
             return Optional.empty();
         }
 
         SigningCertificateIdentifier signingCertificateIdentifier = essCertIdHash(timeStampToken);
         Selector<X509CertificateHolder> signingCertificateSelector = new HashBasedCertificateSelector(
-            signingCertificateIdentifier.algorithmIdentifier, signingCertificateIdentifier.hash);
+            signingCertificateIdentifier.algorithmIdentifier(), signingCertificateIdentifier.hash());
 
         Collection<X509CertificateHolder> matchingCertificates = timeStampToken.getCertificates()
             .getMatches(signingCertificateSelector);
-        if (matchingCertificates.isEmpty()) {
+        if (matchingCertificates.isEmpty() && containsCertificates(timeStampToken)) {
             throw new InvalidTspResponseException(
                 "The signing certificate is not contained in the response, thus violating RFC 3161 / RFC 5816.");
         }
 
-        return Optional.of(matchingCertificates.iterator().next());
+        X509CertificateHolder signingCertificate = matchingCertificates.isEmpty() ? null : matchingCertificates.iterator().next();
+        return Optional.of(new SigningCertificateHolder(signingCertificateIdentifier.algorithmIdentifier(),
+            signingCertificateIdentifier.hash(), signingCertificate));
     }
 
     /**
      * @param timeStampToken
      *     The timestamp token to check.
-     * @return {@code true}, iff the token is not {@code null} and contains certificates.
+     * @return {@code true}, iff the time stamp token contains certificates.
      */
     private boolean containsCertificates(TimeStampToken timeStampToken) {
-        return timeStampToken != null && !timeStampToken.getCertificates().getMatches(null).isEmpty();
+        return !timeStampToken.getCertificates().getMatches(null).isEmpty();
     }
 
     /**

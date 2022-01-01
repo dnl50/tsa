@@ -7,8 +7,10 @@ import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampTokenInfo;
 
 import dev.mieser.tsa.datetime.api.DateConverter;
+import dev.mieser.tsa.domain.SigningCertificateIdentifier;
 import dev.mieser.tsa.domain.SigningCertificateInformation;
 import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.signing.cert.SigningCertificateHolder;
 
 /**
  * Maps Bouncy Castle-specific TSP response objects to domain objects.
@@ -21,13 +23,13 @@ public class TimestampVerificationResultMapper extends AbstractTspMapper {
     /**
      * @param timeStampResponse
      *     The time stamp response to map, not {@code null}.
-     * @param signingCertificate
-     *     The signing certificate included in the time stamp response, can be null.
+     * @param signingCertificateHolder
+     *     The signing certificate referenced in the time stamp response, can be null.
      * @param signedByThisTsa
      *     A flag whether the time stamp response was signed by the certificate currently in use by this TSA.
      * @return The mapped result.
      */
-    public TimestampValidationResult map(TimeStampResponse timeStampResponse, X509CertificateHolder signingCertificate,
+    public TimestampValidationResult map(TimeStampResponse timeStampResponse, SigningCertificateHolder signingCertificateHolder,
         boolean signedByThisTsa) {
         TimeStampTokenInfo timeStampInfo = timeStampResponse.getTimeStampToken() != null
             ? timeStampResponse.getTimeStampToken().getTimeStampInfo()
@@ -42,12 +44,25 @@ public class TimestampVerificationResultMapper extends AbstractTspMapper {
             .nonce(mapIfNotNull(timeStampInfo, TimeStampTokenInfo::getNonce))
             .hashAlgorithm(mapIfNotNull(timeStampInfo, info -> mapToHashAlgorithm(info.getMessageImprintAlgOID())))
             .hash(mapIfNotNull(timeStampInfo, TimeStampTokenInfo::getMessageImprintDigest))
-            .signingCertificateInformation(mapIfNotNull(signingCertificate, this::mapCertificateInformation))
+            .signingCertificateIdentifier(mapIfNotNull(signingCertificateHolder, this::mapCertificateIdentifier))
+            .signingCertificateInformation(mapIfNotNull(signingCertificateHolder, this::mapCertificateInformation))
             .signedByThisTsa(signedByThisTsa)
             .build();
     }
 
-    private SigningCertificateInformation mapCertificateInformation(X509CertificateHolder signingCertificate) {
+    private SigningCertificateIdentifier mapCertificateIdentifier(SigningCertificateHolder signingCertificateHolder) {
+        return SigningCertificateIdentifier.builder()
+            .hashAlgorithmOid(signingCertificateHolder.getAlgorithmIdentifier().getAlgorithm().getId())
+            .hash(signingCertificateHolder.getHash())
+            .build();
+    }
+
+    private SigningCertificateInformation mapCertificateInformation(SigningCertificateHolder signingCertificateHolder) {
+        X509CertificateHolder signingCertificate = signingCertificateHolder.getSigningCertificate();
+        if (signingCertificate == null) {
+            return null;
+        }
+
         return SigningCertificateInformation.builder()
             .serialNumber(signingCertificate.getSerialNumber())
             .expirationDate(dateConverter.toZonedDateTime(signingCertificate.getNotAfter()))

@@ -8,6 +8,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.bouncycastle.asn1.nist.NISTObjectIdentifiers.id_sha256;
 import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.id_aa_signingCertificate;
 import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.id_aa_signingCertificateV2;
 import static org.bouncycastle.asn1.x509.X509ObjectIdentifiers.id_SHA1;
@@ -50,33 +51,15 @@ class SigningCertificateExtractorTest {
     void extractSigningCertificateReturnsEmptyOptionalWhenNoTimeStampTokenIsIncluded(
         @Mock TimeStampResponse timeStampResponseMock) {
         // given / when
-        Optional<X509CertificateHolder> signingCertificate = testSubject.extractSigningCertificate(timeStampResponseMock);
+        Optional<SigningCertificateHolder> signingCertificateHolder = testSubject
+            .extractSigningCertificate(timeStampResponseMock);
 
         // then
-        assertThat(signingCertificate).isEmpty();
+        assertThat(signingCertificateHolder).isEmpty();
     }
 
     @Test
-    void extractSigningCertificateReturnsEmptyOptionalWhenNoCertificatesAreIncluded() {
-        // given
-        ResponseProperties responseProperties = ResponseProperties.builder()
-            .status(GRANTED)
-            .genTime(new Date())
-            .hashAlgorithm(SHA256)
-            .hash(repeat("b", 32).getBytes(UTF_8))
-            .build();
-
-        TimeStampResponse timeStampResponseMock = generateTimeStampResponseMock(responseProperties);
-
-        // when
-        Optional<X509CertificateHolder> signingCertificate = testSubject.extractSigningCertificate(timeStampResponseMock);
-
-        // then
-        assertThat(signingCertificate).isEmpty();
-    }
-
-    @Test
-    void extractSigningInformationThrowsExceptionWhenCertificatesAreIncludedButNoSignedCertAttributeIsPresent() {
+    void extractSigningInformationThrowsExceptionWhenNoSignedCertAttributeIsPresent() {
         // given
         ResponseProperties responseProperties = ResponseProperties.builder()
             .status(GRANTED)
@@ -155,6 +138,39 @@ class SigningCertificateExtractorTest {
         }
 
         @Test
+        void returnsSigningCertificateIdentifierWithoutCertificateWhenNoCertificatesArePresent() {
+            // given
+            byte[] certificateHash = "hash".getBytes(UTF_8);
+
+            SigningCertificate signingCertificate = new SigningCertificate(new ESSCertID(certificateHash));
+            var signingCertificateAttribute = new Attribute(id_aa_signingCertificate,
+                new DLSet(signingCertificate.toASN1Primitive()));
+
+            AttributeTable signedAttributeTable = new AttributeTable(new Hashtable<>(Map.of(
+                id_aa_signingCertificate, signingCertificateAttribute)));
+
+            ResponseProperties responseProperties = ResponseProperties.builder()
+                .status(GRANTED)
+                .genTime(new Date())
+                .hashAlgorithm(SHA256)
+                .hash(repeat("b", 32).getBytes(UTF_8))
+                .signedAttributes(signedAttributeTable)
+                .build();
+
+            TimeStampResponse timeStampResponseMock = generateTimeStampResponseMock(responseProperties);
+
+            // when
+            Optional<SigningCertificateHolder> signingCertificateHolder = testSubject
+                .extractSigningCertificate(timeStampResponseMock);
+
+            // then
+            SigningCertificateHolder expectedCertificateHolder = new SigningCertificateHolder(new AlgorithmIdentifier(id_SHA1),
+                certificateHash, null);
+
+            assertThat(signingCertificateHolder).contains(expectedCertificateHolder);
+        }
+
+        @Test
         void returnsSigningCertificateWhenPresent() throws Exception {
             // given
             X509Certificate certificate = loadRsaCertificate();
@@ -180,11 +196,12 @@ class SigningCertificateExtractorTest {
             TimeStampResponse timeStampResponseMock = generateTimeStampResponseMock(responseProperties);
 
             // when
-            Optional<X509CertificateHolder> signingCertificateHolder = testSubject
+            Optional<SigningCertificateHolder> signingCertificateHolder = testSubject
                 .extractSigningCertificate(timeStampResponseMock);
 
             // then
-            X509CertificateHolder expectedCertificateHolder = new X509CertificateHolder(encodedCertificate);
+            SigningCertificateHolder expectedCertificateHolder = new SigningCertificateHolder(new AlgorithmIdentifier(id_SHA1),
+                sha1CertificateHash, new X509CertificateHolder(encodedCertificate));
 
             assertThat(signingCertificateHolder).contains(expectedCertificateHolder);
         }
@@ -251,6 +268,39 @@ class SigningCertificateExtractorTest {
         }
 
         @Test
+        void returnsSigningCertificateIdentifierWithoutCertificateWhenNoCertificatesArePresent() {
+            // given
+            byte[] certificateHash = "hash".getBytes(UTF_8);
+
+            SigningCertificateV2 signingCertificate = new SigningCertificateV2(new ESSCertIDv2(certificateHash));
+            var signingCertificateAttribute = new Attribute(id_aa_signingCertificateV2,
+                new DLSet(signingCertificate.toASN1Primitive()));
+
+            AttributeTable signedAttributeTable = new AttributeTable(new Hashtable<>(Map.of(
+                id_aa_signingCertificateV2, signingCertificateAttribute)));
+
+            ResponseProperties responseProperties = ResponseProperties.builder()
+                .status(GRANTED)
+                .genTime(new Date())
+                .hashAlgorithm(SHA256)
+                .hash(repeat("b", 32).getBytes(UTF_8))
+                .signedAttributes(signedAttributeTable)
+                .build();
+
+            TimeStampResponse timeStampResponseMock = generateTimeStampResponseMock(responseProperties);
+
+            // when
+            Optional<SigningCertificateHolder> signingCertificateHolder = testSubject
+                .extractSigningCertificate(timeStampResponseMock);
+
+            // then
+            SigningCertificateHolder expectedCertificateHolder = new SigningCertificateHolder(new AlgorithmIdentifier(id_sha256),
+                certificateHash, null);
+
+            assertThat(signingCertificateHolder).contains(expectedCertificateHolder);
+        }
+
+        @Test
         void returnsSigningCertificateWithMatchingSha256HashWhenHashAlgorithmNotSpecified() throws Exception {
             // given
             X509Certificate certificate = loadRsaCertificate();
@@ -276,11 +326,12 @@ class SigningCertificateExtractorTest {
             TimeStampResponse timeStampResponseMock = generateTimeStampResponseMock(responseProperties);
 
             // when
-            Optional<X509CertificateHolder> signingCertificateHolder = testSubject
+            Optional<SigningCertificateHolder> signingCertificateHolder = testSubject
                 .extractSigningCertificate(timeStampResponseMock);
 
             // then
-            X509CertificateHolder expectedCertificateHolder = new X509CertificateHolder(encodedCertificate);
+            SigningCertificateHolder expectedCertificateHolder = new SigningCertificateHolder(new AlgorithmIdentifier(id_sha256),
+                sha256CertificateHash, new X509CertificateHolder(encodedCertificate));
 
             assertThat(signingCertificateHolder).contains(expectedCertificateHolder);
         }
@@ -312,11 +363,12 @@ class SigningCertificateExtractorTest {
             TimeStampResponse timeStampResponseMock = generateTimeStampResponseMock(responseProperties);
 
             // when
-            Optional<X509CertificateHolder> signingCertificateHolder = testSubject
+            Optional<SigningCertificateHolder> signingCertificateHolder = testSubject
                 .extractSigningCertificate(timeStampResponseMock);
 
             // then
-            X509CertificateHolder expectedCertificateHolder = new X509CertificateHolder(encodedCertificate);
+            SigningCertificateHolder expectedCertificateHolder = new SigningCertificateHolder(new AlgorithmIdentifier(id_SHA1),
+                sha1CertificateHash, new X509CertificateHolder(encodedCertificate));
 
             assertThat(signingCertificateHolder).contains(expectedCertificateHolder);
         }

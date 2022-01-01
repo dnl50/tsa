@@ -15,7 +15,6 @@ import java.security.cert.X509Certificate;
 import java.util.Optional;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampResponse;
@@ -32,6 +31,7 @@ import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
 import dev.mieser.tsa.signing.cert.SigningCertificateExtractor;
+import dev.mieser.tsa.signing.cert.SigningCertificateHolder;
 import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
 import dev.mieser.tsa.signing.mapper.TimestampVerificationResultMapper;
 
@@ -145,13 +145,13 @@ class BouncyCastleTimeStampValidatorTest {
 
         @Test
         void validateResponseMarksResponseAsSignedByThisTsaWhenValidationSucceeds(@Mock TimeStampResponse timeStampResponseMock,
-            @Mock(answer = RETURNS_DEEP_STUBS) TimeStampToken timeStampTokenMock,
-            @Mock X509CertificateHolder signingCertificateMock) throws Exception {
+            @Mock(answer = RETURNS_DEEP_STUBS) TimeStampToken timeStampTokenMock) throws Exception {
             // given
             BouncyCastleTimeStampValidator testSubject = createInitializedTestSubject();
             InputStream responseStream = new ByteArrayInputStream("tsp response".getBytes(UTF_8));
             var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
             TimestampValidationResult validationResult = TimestampValidationResult.builder().build();
+            SigningCertificateHolder signingCertificateHolder = new SigningCertificateHolder(null, new byte[0], null);
 
             given(tspParserMock.parseResponse(responseStream)).willReturn(timeStampResponseMock);
             given(timeStampResponseMock.getTimeStampToken()).willReturn(timeStampTokenMock);
@@ -159,8 +159,8 @@ class BouncyCastleTimeStampValidatorTest {
             given(tspValidatorMock.isKnownHashAlgorithm(hashAlgorithmOid)).willReturn(true);
             willDoNothing().given(timeStampTokenMock).validate(notNull());
             given(signingCertificateExtractorMock.extractSigningCertificate(timeStampResponseMock))
-                .willReturn(Optional.of(signingCertificateMock));
-            given(timestampVerificationResultMapperMock.map(timeStampResponseMock, signingCertificateMock, true))
+                .willReturn(Optional.of(signingCertificateHolder));
+            given(timestampVerificationResultMapperMock.map(timeStampResponseMock, signingCertificateHolder, true))
                 .willReturn(validationResult);
 
             // when
