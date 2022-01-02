@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 plugins {
     `java-convention`
     `spotless-config`
-    id("org.springframework.boot") version "2.6.2"
+    alias(libs.plugins.spring.boot)
 }
 
 dependencies {
@@ -18,10 +18,10 @@ dependencies {
     integrationTestImplementation("org.apache.commons:commons-lang3")
     integrationTestImplementation("io.rest-assured:rest-assured")
     integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
-    integrationTestImplementation("org.bouncycastle:bcpkix-jdk15on:1.70")
+    integrationTestImplementation(libs.bouncycastle.bcpkix)
     integrationTestImplementation("com.fasterxml.jackson.core:jackson-databind")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools:2.6.2")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:${libs.versions.spring.boot.get()}")
 }
 
 tasks.getByName<BootRun>("bootRun") {

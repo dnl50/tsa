@@ -10,3 +10,5 @@ include(
         "persistence",
         "test-util"
 )
+
+enableFeaturePreview("VERSION_CATALOGS")

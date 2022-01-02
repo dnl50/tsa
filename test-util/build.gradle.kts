@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api(project(":domain"))
-    api("org.bouncycastle:bcpkix-jdk15on:1.70")
+    api(libs.bouncycastle.bcpkix)
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.mockito:mockito-core")
