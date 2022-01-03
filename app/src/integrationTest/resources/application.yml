@@ -3,6 +3,8 @@ tsa:
     path: "classpath:cert/rsa.p12"
   accepted-hash-algorithms:
     - SHA512
+  server:
+    port: 56760
 spring:
   jpa:
     hibernate:

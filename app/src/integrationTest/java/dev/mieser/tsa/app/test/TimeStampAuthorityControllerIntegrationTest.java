@@ -7,8 +7,7 @@ import static dev.mieser.tsa.domain.ResponseStatus.REJECTION;
 import static io.restassured.RestAssured.given;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.repeat;
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -20,8 +19,8 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.tsp.TimeStampResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 
 import io.restassured.RestAssured;
 
@@ -30,7 +29,7 @@ class TimeStampAuthorityControllerIntegrationTest {
 
     private final int serverPort;
 
-    TimeStampAuthorityControllerIntegrationTest(@LocalServerPort int serverPort) {
+    TimeStampAuthorityControllerIntegrationTest(@Value("${tsa.server.port}") int serverPort) {
         this.serverPort = serverPort;
     }
 
@@ -117,6 +116,30 @@ class TimeStampAuthorityControllerIntegrationTest {
             .post("/")
             .then()
             .statusCode(SC_BAD_REQUEST);
+    }
+
+    @Test
+    void doesNotAcceptRequestsWithWrongContentType() {
+        // given / when / then
+        given()
+            .contentType("text/plain")
+            .accept("application/timestamp-reply")
+            .when()
+            .post("/")
+            .then()
+            .statusCode(SC_UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    @Test
+    void doesNotAcceptRequestsWithWrongRequestMethod() {
+        // given / when / then
+        given()
+            .contentType("application/timestamp-query")
+            .accept("application/timestamp-reply")
+            .when()
+            .put("/")
+            .then()
+            .statusCode(SC_UNSUPPORTED_MEDIA_TYPE);
     }
 
 }

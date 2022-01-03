@@ -30,16 +30,16 @@ _TODO_
 
 ## Configuration
 
-All Parameters must be prefixed with `tsa.`.
-
-| Parameter Name           | Mandatory | Default Value        | Description                                                                                                                                                                                                               |
-|--------------------------|-----------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ess-cert-id-algorithm    | No        | SHA256               | The hash algorithm which is used to calculate the TSA's certificate identifier (ESSCertIDv2).                                                                                                                             |
-| signing-digest-algorithm | No        | SHA256               | The hash algorithm which is used to calculate the TSP requests digest, which will be signed by the TSA.                                                                                                                   |
-| accepted-hash-algorithms | No        | SHA1, SHA256, SHA512 | Comma-separated list of hash algorithms which are accepted by the Time Stamp Authority.                                                                                                                                   |
-| policy-oid               | No        | 1.2                  | The OID of the policy under which the TSP responses are produced.                                                                                                                                                         |
-| certificate.path         | Yes       |                      | The path to load the PKCS#12 archive containing the certificate and private key used to sign TSP requests. Prefixing  the path with "classpath:" will result in the PKCS#12 archive from being loaded from the classpath. |
-| certificate.password     | No        |                      | The password of the PKCS#12 archive.                                                                                                                                                                                      |
+| Parameter Name               | Mandatory | Default Value        | Description                                                                                                                                                                                                               |
+|------------------------------|-----------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| tsa.ess-cert-id-algorithm    | No        | SHA256               | The hash algorithm which is used to calculate the TSA's certificate identifier (ESSCertIDv2).                                                                                                                             |
+| tsa.signing-digest-algorithm | No        | SHA256               | The hash algorithm which is used to calculate the TSP requests digest, which will be signed by the TSA.                                                                                                                   |
+| tsa.accepted-hash-algorithms | No        | SHA1, SHA256, SHA512 | Comma-separated list of hash algorithms which are accepted by the Time Stamp Authority.                                                                                                                                   |
+| tsa.policy-oid               | No        | 1.2                  | The OID of the policy under which the TSP responses are produced.                                                                                                                                                         |
+| tsa.certificate.path         | Yes       |                      | The path to load the PKCS#12 archive containing the certificate and private key used to sign TSP requests. Prefixing  the path with "classpath:" will result in the PKCS#12 archive from being loaded from the classpath. |
+| tsa.certificate.password     | No        |                      | The password of the PKCS#12 archive.                                                                                                                                                                                      |
+| tsa.server.port              | No        | 318                  | The TCP port under which Time Stamp Protocol Query Requests will be answered.                                                                                                                                             |
+| server.port                  | No        | 8080                 | The TCP port under which HTML requests will be answered.                                                                                                                                                                  |
 
 ## Issuing a signing certificate
 

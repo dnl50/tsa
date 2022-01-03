@@ -1,4 +1,6 @@
 module tsa.web {
+    requires spring.boot;
+
     requires spring.context;
 
     requires spring.web;
@@ -11,6 +13,8 @@ module tsa.web {
 
     requires spring.boot.autoconfigure;
 
+    requires org.apache.tomcat.catalina;
+
     requires org.slf4j;
 
     requires java.servlet;
@@ -18,6 +22,8 @@ module tsa.web {
     requires java.validation;
 
     requires org.apache.commons.codec;
+
+    requires org.apache.commons.lang3;
 
     requires com.fasterxml.jackson.databind;
 
