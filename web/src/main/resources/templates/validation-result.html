@@ -41,7 +41,7 @@
                     <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right"
                        th:title="#{validate.result.serial.description}"></i>
                 </th>
-                <td th:text="${validationResult.serialNumber}">123456789</td>
+                <td th:text="${{validationResult.serialNumber}}">F312</td>
             </tr>
 
 
@@ -121,7 +121,7 @@
 
             <tr th:if="${validationResult.signingCertificateInformation}">
                 <th scope="row" class="w-25" th:text="#{validate.result.certificate-serial}">Serial</th>
-                <td th:text="${validationResult.signingCertificateInformation.serialNumber}">123456789</td>
+                <td th:text="${{validationResult.signingCertificateInformation.serialNumber}}">A321F</td>
             </tr>
 
             <tr th:if="${validationResult.signingCertificateInformation}">

@@ -1,5 +1,6 @@
 package dev.mieser.tsa.domain;
 
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 
 import lombok.Builder;
@@ -45,7 +46,7 @@ public class TimestampResponseData {
     /**
      * A unique serial number assigned to the TSP response.
      */
-    private final Long serialNumber;
+    private final BigInteger serialNumber;
 
     /**
      * The request this response belongs to.

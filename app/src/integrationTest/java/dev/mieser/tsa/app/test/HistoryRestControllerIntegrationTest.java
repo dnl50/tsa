@@ -91,4 +91,27 @@ public class HistoryRestControllerIntegrationTest {
             .body("data.id", is(List.of(3)));
     }
 
+    @Test
+    void serialNumbersAreRepresentedAsUppercaseHexStrings() throws Exception {
+        // given
+        DatatablesPagingRequest pagingRequest = DatatablesPagingRequest.builder()
+            .length(1)
+            .columns(List.of(new Column("id", "id")))
+            .order(List.of(new Order(0, SortDirection.ASC)))
+            .build();
+
+        // when / then
+        given()
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+            .body(objectMapper.writeValueAsString(pagingRequest))
+            .when()
+            .post("/api/history")
+            .then()
+            .assertThat()
+            .statusCode(SC_OK)
+            .rootPath("data")
+            .body("serialNumber", is(List.of("A13")));
+    }
+
 }

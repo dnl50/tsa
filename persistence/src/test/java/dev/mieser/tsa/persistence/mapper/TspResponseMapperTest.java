@@ -66,7 +66,7 @@ class TspResponseMapperTest {
             .failureInfo(SYSTEM_FAILURE)
             .generationTime(generationTime)
             .receptionTime(generationTime)
-            .serialNumber(5749L)
+            .serialNumber(BigInteger.valueOf(5749L))
             .request(expectedRequestData)
             .asnEncoded("res".getBytes(UTF_8))
             .build();
@@ -94,7 +94,7 @@ class TspResponseMapperTest {
             .failureInfo(BAD_ALGORITHM)
             .generationTime(generationTime)
             .receptionTime(generationTime)
-            .serialNumber(5749L)
+            .serialNumber(BigInteger.valueOf(5749L))
             .request(requestData)
             .asnEncoded("res".getBytes(UTF_8))
             .build();

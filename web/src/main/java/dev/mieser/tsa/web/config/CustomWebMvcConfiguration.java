@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
 import dev.mieser.tsa.web.formatter.Base64Formatter;
+import dev.mieser.tsa.web.formatter.HexFormatter;
 
 @Configuration
 class CustomWebMvcConfiguration implements WebMvcConfigurer {
@@ -17,6 +18,7 @@ class CustomWebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addFormatter(new Base64Formatter());
+        registry.addFormatter(new HexFormatter());
     }
 
     @Bean

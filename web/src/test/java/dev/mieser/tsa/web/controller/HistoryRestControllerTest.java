@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,7 @@ class HistoryRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         TimestampResponseData timestampResponse = TimestampResponseData.builder()
-            .serialNumber(10L)
+            .serialNumber(BigInteger.valueOf(8L))
             .build();
         DatatablesPagingRequest pagingRequest = DatatablesPagingRequest.builder()
             .draw(12)
@@ -74,7 +75,7 @@ class HistoryRestControllerTest {
             .andExpect(jsonPath("$.recordsTotal").value("1337"))
             .andExpect(jsonPath("$.recordsFiltered").value("1337"))
             .andExpect(jsonPath("$.data.length()").value("1"))
-            .andExpect(jsonPath("$.data[0].serialNumber").value("10"));
+            .andExpect(jsonPath("$.data[0].serialNumber").value("8"));
     }
 
 }

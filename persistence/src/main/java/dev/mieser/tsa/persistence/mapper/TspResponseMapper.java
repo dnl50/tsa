@@ -60,4 +60,12 @@ public interface TspResponseMapper {
         return new BigInteger(hex, 16);
     }
 
+    default Long toLong(BigInteger value) {
+        return value == null ? null : value.longValue();
+    }
+
+    default BigInteger fromLong(Long value) {
+        return value == null ? null : BigInteger.valueOf(value);
+    }
+
 }

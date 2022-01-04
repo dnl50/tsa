@@ -6,7 +6,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.format.Formatter;
 
 /**
- * {@link Formatter} to encode/decode byte Arrays to/from Base64 Strings.
+ * {@link Formatter} to encode/decode byte arrays to/from Base64 Strings.
  */
 public class Base64Formatter implements Formatter<byte[]> {
 

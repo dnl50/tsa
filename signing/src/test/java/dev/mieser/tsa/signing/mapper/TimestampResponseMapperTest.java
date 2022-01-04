@@ -107,7 +107,7 @@ class TimestampResponseMapperTest {
         // given
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
         byte[] asnEncodedResponse = "TSP response".getBytes(UTF_8);
-        long responseSerialNumber = 1337L;
+        BigInteger responseSerialNumber = BigInteger.valueOf(1337L);
         ZonedDateTime genTime = ZonedDateTime.parse("2021-11-13T16:20:51+01:00");
         Date genTimeDate = Date.from(genTime.toInstant());
 
@@ -119,7 +119,7 @@ class TimestampResponseMapperTest {
 
         given(timeStampTokenMock.getTimeStampInfo()).willReturn(tokenInfoMock);
 
-        given(tokenInfoMock.getSerialNumber()).willReturn(BigInteger.valueOf(responseSerialNumber));
+        given(tokenInfoMock.getSerialNumber()).willReturn(responseSerialNumber);
         given(tokenInfoMock.getGenTime()).willReturn(genTimeDate);
 
         given(dateConverterMock.toZonedDateTime(genTimeDate)).willReturn(genTime);

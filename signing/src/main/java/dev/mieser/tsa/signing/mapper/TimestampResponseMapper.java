@@ -45,7 +45,7 @@ public class TimestampResponseMapper extends AbstractTspMapper {
             .failureInfo(mapIfNotNull(timeStampResponse.getFailInfo(), failInfo -> mapToFailureInfo(failInfo.intValue())))
             .serialNumber(
                 mapIfNotNull(timeStampResponse.getTimeStampToken(),
-                    timeStampToken -> timeStampToken.getTimeStampInfo().getSerialNumber().longValue()))
+                    timeStampToken -> timeStampToken.getTimeStampInfo().getSerialNumber()))
             .request(requestData)
             .receptionTime(dateConverter.toZonedDateTime(receptionTime))
             .generationTime(
