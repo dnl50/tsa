@@ -43,9 +43,9 @@ public class TimestampValidationResult {
     private final BigInteger nonce;
 
     /**
-     * The hash algorithm which was used.
+     * The Object Identifier (OID) of the hash algorithm which was used.
      */
-    private final HashAlgorithm hashAlgorithm;
+    private final String hashAlgorithmIdentifier;
 
     /**
      * The hash which was signed.

@@ -16,7 +16,7 @@ import dev.mieser.tsa.signing.cert.SigningCertificateHolder;
  * Maps Bouncy Castle-specific TSP response objects to domain objects.
  */
 @RequiredArgsConstructor
-public class TimestampVerificationResultMapper extends AbstractTspMapper {
+public class TimestampValidationResultMapper extends AbstractTspMapper {
 
     private final DateConverter dateConverter;
 
@@ -42,7 +42,7 @@ public class TimestampVerificationResultMapper extends AbstractTspMapper {
             .generationTime(mapIfNotNull(timeStampInfo, info -> dateConverter.toZonedDateTime(info.getGenTime())))
             .serialNumber(mapIfNotNull(timeStampInfo, TimeStampTokenInfo::getSerialNumber))
             .nonce(mapIfNotNull(timeStampInfo, TimeStampTokenInfo::getNonce))
-            .hashAlgorithm(mapIfNotNull(timeStampInfo, info -> mapToHashAlgorithm(info.getMessageImprintAlgOID())))
+            .hashAlgorithmIdentifier(mapIfNotNull(timeStampInfo, info -> info.getMessageImprintAlgOID().getId()))
             .hash(mapIfNotNull(timeStampInfo, TimeStampTokenInfo::getMessageImprintDigest))
             .signingCertificateIdentifier(mapIfNotNull(signingCertificateHolder, this::mapCertificateIdentifier))
             .signingCertificateInformation(mapIfNotNull(signingCertificateHolder, this::mapCertificateInformation))

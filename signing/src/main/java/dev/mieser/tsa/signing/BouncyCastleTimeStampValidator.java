@@ -31,7 +31,7 @@ import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.cert.*;
-import dev.mieser.tsa.signing.mapper.TimestampVerificationResultMapper;
+import dev.mieser.tsa.signing.mapper.TimestampValidationResultMapper;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
 
     private final PublicKeyAnalyzer publicKeyAnalyzer;
 
-    private final TimestampVerificationResultMapper timestampVerificationResultMapper;
+    private final TimestampValidationResultMapper timestampValidationResultMapper;
 
     private final TspValidator tspValidator;
 
@@ -68,7 +68,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
         SigningCertificateHolder signingCertificate = signingCertificateExtractor.extractSigningCertificate(timeStampResponse)
             .orElse(null);
 
-        return timestampVerificationResultMapper.map(timeStampResponse, signingCertificate,
+        return timestampValidationResultMapper.map(timeStampResponse, signingCertificate,
             wasSignedByThisTsa(timeStampResponse));
     }
 

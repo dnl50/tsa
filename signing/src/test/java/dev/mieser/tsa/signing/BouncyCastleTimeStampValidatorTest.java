@@ -33,7 +33,7 @@ import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
 import dev.mieser.tsa.signing.cert.SigningCertificateExtractor;
 import dev.mieser.tsa.signing.cert.SigningCertificateHolder;
 import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
-import dev.mieser.tsa.signing.mapper.TimestampVerificationResultMapper;
+import dev.mieser.tsa.signing.mapper.TimestampValidationResultMapper;
 
 @ExtendWith(MockitoExtension.class)
 class BouncyCastleTimeStampValidatorTest {
@@ -44,7 +44,7 @@ class BouncyCastleTimeStampValidatorTest {
 
     private final PublicKeyAnalyzer publicKeyAnalyzerMock;
 
-    private final TimestampVerificationResultMapper timestampVerificationResultMapperMock;
+    private final TimestampValidationResultMapper timestampValidationResultMapperMock;
 
     private final TspValidator tspValidatorMock;
 
@@ -52,12 +52,12 @@ class BouncyCastleTimeStampValidatorTest {
 
     BouncyCastleTimeStampValidatorTest(@Mock TspParser tspParserMock, @Mock SigningCertificateLoader signingCertificateLoaderMock,
         @Mock PublicKeyAnalyzer publicKeyAnalyzerMock,
-        @Mock TimestampVerificationResultMapper timestampVerificationResultMapperMock,
+        @Mock TimestampValidationResultMapper timestampValidationResultMapperMock,
         @Mock TspValidator tspValidatorMock, @Mock SigningCertificateExtractor signingCertificateExtractorMock) {
         this.tspParserMock = tspParserMock;
         this.signingCertificateLoaderMock = signingCertificateLoaderMock;
         this.publicKeyAnalyzerMock = publicKeyAnalyzerMock;
-        this.timestampVerificationResultMapperMock = timestampVerificationResultMapperMock;
+        this.timestampValidationResultMapperMock = timestampValidationResultMapperMock;
         this.signingCertificateExtractorMock = signingCertificateExtractorMock;
         this.tspValidatorMock = tspValidatorMock;
     }
@@ -134,7 +134,7 @@ class BouncyCastleTimeStampValidatorTest {
             given(tspValidatorMock.isKnownHashAlgorithm(hashAlgorithmOid)).willReturn(true);
             willThrow(new TSPException("Validation Error!!1!")).given(timeStampTokenMock).validate(notNull());
             given(signingCertificateExtractorMock.extractSigningCertificate(timeStampResponseMock)).willReturn(Optional.empty());
-            given(timestampVerificationResultMapperMock.map(timeStampResponseMock, null, false)).willReturn(validationResult);
+            given(timestampValidationResultMapperMock.map(timeStampResponseMock, null, false)).willReturn(validationResult);
 
             // when
             TimestampValidationResult actualVerificationResult = testSubject.validateResponse(responseStream);
@@ -160,7 +160,7 @@ class BouncyCastleTimeStampValidatorTest {
             willDoNothing().given(timeStampTokenMock).validate(notNull());
             given(signingCertificateExtractorMock.extractSigningCertificate(timeStampResponseMock))
                 .willReturn(Optional.of(signingCertificateHolder));
-            given(timestampVerificationResultMapperMock.map(timeStampResponseMock, signingCertificateHolder, true))
+            given(timestampValidationResultMapperMock.map(timeStampResponseMock, signingCertificateHolder, true))
                 .willReturn(validationResult);
 
             // when
@@ -185,7 +185,7 @@ class BouncyCastleTimeStampValidatorTest {
             testSubject.validateResponse(responseStream);
 
             // then
-            then(timestampVerificationResultMapperMock).should().map(timeStampResponseMock, null, false);
+            then(timestampValidationResultMapperMock).should().map(timeStampResponseMock, null, false);
         }
 
     }
@@ -239,7 +239,7 @@ class BouncyCastleTimeStampValidatorTest {
 
     private BouncyCastleTimeStampValidator createUninitializedTestSubject() {
         return new BouncyCastleTimeStampValidator(tspParserMock, signingCertificateLoaderMock, publicKeyAnalyzerMock,
-            timestampVerificationResultMapperMock,
+            timestampValidationResultMapperMock,
             tspValidatorMock, signingCertificateExtractorMock);
     }
 

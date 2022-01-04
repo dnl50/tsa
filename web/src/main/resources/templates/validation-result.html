@@ -44,9 +44,13 @@
                 <td th:text="${validationResult.serialNumber}">123456789</td>
             </tr>
 
-            <tr>
-                <th scope="row" class="w-25" th:text="#{validate.result.hash-algorithm}">Algorithm</th>
-                <td th:text="${validationResult.hashAlgorithm}">SHA512</td>
+
+            <tr th:if="${validationResult.hashAlgorithmIdentifier}">
+                <th scope="row" class="w-25" th:text="#{validate.result.hash-algorithm}">OID</th>
+                <td>
+                    <a th:href="'http://oid-info.com/get/' + ${validationResult.hashAlgorithmIdentifier}"
+                       th:text="${validationResult.hashAlgorithmIdentifier}">1.2.3.4.5</a>
+                </td>
             </tr>
 
             <tr>

@@ -33,15 +33,15 @@ import dev.mieser.tsa.signing.cert.SigningCertificateHolder;
 import dev.mieser.tsa.testutil.TimeStampResponseGenerator.ResponseProperties;
 
 @ExtendWith(MockitoExtension.class)
-class TimestampVerificationResultMapperTest {
+class TimestampValidationResultMapperTest {
 
     private final DateConverter dateConverterMock;
 
-    private final TimestampVerificationResultMapper testSubject;
+    private final TimestampValidationResultMapper testSubject;
 
-    TimestampVerificationResultMapperTest(@Mock DateConverter dateConverterMock) {
+    TimestampValidationResultMapperTest(@Mock DateConverter dateConverterMock) {
         this.dateConverterMock = dateConverterMock;
-        this.testSubject = new TimestampVerificationResultMapper(dateConverterMock);
+        this.testSubject = new TimestampValidationResultMapper(dateConverterMock);
     }
 
     @Test
@@ -117,7 +117,7 @@ class TimestampVerificationResultMapperTest {
             .status(GRANTED_WITH_MODS)
             .generationTime(genTime)
             .hash(sha512Hash)
-            .hashAlgorithm(SHA512)
+            .hashAlgorithmIdentifier(SHA512.getObjectIdentifier())
             .serialNumber(BigInteger.valueOf(1337L))
             .nonce(TWO)
             .signedByThisTsa(true)
