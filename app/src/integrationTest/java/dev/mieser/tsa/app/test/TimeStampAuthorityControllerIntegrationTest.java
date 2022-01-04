@@ -139,7 +139,7 @@ class TimeStampAuthorityControllerIntegrationTest {
             .when()
             .put("/")
             .then()
-            .statusCode(SC_UNSUPPORTED_MEDIA_TYPE);
+            .statusCode(SC_METHOD_NOT_ALLOWED);
     }
 
 }

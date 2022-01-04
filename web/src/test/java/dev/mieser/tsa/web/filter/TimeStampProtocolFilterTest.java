@@ -1,5 +1,7 @@
 package dev.mieser.tsa.web.filter;
 
+import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
+import static javax.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -11,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -25,7 +29,7 @@ class TimeStampProtocolFilterTest {
     void callsFilterChainWhenRequestIsNotSentToTspHandlerPort(@Mock ServletRequest requestMock,
         @Mock ServletResponse responseMock, @Mock FilterChain filterChainMock) throws Exception {
         // given
-        given(requestMock.getServerPort()).willReturn(12345);
+        given(requestMock.getServerPort()).willReturn(TSP_HANDLER_PORT + 1);
 
         // when
         testSubject.doFilter(requestMock, responseMock, filterChainMock);
@@ -35,12 +39,17 @@ class TimeStampProtocolFilterTest {
         then(responseMock).shouldHaveNoInteractions();
     }
 
-    @Test
-    void callsFilterChainWhenRequestIsSentToTspHandlerPortAndIsTspRequest(@Mock HttpServletRequest requestMock,
-        @Mock ServletResponse responseMock, @Mock FilterChain filterChainMock) throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "application/timestamp-query",
+        "application/timestamp-query; charset=UTF-8"
+    })
+    void callsFilterChainWhenPostRequestIsSentToTspHandlerPortAndIsTspRequest(String contentType,
+        @Mock HttpServletRequest requestMock, @Mock ServletResponse responseMock,
+        @Mock FilterChain filterChainMock) throws Exception {
         // given
         given(requestMock.getServerPort()).willReturn(TSP_HANDLER_PORT);
-        given(requestMock.getContentType()).willReturn("application/timestamp-query; charset=UTF-8");
+        given(requestMock.getContentType()).willReturn(contentType);
         given(requestMock.getMethod()).willReturn("POST");
 
         // when
@@ -52,24 +61,27 @@ class TimeStampProtocolFilterTest {
     }
 
     @Test
-    void setsStatusCodeWhenRequestHasNoContentType(@Mock HttpServletRequest requestMock,
+    void setsStatusCodeToUnsupportedMediaTypeWhenPostRequestHasBlankContentType(@Mock HttpServletRequest requestMock,
         @Mock HttpServletResponse responseMock, @Mock FilterChain filterChainMock) throws Exception {
         // given
         given(requestMock.getServerPort()).willReturn(TSP_HANDLER_PORT);
+        given(requestMock.getMethod()).willReturn("POST");
+        given(requestMock.getContentType()).willReturn("\t");
 
         // when
         testSubject.doFilter(requestMock, responseMock, filterChainMock);
 
         // then
         then(filterChainMock).shouldHaveNoInteractions();
-        then(responseMock).should().setStatus(415);
+        then(responseMock).should().setStatus(SC_UNSUPPORTED_MEDIA_TYPE);
     }
 
     @Test
-    void setsStatusCodeWhenRequestHasWrongContentType(@Mock HttpServletRequest requestMock,
+    void setsStatusCodeToUnsupportedMediaTypeWhenPostRequestHasWrongContentType(@Mock HttpServletRequest requestMock,
         @Mock HttpServletResponse responseMock, @Mock FilterChain filterChainMock) throws Exception {
         // given
         given(requestMock.getServerPort()).willReturn(TSP_HANDLER_PORT);
+        given(requestMock.getMethod()).willReturn("POST");
         given(requestMock.getContentType()).willReturn("text/html");
 
         // when
@@ -77,23 +89,27 @@ class TimeStampProtocolFilterTest {
 
         // then
         then(filterChainMock).shouldHaveNoInteractions();
-        then(responseMock).should().setStatus(415);
+        then(responseMock).should().setStatus(SC_UNSUPPORTED_MEDIA_TYPE);
     }
 
-    @Test
-    void setsStatusCodeWhenRequestIsNotAPostRequest(@Mock HttpServletRequest requestMock,
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "GET",
+        "PUT",
+        "DELETE"
+    })
+    void setsStatusCodeWhenRequestIsNotAPostRequest(String requestMethod, @Mock HttpServletRequest requestMock,
         @Mock HttpServletResponse responseMock, @Mock FilterChain filterChainMock) throws Exception {
         // given
         given(requestMock.getServerPort()).willReturn(TSP_HANDLER_PORT);
-        given(requestMock.getContentType()).willReturn("application/timestamp-query");
-        given(requestMock.getMethod()).willReturn("GET");
+        given(requestMock.getMethod()).willReturn(requestMethod);
 
         // when
         testSubject.doFilter(requestMock, responseMock, filterChainMock);
 
         // then
         then(filterChainMock).shouldHaveNoInteractions();
-        then(responseMock).should().setStatus(415);
+        then(responseMock).should().setStatus(SC_METHOD_NOT_ALLOWED);
     }
 
 }
