@@ -7,7 +7,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.bouncycastle.asn1.nist.NISTObjectIdentifiers.id_sha256;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.spy;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,7 +17,6 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -69,19 +67,24 @@ class HashBasedCertificateSelectorTest {
     }
 
     @Test
-    @Disabled("problems with spying output stream")
     void matchThrowsExceptionWhenDigestOutputStreamCannotBeClosed(@Mock DigestCalculator digestCalculatorMock,
         @Mock X509CertificateHolder certificateMock) throws Exception {
         // given
         var testSubject = new HashBasedCertificateSelector(SHA256_IDENTIFIER, new byte[0], digestCalculatorProviderMock);
         IOException thrownException = new IOException("error!!1!");
 
-        OutputStream outputStreamSpy = spy(new ByteArrayOutputStream());
+        OutputStream throwingOutputStream = new ByteArrayOutputStream() {
+
+            @Override
+            public void close() throws IOException {
+                throw thrownException;
+            }
+
+        };
 
         given(digestCalculatorProviderMock.get(SHA256_IDENTIFIER)).willReturn(digestCalculatorMock);
-        given(digestCalculatorMock.getOutputStream()).willReturn(outputStreamSpy);
+        given(digestCalculatorMock.getOutputStream()).willReturn(throwingOutputStream);
         given(certificateMock.getEncoded()).willReturn("cert".getBytes(UTF_8));
-        willThrow(thrownException).given(outputStreamSpy).close();
 
         // when / then
         assertThatIllegalStateException()
