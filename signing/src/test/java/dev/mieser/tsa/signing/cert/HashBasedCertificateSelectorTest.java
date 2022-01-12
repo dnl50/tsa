@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.bouncycastle.asn1.nist.NISTObjectIdentifiers.id_sha256;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
