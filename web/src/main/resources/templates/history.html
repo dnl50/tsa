@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head (#{history.page-title})"></head>
+
+<body class="bg-light">
+
+<div th:replace="fragments/navbar.html :: navbar"></div>
+
+<div id="hashValueModal" class="modal fade" tabindex="-1" aria-labelledby="hashValueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="hashValueModalLabel" class="modal-title" th:text="#{history.hash-modal.title}">Hash</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <span class="text-break font-monospace" id="hashValueModalContent">dynamically replaced by jQuery onClick Handler</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{history.hash-modal.close}">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col col-xxl-11 mx-auto">
+            <table id="history" class="table table-hover align-middle table-striped">
+                <thead>
+                <tr>
+                    <th th:text="#{history.column.serial}">Serial</th>
+                    <th th:text="#{history.column.algorithm}">Algorithm</th>
+                    <th th:text="#{history.column.status}">Status</th>
+                    <th th:text="#{history.column.status-string}">Status String</th>
+                    <th th:text="#{history.column.fail-info}">Failure Code</th>
+                    <th>
+                        <span th:text="#{history.column.reception-time}">Reception Time</span>
+                        <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                           th:title="#{history.column.reception-time.description}"></i>
+                    </th>
+                    <th th:text="#{history.column.hash}">Hash</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    $(document).ready(function () {
+        const historyTable = $('table#history').DataTable({
+            "searching": false,
+            "pageLength": 50,
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "[(@{/api/history})]",
+                "type": "POST",
+                "dataType": "json",
+                "contentType": "application/json",
+                "data": function (d) {
+                    return JSON.stringify(d);
+                }
+            },
+            "columns": [
+                {"data": "serialNumber"},
+                {"data": "request.hashAlgorithm"},
+                {"data": "status"},
+                {"data": "statusString"},
+                {"data": "failureInfo"},
+                {"data": "receptionTime"},
+                {
+                    "sortable": false,
+                    "data": null,
+                    "defaultContent": '<a href="#" class="link-info">[(#{history.hash-modal.show})]</a>'
+                }
+            ]
+        });
+
+        $('table#history tbody').on('click', 'a', function () {
+            const clickedRow = historyTable.row($(this).parents('tr'))
+            const base64Hash = clickedRow.data().request.hash
+
+            $('#hashValueModalContent').text(base64Hash)
+            $('#hashValueModal').modal('show');
+        });
+    });
+</script>
+
+<script th:replace="fragments/tooltip-initializer :: tooltip-initializer"></script>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head (#{error.title-prefix} + ' ' + ${status})"></head>
+<body class="bg-light">
+
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="container">
+    <div class="row">
+        <div class="col d-flex justify-content-center">
+            <i class="display-1 bi bi-emoji-dizzy"></i>
+            <span class="display-1 mx-3" th:text="${status}">500</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col d-flex justify-content-center">
+            <span class="display-6" th:text="${error}">Internal Server Error</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

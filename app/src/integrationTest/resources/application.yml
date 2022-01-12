@@ -1,0 +1,16 @@
+tsa:
+  certificate:
+    path: "classpath:cert/rsa.p12"
+  accepted-hash-algorithms:
+    - SHA512
+  server:
+    port: 56760
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: "jdbc:h2:mem:test"
+  sql:
+    init:
+      platform: h2
