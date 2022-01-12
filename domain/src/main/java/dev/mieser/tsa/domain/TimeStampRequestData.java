@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class TimestampRequestData {
+public class TimeStampRequestData {
 
     /**
      * The hash algorithm which was used.

@@ -5,14 +5,14 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 
 public interface TspResponseDataRepository {
 
-    TimestampResponseData save(TimestampResponseData response);
+    TimeStampResponseData save(TimeStampResponseData response);
 
-    Optional<TimestampResponseData> findById(Long id);
+    Optional<TimeStampResponseData> findById(Long id);
 
-    Page<TimestampResponseData> findAll(Pageable pageable);
+    Page<TimeStampResponseData> findAll(Pageable pageable);
 
 }

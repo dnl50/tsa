@@ -27,19 +27,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import dev.mieser.tsa.datetime.api.DateConverter;
 import dev.mieser.tsa.domain.ResponseStatus;
-import dev.mieser.tsa.domain.TimestampRequestData;
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampRequestData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 
 @ExtendWith(MockitoExtension.class)
-class TimestampResponseMapperTest {
+class TimeStampResponseMapperTest {
 
     private final DateConverter dateConverterMock;
 
-    private final TimestampResponseMapper testSubject;
+    private final TimeStampResponseMapper testSubject;
 
-    public TimestampResponseMapperTest(@Mock DateConverter dateConverterMock) {
+    public TimeStampResponseMapperTest(@Mock DateConverter dateConverterMock) {
         this.dateConverterMock = dateConverterMock;
-        this.testSubject = new TimestampResponseMapper(dateConverterMock);
+        this.testSubject = new TimeStampResponseMapper(dateConverterMock);
     }
 
     @Test
@@ -80,15 +80,15 @@ class TimestampResponseMapperTest {
         given(dateConverterMock.toZonedDateTime(receptionTimeAsDate)).willReturn(receptionTime);
 
         // when
-        TimestampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock,
+        TimeStampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock,
             receptionTimeAsDate);
 
         // then
-        TimestampRequestData expectedRequestData = TimestampRequestData.builder()
+        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder()
             .hashAlgorithm(SHA256)
             .build();
 
-        TimestampResponseData expectedResponseData = TimestampResponseData.builder()
+        TimeStampResponseData expectedResponseData = TimeStampResponseData.builder()
             .status(ResponseStatus.REJECTION)
             .failureInfo(BAD_ALGORITHM)
             .statusString(statusString)
@@ -125,14 +125,14 @@ class TimestampResponseMapperTest {
         given(dateConverterMock.toZonedDateTime(genTimeDate)).willReturn(genTime);
 
         // when
-        TimestampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock, genTimeDate);
+        TimeStampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock, genTimeDate);
 
         // then
-        TimestampRequestData expectedRequestData = TimestampRequestData.builder()
+        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder()
             .hashAlgorithm(SHA256)
             .build();
 
-        TimestampResponseData expectedResponseData = TimestampResponseData.builder()
+        TimeStampResponseData expectedResponseData = TimeStampResponseData.builder()
             .status(ResponseStatus.GRANTED)
             .serialNumber(responseSerialNumber)
             .generationTime(genTime)
@@ -165,11 +165,11 @@ class TimestampResponseMapperTest {
         given(dateConverterMock.toZonedDateTime(receptionTimeAsDate)).willReturn(receptionTime);
 
         // when
-        TimestampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock,
+        TimeStampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock,
             receptionTimeAsDate);
 
         // then
-        TimestampRequestData expectedRequestData = TimestampRequestData.builder()
+        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder()
             .nonce(nonce)
             .hashAlgorithm(SHA512)
             .tsaPolicyId(policyOid)
@@ -178,7 +178,7 @@ class TimestampResponseMapperTest {
             .asnEncoded(asnEncodedRequest)
             .build();
 
-        TimestampResponseData expectedResponseData = TimestampResponseData.builder()
+        TimeStampResponseData expectedResponseData = TimeStampResponseData.builder()
             .status(ResponseStatus.GRANTED)
             .request(expectedRequestData)
             .receptionTime(receptionTime)

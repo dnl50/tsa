@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class TimestampValidationResult {
+public class TimeStampValidationResult {
 
     /**
      * The status of the TSP response as defined in {@code PKIStatus}.

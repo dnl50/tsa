@@ -13,8 +13,8 @@ import org.mapstruct.factory.Mappers;
 
 import dev.mieser.tsa.domain.HashAlgorithm;
 import dev.mieser.tsa.domain.ResponseStatus;
-import dev.mieser.tsa.domain.TimestampRequestData;
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampRequestData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.persistence.entity.TspRequestEntity;
 import dev.mieser.tsa.persistence.entity.TspResponseEntity;
 
@@ -48,10 +48,10 @@ class TspResponseMapperTest {
             .build();
 
         // when
-        TimestampResponseData actualResponseData = testSubject.toDomain(responseEntity);
+        TimeStampResponseData actualResponseData = testSubject.toDomain(responseEntity);
 
         // then
-        TimestampRequestData expectedRequestData = TimestampRequestData.builder()
+        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder()
             .hashAlgorithm(HashAlgorithm.SHA256)
             .hash("hash".getBytes(UTF_8))
             .nonce(BigInteger.valueOf(4919L))
@@ -60,7 +60,7 @@ class TspResponseMapperTest {
             .asnEncoded("req".getBytes(UTF_8))
             .build();
 
-        TimestampResponseData expectedResponseData = TimestampResponseData.builder()
+        TimeStampResponseData expectedResponseData = TimeStampResponseData.builder()
             .status(ResponseStatus.REJECTION)
             .statusString("test")
             .failureInfo(SYSTEM_FAILURE)
@@ -79,7 +79,7 @@ class TspResponseMapperTest {
         // given
         ZonedDateTime generationTime = ZonedDateTime.parse("2021-11-13T19:09:27+01:00");
 
-        TimestampRequestData requestData = TimestampRequestData.builder()
+        TimeStampRequestData requestData = TimeStampRequestData.builder()
             .hashAlgorithm(HashAlgorithm.SHA512)
             .hash("hash".getBytes(UTF_8))
             .nonce(BigInteger.valueOf(4919L))
@@ -88,7 +88,7 @@ class TspResponseMapperTest {
             .asnEncoded("req".getBytes(UTF_8))
             .build();
 
-        TimestampResponseData responseData = TimestampResponseData.builder()
+        TimeStampResponseData responseData = TimeStampResponseData.builder()
             .status(ResponseStatus.REJECTION)
             .statusString("test")
             .failureInfo(BAD_ALGORITHM)

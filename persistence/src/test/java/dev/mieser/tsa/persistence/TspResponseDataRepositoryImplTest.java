@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.persistence.entity.TspResponseEntity;
 import dev.mieser.tsa.persistence.mapper.TspResponseMapper;
 
@@ -38,17 +38,17 @@ class TspResponseDataRepositoryImplTest {
     @Test
     void saveReturnsSavedEntity() {
         // given
-        TimestampResponseData dataToSave = TimestampResponseData.builder().build();
+        TimeStampResponseData dataToSave = TimeStampResponseData.builder().build();
         TspResponseEntity entityToSave = new TspResponseEntity();
         TspResponseEntity savedEntity = new TspResponseEntity();
-        TimestampResponseData savedData = TimestampResponseData.builder().build();
+        TimeStampResponseData savedData = TimeStampResponseData.builder().build();
 
         given(tspResponseMapperMock.fromDomain(dataToSave)).willReturn(entityToSave);
         given(repositoryMock.save(entityToSave)).willReturn(savedEntity);
         given(tspResponseMapperMock.toDomain(savedEntity)).willReturn(savedData);
 
         // when
-        TimestampResponseData actualSavedData = testSubject.save(dataToSave);
+        TimeStampResponseData actualSavedData = testSubject.save(dataToSave);
 
         // then
         assertThat(actualSavedData).isEqualTo(savedData);
@@ -62,7 +62,7 @@ class TspResponseDataRepositoryImplTest {
         given(repositoryMock.findById(id)).willReturn(Optional.empty());
 
         // when
-        Optional<TimestampResponseData> actualData = testSubject.findById(id);
+        Optional<TimeStampResponseData> actualData = testSubject.findById(id);
 
         // then
         assertThat(actualData).isEmpty();
@@ -73,13 +73,13 @@ class TspResponseDataRepositoryImplTest {
         // given
         long id = 421L;
         TspResponseEntity entity = new TspResponseEntity();
-        TimestampResponseData domain = TimestampResponseData.builder().build();
+        TimeStampResponseData domain = TimeStampResponseData.builder().build();
 
         given(repositoryMock.findById(id)).willReturn(Optional.of(entity));
         given(tspResponseMapperMock.toDomain(entity)).willReturn(domain);
 
         // when
-        Optional<TimestampResponseData> actualData = testSubject.findById(id);
+        Optional<TimeStampResponseData> actualData = testSubject.findById(id);
 
         // then
         assertThat(actualData).contains(domain);
@@ -87,7 +87,7 @@ class TspResponseDataRepositoryImplTest {
 
     @Test
     void findAllReturnsPagedResponses(@Mock Page<TspResponseEntity> entityPageMock,
-        @Mock Page<TimestampResponseData> domainPageMock) {
+        @Mock Page<TimeStampResponseData> domainPageMock) {
         // given
         PageRequest pageRequest = PageRequest.of(1, 10);
 
@@ -95,7 +95,7 @@ class TspResponseDataRepositoryImplTest {
         willReturn(domainPageMock).given(entityPageMock).map(notNull());
 
         // when
-        Page<TimestampResponseData> actualDomainPage = testSubject.findAll(pageRequest);
+        Page<TimeStampResponseData> actualDomainPage = testSubject.findAll(pageRequest);
 
         // then
         assertThat(actualDomainPage).isEqualTo(domainPageMock);

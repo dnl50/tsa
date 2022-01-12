@@ -31,7 +31,7 @@ import org.bouncycastle.util.Store;
 
 import dev.mieser.tsa.datetime.api.CurrentDateTimeService;
 import dev.mieser.tsa.domain.HashAlgorithm;
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.signing.api.TimeStampAuthority;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
@@ -41,7 +41,7 @@ import dev.mieser.tsa.signing.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
 import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
 import dev.mieser.tsa.signing.config.TsaProperties;
-import dev.mieser.tsa.signing.mapper.TimestampResponseMapper;
+import dev.mieser.tsa.signing.mapper.TimeStampResponseMapper;
 import dev.mieser.tsa.signing.serial.SerialNumberGenerator;
 
 /**
@@ -65,14 +65,14 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
 
     private final SerialNumberGenerator serialNumberGenerator;
 
-    private final TimestampResponseMapper timestampResponseMapper;
+    private final TimeStampResponseMapper timeStampResponseMapper;
 
     private final PublicKeyAnalyzer publicKeyAnalyzer;
 
     private TimeStampResponseGenerator timeStampResponseGenerator;
 
     @Override
-    public TimestampResponseData signRequest(InputStream tspRequestInputStream) {
+    public TimeStampResponseData signRequest(InputStream tspRequestInputStream) {
         verifyTsaIsInitialized();
 
         TimeStampRequest timeStampRequest = tspParser.parseRequest(tspRequestInputStream);
@@ -96,14 +96,14 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
         }
     }
 
-    private TimestampResponseData generateTspResponse(TimeStampRequest timeStampRequest) {
+    private TimeStampResponseData generateTspResponse(TimeStampRequest timeStampRequest) {
         try {
             BigInteger tspResponseSerial = BigInteger.valueOf(serialNumberGenerator.generateSerialNumber());
             Date receptionTime = currentDateTimeService.now();
             TimeStampResponse tspResponse = timeStampResponseGenerator.generate(timeStampRequest, tspResponseSerial,
                 receptionTime);
             log.info("Successfully signed TSP request. TSP request serial number: {}", tspResponseSerial);
-            return timestampResponseMapper.map(timeStampRequest, tspResponse, receptionTime);
+            return timeStampResponseMapper.map(timeStampRequest, tspResponse, receptionTime);
         } catch (TSPException tspException) {
             throw new TspResponseException("Could not sign TSP request.", tspException);
         }

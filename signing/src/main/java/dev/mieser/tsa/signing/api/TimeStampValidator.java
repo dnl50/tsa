@@ -2,7 +2,7 @@ package dev.mieser.tsa.signing.api;
 
 import java.io.InputStream;
 
-import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
@@ -32,6 +32,6 @@ public interface TimeStampValidator {
      * @throws InvalidTspResponseException
      *     When the specified input stream does not contain a valid ASN.1 DER encoded TSP response.
      */
-    TimestampValidationResult validateResponse(InputStream tspResponseInputStream);
+    TimeStampValidationResult validateResponse(InputStream tspResponseInputStream);
 
 }

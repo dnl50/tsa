@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class TimestampResponseData {
+public class TimeStampResponseData {
 
     /**
      * An arbitrary Identifier, may be {@code null}.
@@ -51,7 +51,7 @@ public class TimestampResponseData {
     /**
      * The request this response belongs to.
      */
-    private final TimestampRequestData request;
+    private final TimeStampRequestData request;
 
     /**
      * The ASN.1 encoded TSP response.

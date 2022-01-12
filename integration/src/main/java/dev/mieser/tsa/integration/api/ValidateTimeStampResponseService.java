@@ -1,6 +1,6 @@
 package dev.mieser.tsa.integration.api;
 
-import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.domain.TimeStampValidationResult;
 
 /**
  * @see dev.mieser.tsa.signing.api.TimeStampValidator
@@ -12,6 +12,6 @@ public interface ValidateTimeStampResponseService {
      *     The Base64 representation of an ASN.1 DER encoded TSP response, not empty.
      * @return The verification result.
      */
-    TimestampValidationResult validateTimeStampResponse(String base64EncodedResponse);
+    TimeStampValidationResult validateTimeStampResponse(String base64EncodedResponse);
 
 }

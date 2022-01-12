@@ -2,7 +2,7 @@ package dev.mieser.tsa.signing.api;
 
 import java.io.InputStream;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.signing.api.exception.*;
 
 /**
@@ -31,6 +31,6 @@ public interface TimeStampAuthority {
      * @throws TspResponseException
      *     When an error occurs while generating the signing TSP request.
      */
-    TimestampResponseData signRequest(InputStream tspRequestInputStream);
+    TimeStampResponseData signRequest(InputStream tspRequestInputStream);
 
 }

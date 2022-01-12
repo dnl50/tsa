@@ -25,13 +25,13 @@ import org.bouncycastle.operator.bc.BcRSAContentVerifierProviderBuilder;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampResponse;
 
-import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.cert.*;
-import dev.mieser.tsa.signing.mapper.TimestampValidationResultMapper;
+import dev.mieser.tsa.signing.mapper.TimeStampValidationResultMapper;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
 
     private final PublicKeyAnalyzer publicKeyAnalyzer;
 
-    private final TimestampValidationResultMapper timestampValidationResultMapper;
+    private final TimeStampValidationResultMapper timeStampValidationResultMapper;
 
     private final TspValidator tspValidator;
 
@@ -59,7 +59,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
     }
 
     @Override
-    public TimestampValidationResult validateResponse(InputStream tspResponseInputStream) {
+    public TimeStampValidationResult validateResponse(InputStream tspResponseInputStream) {
         verifyInitialized();
 
         TimeStampResponse timeStampResponse = tspParser.parseResponse(tspResponseInputStream);
@@ -68,7 +68,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
         SigningCertificateHolder signingCertificate = signingCertificateExtractor.extractSigningCertificate(timeStampResponse)
             .orElse(null);
 
-        return timestampValidationResultMapper.map(timeStampResponse, signingCertificate,
+        return timeStampValidationResultMapper.map(timeStampResponse, signingCertificate,
             wasSignedByThisTsa(timeStampResponse));
     }
 

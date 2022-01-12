@@ -6,7 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import lombok.RequiredArgsConstructor;
-import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.integration.api.ValidateTimeStampResponseService;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
 
@@ -16,7 +16,7 @@ public class ValidateTimeStampResponseServiceImpl implements ValidateTimeStampRe
     private final TimeStampValidator timeStampValidator;
 
     @Override
-    public TimestampValidationResult validateTimeStampResponse(String base64EncodedResponse) {
+    public TimeStampValidationResult validateTimeStampResponse(String base64EncodedResponse) {
         InputStream tspResponseStream = new ByteArrayInputStream(decodeBase64(base64EncodedResponse));
         return timeStampValidator.validateResponse(tspResponseStream);
     }

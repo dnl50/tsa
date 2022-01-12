@@ -26,14 +26,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
 import dev.mieser.tsa.signing.cert.SigningCertificateExtractor;
 import dev.mieser.tsa.signing.cert.SigningCertificateHolder;
 import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
-import dev.mieser.tsa.signing.mapper.TimestampValidationResultMapper;
+import dev.mieser.tsa.signing.mapper.TimeStampValidationResultMapper;
 
 @ExtendWith(MockitoExtension.class)
 class BouncyCastleTimeStampValidatorTest {
@@ -44,7 +44,7 @@ class BouncyCastleTimeStampValidatorTest {
 
     private final PublicKeyAnalyzer publicKeyAnalyzerMock;
 
-    private final TimestampValidationResultMapper timestampValidationResultMapperMock;
+    private final TimeStampValidationResultMapper timeStampValidationResultMapperMock;
 
     private final TspValidator tspValidatorMock;
 
@@ -52,12 +52,12 @@ class BouncyCastleTimeStampValidatorTest {
 
     BouncyCastleTimeStampValidatorTest(@Mock TspParser tspParserMock, @Mock SigningCertificateLoader signingCertificateLoaderMock,
         @Mock PublicKeyAnalyzer publicKeyAnalyzerMock,
-        @Mock TimestampValidationResultMapper timestampValidationResultMapperMock,
+        @Mock TimeStampValidationResultMapper timeStampValidationResultMapperMock,
         @Mock TspValidator tspValidatorMock, @Mock SigningCertificateExtractor signingCertificateExtractorMock) {
         this.tspParserMock = tspParserMock;
         this.signingCertificateLoaderMock = signingCertificateLoaderMock;
         this.publicKeyAnalyzerMock = publicKeyAnalyzerMock;
-        this.timestampValidationResultMapperMock = timestampValidationResultMapperMock;
+        this.timeStampValidationResultMapperMock = timeStampValidationResultMapperMock;
         this.signingCertificateExtractorMock = signingCertificateExtractorMock;
         this.tspValidatorMock = tspValidatorMock;
     }
@@ -126,7 +126,7 @@ class BouncyCastleTimeStampValidatorTest {
             BouncyCastleTimeStampValidator testSubject = createInitializedTestSubject();
             InputStream responseStream = new ByteArrayInputStream("tsp response".getBytes(UTF_8));
             var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
-            TimestampValidationResult validationResult = TimestampValidationResult.builder().build();
+            TimeStampValidationResult validationResult = TimeStampValidationResult.builder().build();
 
             given(tspParserMock.parseResponse(responseStream)).willReturn(timeStampResponseMock);
             given(timeStampResponseMock.getTimeStampToken()).willReturn(timeStampTokenMock);
@@ -134,10 +134,10 @@ class BouncyCastleTimeStampValidatorTest {
             given(tspValidatorMock.isKnownHashAlgorithm(hashAlgorithmOid)).willReturn(true);
             willThrow(new TSPException("Validation Error!!1!")).given(timeStampTokenMock).validate(notNull());
             given(signingCertificateExtractorMock.extractSigningCertificate(timeStampResponseMock)).willReturn(Optional.empty());
-            given(timestampValidationResultMapperMock.map(timeStampResponseMock, null, false)).willReturn(validationResult);
+            given(timeStampValidationResultMapperMock.map(timeStampResponseMock, null, false)).willReturn(validationResult);
 
             // when
-            TimestampValidationResult actualVerificationResult = testSubject.validateResponse(responseStream);
+            TimeStampValidationResult actualVerificationResult = testSubject.validateResponse(responseStream);
 
             // then
             assertThat(actualVerificationResult).isEqualTo(validationResult);
@@ -150,7 +150,7 @@ class BouncyCastleTimeStampValidatorTest {
             BouncyCastleTimeStampValidator testSubject = createInitializedTestSubject();
             InputStream responseStream = new ByteArrayInputStream("tsp response".getBytes(UTF_8));
             var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
-            TimestampValidationResult validationResult = TimestampValidationResult.builder().build();
+            TimeStampValidationResult validationResult = TimeStampValidationResult.builder().build();
             SigningCertificateHolder signingCertificateHolder = new SigningCertificateHolder(null, new byte[0], null);
 
             given(tspParserMock.parseResponse(responseStream)).willReturn(timeStampResponseMock);
@@ -160,11 +160,11 @@ class BouncyCastleTimeStampValidatorTest {
             willDoNothing().given(timeStampTokenMock).validate(notNull());
             given(signingCertificateExtractorMock.extractSigningCertificate(timeStampResponseMock))
                 .willReturn(Optional.of(signingCertificateHolder));
-            given(timestampValidationResultMapperMock.map(timeStampResponseMock, signingCertificateHolder, true))
+            given(timeStampValidationResultMapperMock.map(timeStampResponseMock, signingCertificateHolder, true))
                 .willReturn(validationResult);
 
             // when
-            TimestampValidationResult actualVerificationResult = testSubject.validateResponse(responseStream);
+            TimeStampValidationResult actualVerificationResult = testSubject.validateResponse(responseStream);
 
             // then
             assertThat(actualVerificationResult).isEqualTo(validationResult);
@@ -185,7 +185,7 @@ class BouncyCastleTimeStampValidatorTest {
             testSubject.validateResponse(responseStream);
 
             // then
-            then(timestampValidationResultMapperMock).should().map(timeStampResponseMock, null, false);
+            then(timeStampValidationResultMapperMock).should().map(timeStampResponseMock, null, false);
         }
 
     }
@@ -239,7 +239,7 @@ class BouncyCastleTimeStampValidatorTest {
 
     private BouncyCastleTimeStampValidator createUninitializedTestSubject() {
         return new BouncyCastleTimeStampValidator(tspParserMock, signingCertificateLoaderMock, publicKeyAnalyzerMock,
-            timestampValidationResultMapperMock,
+            timeStampValidationResultMapperMock,
             tspValidatorMock, signingCertificateExtractorMock);
     }
 

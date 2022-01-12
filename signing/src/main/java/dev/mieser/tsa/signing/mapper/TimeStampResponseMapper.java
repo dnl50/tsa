@@ -9,14 +9,14 @@ import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
 
 import dev.mieser.tsa.datetime.api.DateConverter;
-import dev.mieser.tsa.domain.TimestampRequestData;
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampRequestData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 
 /**
  * Maps Bouncy Castle-specific TSP request/response objects to domain objects.
  */
 @RequiredArgsConstructor
-public class TimestampResponseMapper extends AbstractTspMapper {
+public class TimeStampResponseMapper extends AbstractTspMapper {
 
     private final DateConverter dateConverter;
 
@@ -29,8 +29,8 @@ public class TimestampResponseMapper extends AbstractTspMapper {
      *     The time the TSP request was received, not {@code null}.
      * @return The corresponding domain object.
      */
-    public TimestampResponseData map(TimeStampRequest timeStampRequest, TimeStampResponse timeStampResponse, Date receptionTime) {
-        TimestampRequestData requestData = TimestampRequestData.builder()
+    public TimeStampResponseData map(TimeStampRequest timeStampRequest, TimeStampResponse timeStampResponse, Date receptionTime) {
+        TimeStampRequestData requestData = TimeStampRequestData.builder()
             .hashAlgorithm(mapToHashAlgorithm(timeStampRequest.getMessageImprintAlgOID()))
             .hash(timeStampRequest.getMessageImprintDigest())
             .nonce(timeStampRequest.getNonce())
@@ -39,7 +39,7 @@ public class TimestampResponseMapper extends AbstractTspMapper {
             .asnEncoded(asnEncoded(timeStampRequest, TimeStampRequest::getEncoded))
             .build();
 
-        return TimestampResponseData.builder()
+        return TimeStampResponseData.builder()
             .status(mapToResponseStatus(timeStampResponse.getStatus()))
             .statusString(timeStampResponse.getStatusString())
             .failureInfo(mapIfNotNull(timeStampResponse.getFailInfo(), failInfo -> mapToFailureInfo(failInfo.intValue())))

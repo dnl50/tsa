@@ -8,25 +8,25 @@ import java.math.BigInteger;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import dev.mieser.tsa.domain.TimestampRequestData;
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampRequestData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.persistence.entity.TspRequestEntity;
 import dev.mieser.tsa.persistence.entity.TspResponseEntity;
 
 /**
- * Mapstruct {@link Mapper} to map between domain objects and entities.
+ * Mapstruct {@link Mapper} to map between domain objects and JPA entities.
  */
 @Mapper
 public interface TspResponseMapper {
 
-    TimestampResponseData toDomain(TspResponseEntity entity);
+    TimeStampResponseData toDomain(TspResponseEntity entity);
 
-    TimestampRequestData toDomain(TspRequestEntity entity);
+    TimeStampRequestData toDomain(TspRequestEntity entity);
 
-    TspResponseEntity fromDomain(TimestampResponseData domain);
+    TspResponseEntity fromDomain(TimeStampResponseData domain);
 
     @Mapping(target = "id", ignore = true)
-    TspRequestEntity fromDomain(TimestampRequestData timestampRequestData);
+    TspRequestEntity fromDomain(TimeStampRequestData domain);
 
     default String toBase64(byte[] binaryData) {
         if (binaryData == null) {

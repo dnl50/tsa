@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.integration.api.QueryTimeStampResponseService;
 import dev.mieser.tsa.web.dto.datatable.DatatablesPage;
 import dev.mieser.tsa.web.dto.datatable.DatatablesPagingRequest;
@@ -33,10 +33,10 @@ public class HistoryRestController {
     private final DatatablesPageableMapper datatablesPageableMapper;
 
     @PostMapping
-    public DatatablesPage<TimestampResponseData> history(@Valid @RequestBody DatatablesPagingRequest request) {
-        Page<TimestampResponseData> page = queryTimeStampResponseService.findAll(datatablesPageableMapper.apply(request));
+    public DatatablesPage<TimeStampResponseData> history(@Valid @RequestBody DatatablesPagingRequest request) {
+        Page<TimeStampResponseData> page = queryTimeStampResponseService.findAll(datatablesPageableMapper.apply(request));
 
-        return DatatablesPage.<TimestampResponseData>builder()
+        return DatatablesPage.<TimeStampResponseData>builder()
             .draw(request.getDraw())
             .recordsTotal(page.getTotalElements())
             .recordsFiltered(page.getTotalElements())

@@ -2,7 +2,7 @@ package dev.mieser.tsa.integration.api;
 
 import java.io.InputStream;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 
 /**
  * @see dev.mieser.tsa.signing.api.TimeStampAuthority
@@ -10,6 +10,6 @@ import dev.mieser.tsa.domain.TimestampResponseData;
  */
 public interface IssueTimeStampService {
 
-    TimestampResponseData signTimestampRequest(InputStream tspRequestStream);
+    TimeStampResponseData signTimestampRequest(InputStream tspRequestStream);
 
 }

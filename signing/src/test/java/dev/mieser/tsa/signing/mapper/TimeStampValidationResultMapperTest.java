@@ -28,20 +28,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import dev.mieser.tsa.datetime.api.DateConverter;
 import dev.mieser.tsa.domain.SigningCertificateIdentifier;
 import dev.mieser.tsa.domain.SigningCertificateInformation;
-import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.cert.SigningCertificateHolder;
 import dev.mieser.tsa.testutil.TimeStampResponseGenerator.ResponseProperties;
 
 @ExtendWith(MockitoExtension.class)
-class TimestampValidationResultMapperTest {
+class TimeStampValidationResultMapperTest {
 
     private final DateConverter dateConverterMock;
 
-    private final TimestampValidationResultMapper testSubject;
+    private final TimeStampValidationResultMapper testSubject;
 
-    TimestampValidationResultMapperTest(@Mock DateConverter dateConverterMock) {
+    TimeStampValidationResultMapperTest(@Mock DateConverter dateConverterMock) {
         this.dateConverterMock = dateConverterMock;
-        this.testSubject = new TimestampValidationResultMapper(dateConverterMock);
+        this.testSubject = new TimeStampValidationResultMapper(dateConverterMock);
     }
 
     @Test
@@ -56,10 +56,10 @@ class TimestampValidationResultMapperTest {
         TimeStampResponse timeStampResponse = generateTimeStampResponseMock(rejectedResponseProperties);
 
         // when
-        TimestampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, null, false);
+        TimeStampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, null, false);
 
         // then
-        TimestampValidationResult expectedValidationResult = TimestampValidationResult.builder()
+        TimeStampValidationResult expectedValidationResult = TimeStampValidationResult.builder()
             .status(REJECTION)
             .statusString("Unsupported Algorithm!!!!")
             .failureInfo(BAD_ALGORITHM)
@@ -79,10 +79,10 @@ class TimestampValidationResultMapperTest {
         TimeStampResponse timeStampResponse = generateTimeStampResponseMock(rejectedResponseProperties);
 
         // when
-        TimestampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, null, false);
+        TimeStampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, null, false);
 
         // then
-        TimestampValidationResult expectedValidationResult = TimestampValidationResult.builder()
+        TimeStampValidationResult expectedValidationResult = TimeStampValidationResult.builder()
             .status(REJECTION)
             .signedByThisTsa(false)
             .build();
@@ -110,10 +110,10 @@ class TimestampValidationResultMapperTest {
         given(dateConverterMock.toZonedDateTime(genTimeAsDate)).willReturn(genTime);
 
         // when
-        TimestampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, null, true);
+        TimeStampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, null, true);
 
         // then
-        TimestampValidationResult expectedValidationResult = TimestampValidationResult.builder()
+        TimeStampValidationResult expectedValidationResult = TimeStampValidationResult.builder()
             .status(GRANTED_WITH_MODS)
             .generationTime(genTime)
             .hash(sha512Hash)
@@ -143,7 +143,7 @@ class TimestampValidationResultMapperTest {
         TimeStampResponse timeStampResponse = generateTimeStampResponseMock(grantedResponseProperties);
 
         // when
-        TimestampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, signingCertificateHolder, true);
+        TimeStampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, signingCertificateHolder, true);
 
         // then
         SigningCertificateIdentifier expectedCertificateIdentifier = SigningCertificateIdentifier.builder()
@@ -176,7 +176,7 @@ class TimestampValidationResultMapperTest {
         given(dateConverterMock.toZonedDateTime(certificateHolder.getNotAfter())).willReturn(mappedExpirationDate);
 
         // when
-        TimestampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, signingCertificateHolder, true);
+        TimeStampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, signingCertificateHolder, true);
 
         // then
         SigningCertificateInformation expectedCertificateInformation = SigningCertificateInformation.builder()

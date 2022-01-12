@@ -27,7 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.integration.api.IssueTimeStampService;
 import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
 import dev.mieser.tsa.signing.api.exception.TspResponseException;
@@ -64,7 +64,7 @@ class TimeStampAuthorityControllerTest {
         byte[] requestContent = "TSP request".getBytes(UTF_8);
         byte[] responseContent = "TSP response".getBytes(UTF_8);
 
-        TimestampResponseData issuedResponse = TimestampResponseData.builder()
+        TimeStampResponseData issuedResponse = TimeStampResponseData.builder()
             .asnEncoded(responseContent)
             .build();
 
@@ -85,7 +85,7 @@ class TimeStampAuthorityControllerTest {
         byte[] requestContent = "TSP request".getBytes(UTF_8);
         byte[] responseContent = "TSP response".getBytes(UTF_8);
 
-        TimestampResponseData issuedResponse = TimestampResponseData.builder()
+        TimeStampResponseData issuedResponse = TimeStampResponseData.builder()
             .asnEncoded(responseContent)
             .build();
 

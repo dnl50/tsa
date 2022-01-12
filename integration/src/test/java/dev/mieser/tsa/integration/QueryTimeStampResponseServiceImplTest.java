@@ -13,7 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,14 +30,14 @@ class QueryTimeStampResponseServiceImplTest {
     }
 
     @Test
-    void findAllDelegatesToRepository(@Mock Page<TimestampResponseData> responseDataPageMock) {
+    void findAllDelegatesToRepository(@Mock Page<TimeStampResponseData> responseDataPageMock) {
         // given
         Pageable pageable = PageRequest.of(1, 3);
 
         given(tspResponseDataRepositoryMock.findAll(pageable)).willReturn(responseDataPageMock);
 
         // when
-        Page<TimestampResponseData> actualPage = testSubject.findAll(pageable);
+        Page<TimeStampResponseData> actualPage = testSubject.findAll(pageable);
 
         // then
         assertThat(actualPage).isEqualTo(responseDataPageMock);
@@ -47,12 +47,12 @@ class QueryTimeStampResponseServiceImplTest {
     void findByIdDelegatesToRepository() {
         // given
         Long id = 1337L;
-        TimestampResponseData responseData = TimestampResponseData.builder().build();
+        TimeStampResponseData responseData = TimeStampResponseData.builder().build();
 
         given(tspResponseDataRepositoryMock.findById(id)).willReturn(Optional.of(responseData));
 
         // when
-        Optional<TimestampResponseData> byId = testSubject.findById(id);
+        Optional<TimeStampResponseData> byId = testSubject.findById(id);
 
         // then
         assertThat(byId).contains(responseData);

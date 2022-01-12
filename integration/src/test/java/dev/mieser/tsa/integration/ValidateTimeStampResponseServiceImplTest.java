@@ -15,7 +15,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,12 +35,12 @@ class ValidateTimeStampResponseServiceImplTest {
         // given
         byte[] tspResponse = "TSP response".getBytes(UTF_8);
         String base64EncodedResponse = encodeBase64String(tspResponse);
-        TimestampValidationResult validationResult = TimestampValidationResult.builder().build();
+        TimeStampValidationResult validationResult = TimeStampValidationResult.builder().build();
 
         given(timeStampValidatorMock.validateResponse(notNull())).willReturn(validationResult);
 
         // when
-        TimestampValidationResult actualValidationResult = testSubject.validateTimeStampResponse(base64EncodedResponse);
+        TimeStampValidationResult actualValidationResult = testSubject.validateTimeStampResponse(base64EncodedResponse);
 
         // then
         ArgumentCaptor<InputStream> inputStreamCaptor = ArgumentCaptor.forClass(InputStream.class);

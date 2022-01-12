@@ -9,14 +9,14 @@ import org.bouncycastle.tsp.TimeStampTokenInfo;
 import dev.mieser.tsa.datetime.api.DateConverter;
 import dev.mieser.tsa.domain.SigningCertificateIdentifier;
 import dev.mieser.tsa.domain.SigningCertificateInformation;
-import dev.mieser.tsa.domain.TimestampValidationResult;
+import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.cert.SigningCertificateHolder;
 
 /**
  * Maps Bouncy Castle-specific TSP response objects to domain objects.
  */
 @RequiredArgsConstructor
-public class TimestampValidationResultMapper extends AbstractTspMapper {
+public class TimeStampValidationResultMapper extends AbstractTspMapper {
 
     private final DateConverter dateConverter;
 
@@ -29,13 +29,13 @@ public class TimestampValidationResultMapper extends AbstractTspMapper {
      *     A flag whether the time stamp response was signed by the certificate currently in use by this TSA.
      * @return The mapped result.
      */
-    public TimestampValidationResult map(TimeStampResponse timeStampResponse, SigningCertificateHolder signingCertificateHolder,
+    public TimeStampValidationResult map(TimeStampResponse timeStampResponse, SigningCertificateHolder signingCertificateHolder,
         boolean signedByThisTsa) {
         TimeStampTokenInfo timeStampInfo = timeStampResponse.getTimeStampToken() != null
             ? timeStampResponse.getTimeStampToken().getTimeStampInfo()
             : null;
 
-        return TimestampValidationResult.builder()
+        return TimeStampValidationResult.builder()
             .status(mapToResponseStatus(timeStampResponse.getStatus()))
             .statusString(timeStampResponse.getStatusString())
             .failureInfo(mapIfNotNull(timeStampResponse.getFailInfo(), failInfo -> mapToFailureInfo(failInfo.intValue())))

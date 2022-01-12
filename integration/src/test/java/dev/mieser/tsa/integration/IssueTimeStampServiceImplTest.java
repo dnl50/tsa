@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
 import dev.mieser.tsa.signing.api.TimeStampAuthority;
 
@@ -37,14 +37,14 @@ class IssueTimeStampServiceImplTest {
     void signTimestampRequestIssuesAndSavesResponse() {
         // given
         InputStream tspRequestInputStream = new ByteArrayInputStream("TSP request".getBytes(UTF_8));
-        TimestampResponseData issuedResponse = TimestampResponseData.builder().build();
-        TimestampResponseData savedResponse = TimestampResponseData.builder().build();
+        TimeStampResponseData issuedResponse = TimeStampResponseData.builder().build();
+        TimeStampResponseData savedResponse = TimeStampResponseData.builder().build();
 
         given(timeStampAuthorityMock.signRequest(tspRequestInputStream)).willReturn(savedResponse);
         given(responseDataRepositoryMock.save(issuedResponse)).willReturn(savedResponse);
 
         // when
-        TimestampResponseData actualResponse = testSubject.signTimestampRequest(tspRequestInputStream);
+        TimeStampResponseData actualResponse = testSubject.signTimestampRequest(tspRequestInputStream);
 
         // then
         assertThat(actualResponse).isSameAs(savedResponse);

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.integration.api.IssueTimeStampService;
 import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
 import dev.mieser.tsa.signing.api.exception.TspResponseException;
@@ -34,7 +34,7 @@ public class TimeStampAuthorityController {
                  consumes = "application/timestamp-query",
                  produces = "application/timestamp-reply")
     public ResponseEntity<byte[]> sign(InputStream requestInputStream) {
-        TimestampResponseData responseData = issueTimeStampService.signTimestampRequest(requestInputStream);
+        TimeStampResponseData responseData = issueTimeStampService.signTimestampRequest(requestInputStream);
         return ResponseEntity.ok(responseData.getAsnEncoded());
     }
 

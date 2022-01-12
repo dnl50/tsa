@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dev.mieser.tsa.domain.TimestampResponseData;
+import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.integration.api.QueryTimeStampResponseService;
 import dev.mieser.tsa.web.dto.datatable.Column;
 import dev.mieser.tsa.web.dto.datatable.DatatablesPagingRequest;
@@ -50,7 +50,7 @@ class HistoryRestControllerTest {
         // given
         ObjectMapper objectMapper = new ObjectMapper();
 
-        TimestampResponseData timestampResponse = TimestampResponseData.builder()
+        TimeStampResponseData timeStampResponse = TimeStampResponseData.builder()
             .serialNumber(BigInteger.valueOf(8L))
             .build();
         DatatablesPagingRequest pagingRequest = DatatablesPagingRequest.builder()
@@ -60,7 +60,7 @@ class HistoryRestControllerTest {
             .columns(List.of(new Column("name", "data")))
             .build();
         Pageable mappedPageable = PageRequest.of(0, 1);
-        Page<TimestampResponseData> page = new PageImpl<>(List.of(timestampResponse), mappedPageable, 1337);
+        Page<TimeStampResponseData> page = new PageImpl<>(List.of(timeStampResponse), mappedPageable, 1337);
 
         given(datatablesPageableMapperMock.apply(pagingRequest)).willReturn(mappedPageable);
         given(queryTimeStampResponseServiceMock.findAll(mappedPageable)).willReturn(page);
