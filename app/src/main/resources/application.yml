@@ -12,3 +12,11 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     url: "jdbc:h2:file:./db/data"
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+

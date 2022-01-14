@@ -29,3 +29,14 @@ dependencies {
 tasks.getByName<BootRun>("bootRun") {
     args = listOf("--spring.profiles.active=dev")
 }
+
+springBoot {
+    buildInfo {
+        properties {
+            time = null
+            artifact = ""
+            group = ""
+            name = ""
+        }
+    }
+}
