@@ -30,3 +30,6 @@ jobs:
 
       - name: Run Gradle 'check' Task
         run: ./gradlew check
+
+      - name: Run Gradle 'build' Task
+        run: ./gradlew build
