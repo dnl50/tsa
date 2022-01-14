@@ -4,20 +4,26 @@ plugins {
 }
 
 val webResource by configurations.creating
+val provided by configurations.creating
 
-configurations.runtimeOnly {
-    extendsFrom(webResource)
+configurations {
+    runtimeOnly {
+        extendsFrom(webResource)
+    }
+
+    listOf(compileOnly, testImplementation).forEach {
+        it.get().extendsFrom(provided)
+    }
 }
 
 dependencies {
-    implementation(project(":integration"))
-
-    compileOnly("org.apache.tomcat:tomcat-catalina:${libs.versions.tomcat.get()}") {
+    provided("org.apache.tomcat:tomcat-catalina:${libs.versions.tomcat.get()}") {
         exclude("org.apache.tomcat", "tomcat-servlet-api")
         exclude("org.apache.tomcat", "tomcat-annotations-api")
     }
-    compileOnly("jakarta.annotation:jakarta.annotation-api")
+    provided("jakarta.annotation:jakarta.annotation-api")
 
+    implementation(project(":integration"))
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework:spring-tx")
     implementation("org.webjars:webjars-locator:0.42")

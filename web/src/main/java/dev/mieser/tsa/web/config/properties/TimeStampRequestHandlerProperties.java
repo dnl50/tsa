@@ -1,4 +1,4 @@
-package dev.mieser.tsa.web.config;
+package dev.mieser.tsa.web.config.properties;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -16,9 +16,9 @@ import org.springframework.validation.annotation.Validated;
 public class TimeStampRequestHandlerProperties {
 
     /**
-     * The TCP port of the Tomcat Connector which handles Time Stamp Query HTTP requests. Defaults to {@code 318}.
+     * The TCP port of the Tomcat Connector which handles Time Stamp Query HTTP requests. Defaults to port {@code 318}.
      * <p/>
-     * Must be a value between {@code 1} and {@code 65535} (inclusive) which differs from the default tomcat connector port
+     * Must be a value between {@code 1} and {@code 65535} (inclusive) which differs from the default Tomcat Connector port
      * used for other requests.
      */
     @Min(1L)
