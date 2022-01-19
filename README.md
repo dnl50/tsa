@@ -30,16 +30,31 @@ _TODO_
 
 ## Configuration
 
-| Parameter Name               | Mandatory | Default Value        | Description                                                                                                                                                                                                               |
-|------------------------------|-----------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| tsa.ess-cert-id-algorithm    | No        | SHA256               | The hash algorithm which is used to calculate the TSA's certificate identifier (ESSCertIDv2).                                                                                                                             |
-| tsa.signing-digest-algorithm | No        | SHA256               | The hash algorithm which is used to calculate the TSP requests digest, which will be signed by the TSA.                                                                                                                   |
-| tsa.accepted-hash-algorithms | No        | SHA1, SHA256, SHA512 | Comma-separated list of hash algorithms which are accepted by the Time Stamp Authority.                                                                                                                                   |
-| tsa.policy-oid               | No        | 1.2                  | The OID of the policy under which the TSP responses are produced.                                                                                                                                                         |
-| tsa.certificate.path         | Yes       |                      | The path to load the PKCS#12 archive containing the certificate and private key used to sign TSP requests. Prefixing  the path with "classpath:" will result in the PKCS#12 archive from being loaded from the classpath. |
-| tsa.certificate.password     | No        |                      | The password of the PKCS#12 archive.                                                                                                                                                                                      |
-| tsa.server.port              | No        | 318                  | The TCP port under which Time Stamp Protocol Query Requests will be answered.                                                                                                                                             |
-| server.port                  | No        | 8080                 | The TCP port under which HTML requests will be answered.                                                                                                                                                                  |
+All Parameters mentioned below can be configured in variety of ways. Please refer to the
+[Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.6.2/reference/htmlsingle/#features.external-config)
+for more information.
+
+### Time Stamp Protocol
+
+| Parameter Name                 | Mandatory | Default Value        | Description                                                                                                                                                                                                               |
+|--------------------------------|-----------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `tsa.ess-cert-id-algorithm`    | No        | SHA256               | The hash algorithm which is used to calculate the TSA's certificate identifier (ESSCertIDv2).                                                                                                                             |
+| `tsa.signing-digest-algorithm` | No        | SHA256               | The hash algorithm which is used to calculate the TSP requests digest, which will be signed by the TSA.                                                                                                                   |
+| `tsa.accepted-hash-algorithms` | No        | SHA1, SHA256, SHA512 | Comma-separated list of hash algorithms which are accepted by the Time Stamp Authority.                                                                                                                                   |
+| `tsa.policy-oid`               | No        | 1.2                  | The OID of the policy under which the TSP responses are produced.                                                                                                                                                         |
+| `tsa.certificate.path`         | Yes       |                      | The path to load the PKCS#12 archive containing the certificate and private key used to sign TSP requests. Prefixing  the path with `classpath:` will result in the PKCS#12 archive from being loaded from the classpath. |
+| `tsa.certificate.password`     | No        |                      | The password of the PKCS#12 archive.                                                                                                                                                                                      |
+| `tsa.server.port`              | No        | 318                  | The TCP port under which Time Stamp Protocol Query Requests will be answered.                                                                                                                                             |
+
+### Web
+
+| Parameter Name                  | Mandatory | Default Value | Description                                                                                                                                           |
+|---------------------------------|-----------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `server.port`                   | No        | 8080          | The TCP port under which HTTP(S) frontend requests will be answered.                                                                                  |
+| `tsa.http.port`                 | No        | 80            | The TCP port for which requests will be redirected to HTTPS. Only active when the HTTPS is activated by setting the `server.ssl.key-store` parameter. |
+| `server.ssl.key-store`          | No        |               | The absolut path of the keystore containing the TLS certificate to use for HTTPS. Accepts Java Key Stores (`jks`) and PKCS#12 (`p12`) files.          |
+| `server.ssl.key-store-password` | No        |               | The password of the aforementioned keystore.                                                                                                          |
+| `server.ssl.key-store-type`     | No        |               | The type of the keystore to use (`jks` or `pkcs12`).                                                                                                  |
 
 ## Issuing a signing certificate
 

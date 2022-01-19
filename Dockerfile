@@ -10,6 +10,7 @@ COPY --from=builder application/dependencies/ ./
 COPY --from=builder application/spring-boot-loader/ ./
 COPY --from=builder application/snapshot-dependencies/ ./
 COPY --from=builder application/application/ ./
+EXPOSE 80
 EXPOSE 318
 EXPOSE 8080
 VOLUME ["/application/db/data"]
