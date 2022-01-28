@@ -67,3 +67,15 @@ tasks.check {
 jacoco {
     toolVersion = libs.versions.jacoco.get()
 }
+
+// Makes the project version configurable via a project property that can be passed in via
+// the -P CLI parameter. Useful for CI builds to infer the project version from the branch name.
+if (hasProperty("projectVersion")) {
+    version = property("projectVersion")!!
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes("Implementation-Version" to archiveVersion)
+    }
+}
