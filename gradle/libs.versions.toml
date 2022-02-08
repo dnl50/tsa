@@ -1,5 +1,5 @@
 [versions]
-spring-boot = "2.6.2"
+spring-boot = "2.6.3"
 tomcat = "9.0.56"
 jacoco = "0.8.7"
 spotless = "6.1.0"

@@ -31,7 +31,7 @@ _TODO_
 ## Configuration
 
 All Parameters mentioned below can be configured in variety of ways. Please refer to the
-[Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.6.2/reference/htmlsingle/#features.external-config)
+[Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.6.3/reference/htmlsingle/#features.external-config)
 for more information.
 
 ### Time Stamp Protocol
