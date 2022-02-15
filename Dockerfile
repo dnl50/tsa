@@ -13,5 +13,5 @@ COPY --from=builder application/application/ ./
 EXPOSE 80
 EXPOSE 318
 EXPOSE 8080
-VOLUME ["/application/db/data"]
+VOLUME ["/application/db"]
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
