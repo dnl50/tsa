@@ -22,16 +22,21 @@ sent to the root path are automatically redirected to the history page.
 
 #### History
 
-_TODO_
+A sortable overview table of all issued Time Stamp Protocol responses utilizing pagination:
+
+![Overview Page](docs/images/overview-page.png "Overview Page")
 
 #### Time Stamp Response Analysis
 
-_TODO_
+You can enter a Base64 encoded ASN.1 DER response of an RFC 3161 / RFC 5816 Time Stamp Protocol Response to see what was
+signed and who signed it:
+
+![Validation Page](docs/images/validation-page.png "Validation Page")
 
 ## Configuration
 
 All Parameters mentioned below can be configured in variety of ways. Please refer to the
-[Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.6.3/reference/htmlsingle/#features.external-config)
+[Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.6.3/reference/html/features.html#features.external-config)
 for more information.
 
 ### Time Stamp Protocol
@@ -68,3 +73,35 @@ extension when creating a self-signed certificate:
 ```bash
 openssl x509 ... -addext extendedKeyUsage=critical,timeStamping
 ```
+
+## Running in Docker
+
+Docker images are automatically published to [Docker Hub](https://hub.docker.com/r/dnl50/tsa-server). The Embedded
+Database writes its data to the `/application/db` directory. Mounting a filesystem directory or a named volume under
+that path will make the DB data persistent.
+
+## Configure Logging
+
+By default, all log messages will be printed to STDOUT. If you want to configure the logging library used ([Logback](https://logback.qos.ch/)), please refer to the relevant section in the [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.6.3/reference/html/features.html#features.logging)
+
+## Development
+
+### Running in development mode
+
+In normal operation, no signing certificate is configured since you probably want to use your own/your organizations
+certificate and not a self-signed certificate I issued to use in integration tests. Configuring a file system path to a
+valid certificate for development is error-prone though. That's what the development mode is for. It can be enabled by
+activating the `dev` Spring profile (e.g. by setting the `spring.profiles.active` JVM System Property to `dev`). In
+addition, this also has the following effects:
+
+* application data is written into an in-memory Database which will be scrapped on application shutdown
+* enables the H2 Database Console which can be accessed
+  under [localhost:8080/h2-console](http://localhost:8080/h2-console)
+* uses a self-singed RSA certificate for signing TSP requests
+
+### Using the code formatter
+
+The source code is formatted using the Eclipse Code Formatter. The formatter config file is located
+unter `/eclipse-formatter.xml`. A custom import order configuration file os located under `/spotless.importorder`. The
+code can also be formatted using the [Spotless Gradle Plugin](https://github.com/diffplug/spotless). Just execute
+the `spotlessApply` Gradle Task and you are good to go! 
