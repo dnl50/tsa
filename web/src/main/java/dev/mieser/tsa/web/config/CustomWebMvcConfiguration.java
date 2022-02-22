@@ -1,9 +1,6 @@
 package dev.mieser.tsa.web.config;
 
 import static java.util.Locale.ENGLISH;
-import static java.util.Locale.GERMAN;
-
-import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +24,6 @@ class CustomWebMvcConfiguration implements WebMvcConfigurer {
     @Bean
     LocaleResolver localeResolver() {
         var localeResolver = new AcceptHeaderLocaleResolver();
-        localeResolver.setSupportedLocales(List.of(ENGLISH, GERMAN));
         localeResolver.setDefaultLocale(ENGLISH);
 
         return localeResolver;
