@@ -11,7 +11,6 @@ repositories {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
 val integrationTestImplementation by configurations.creating
@@ -40,19 +39,17 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter")
 }
 
-sourceSets {
-    create("integrationTest") {
-        compileClasspath += sourceSets.main.get().output
-        runtimeClasspath += sourceSets.main.get().output
-    }
+val integrationTestSourceSet by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
 }
 
-val integrationTest = task<Test>("integrationTest") {
+val integrationTest by tasks.registering(Test::class) {
     group = "verification"
 
-    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
-    classpath = sourceSets["integrationTest"].runtimeClasspath
-    shouldRunAfter("test")
+    testClassesDirs = integrationTestSourceSet.output.classesDirs
+    classpath = integrationTestSourceSet.runtimeClasspath
+    shouldRunAfter(tasks.test)
 }
 
 tasks.withType<Test> {
