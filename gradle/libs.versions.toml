@@ -1,8 +1,8 @@
 [versions]
-spring-boot = "2.6.3"
-tomcat = "9.0.56"
+spring-boot = "2.6.6"
+tomcat = "9.0.60"
 jacoco = "0.8.7"
-spotless = "6.1.0"
+spotless = "6.4.1"
 
 [libraries]
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk15on", version = "1.70" }
