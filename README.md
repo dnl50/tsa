@@ -24,14 +24,14 @@ sent to the root path are automatically redirected to the history page.
 
 A sortable overview table of all issued Time Stamp Protocol responses utilizing pagination:
 
-![Overview Page](docs/images/overview-page.png "Overview Page")
+![Overview Page](https://raw.githubusercontent.com/dnl50/tsa-server/develop/docs/images/overview-page.png "Overview Page")
 
 #### Time Stamp Response Analysis
 
 You can enter a Base64 encoded ASN.1 DER response of an RFC 3161 / RFC 5816 Time Stamp Protocol Response to see what was
 signed and who signed it:
 
-![Validation Page](docs/images/validation-page.png "Validation Page")
+![Validation Page](https://raw.githubusercontent.com/dnl50/tsa-server/develop/docs/images/validation-page.png "Validation Page")
 
 ## Configuration
 
