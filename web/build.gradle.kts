@@ -26,7 +26,7 @@ dependencies {
     implementation(project(":integration"))
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework:spring-tx")
-    implementation("org.webjars:webjars-locator:0.42")
+    implementation("org.webjars:webjars-locator:${libs.versions.webjars.locator.get()}")
     implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework.data:spring-data-commons")
     implementation("org.springframework.boot:spring-boot-autoconfigure")
@@ -36,21 +36,20 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.apache.commons:commons-lang3")
 
-    testImplementation("commons-io:commons-io:2.11.0")
+    testImplementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     integrationTestImplementation("org.hibernate.validator:hibernate-validator")
     integrationTestRuntimeOnly("org.glassfish:jakarta.el")
 
-    webResource("org.webjars:bootstrap:5.1.3")
-    webResource("org.webjars:jquery:3.6.0")
-    webResource("org.webjars.npm:bootstrap-icons:1.7.0")
-    webResource("org.webjars:datatables:1.11.3") {
+    webResource("org.webjars:bootstrap:${libs.versions.webjars.bootstrap.get()}")
+    webResource("org.webjars.npm:bootstrap-icons:${libs.versions.webjars.bootstrapIcons.get()}")
+    webResource("org.webjars:jquery:${libs.versions.webjars.jquery.get()}")
+    webResource("org.webjars:datatables:${libs.versions.webjars.datatables.get()}") {
         exclude("org.webjars", "jquery")
     }
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
 }
 
 // Copies each english properties resource bundle file into a file with the resource bundle's default name

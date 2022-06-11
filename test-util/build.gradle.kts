@@ -7,7 +7,7 @@ dependencies {
     api(project(":domain"))
     api(libs.bouncycastle.bcpkix)
 
-    implementation("commons-io:commons-io:2.11.0")
+    implementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
     implementation("org.mockito:mockito-core")
 
     testImplementation("org.apache.commons:commons-lang3")

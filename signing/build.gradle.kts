@@ -11,7 +11,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation(libs.bouncycastle.bcpkix)
     implementation("jakarta.validation:jakarta.validation-api")
-    implementation("commons-io:commons-io:2.11.0")
+    implementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
     implementation("org.apache.commons:commons-lang3")
 
     testImplementation(project(":test-util"))

@@ -10,13 +10,13 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("jakarta.validation:jakarta.validation-api")
-    implementation("org.mapstruct:mapstruct:1.4.2.Final")
+    implementation("org.mapstruct:mapstruct:${libs.versions.mapstruct.get()}")
     implementation("commons-codec:commons-codec")
     implementation("org.flywaydb:flyway-core")
 
     integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.4.2.Final")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${libs.versions.mapstruct.get()}")
 
     runtimeOnly("com.h2database:h2")
 }
