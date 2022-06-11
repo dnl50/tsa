@@ -39,7 +39,7 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter")
 }
 
-val integrationTestSourceSet by sourceSets.creating {
+val integrationTestSourceSet = sourceSets.create("integrationTest") {
     compileClasspath += sourceSets.main.get().output
     runtimeClasspath += sourceSets.main.get().output
 }

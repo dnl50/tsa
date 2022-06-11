@@ -18,4 +18,4 @@ out
 *.iml
 
 # H2 File
-db
+*.db
