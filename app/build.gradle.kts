@@ -22,7 +22,8 @@ dependencies {
     integrationTestImplementation(libs.bouncycastle.bcpkix)
     integrationTestImplementation("com.fasterxml.jackson.core:jackson-databind")
 
-    runtimeOnly("org.springframework.boot:spring-boot-actuator-autoconfigure")
+    runtimeOnly("org.springframework.boot:spring-boot-starter-actuator")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools:${libs.versions.spring.boot.get()}")
 }
