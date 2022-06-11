@@ -5,14 +5,20 @@ plugins {
 
 val webResource by configurations.creating
 val provided by configurations.creating
+listOf(webResource, provided).forEach { config ->
+    config.isCanBeResolved = true
+    config.isCanBeConsumed = false
+}
 
 configurations {
     runtimeOnly {
         extendsFrom(webResource)
     }
 
-    listOf(compileOnly, testImplementation).forEach {
-        it.get().extendsFrom(provided)
+    listOf(compileOnly, testImplementation).forEach { config ->
+        config.configure {
+            extendsFrom(provided)
+        }
     }
 }
 
