@@ -82,7 +82,7 @@ that path will make the DB data persistent.
 
 ## Configure Logging
 
-By default, all log messages will be printed to STDOUT. If you want to configure the logging library used ([Logback](https://logback.qos.ch/)), please refer to the relevant section in the [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.6.3/reference/html/features.html#features.logging)
+By default, all log messages will be printed to STDOUT. If you want to configure the logging library used ([Logback](https://logback.qos.ch/)), please refer to the relevant section in the [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.7.0/reference/html/features.html#features.logging)
 
 ## Development
 
