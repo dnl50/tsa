@@ -1,5 +1,9 @@
 package dev.mieser.tsa.signing.mapper;
 
+import static org.apache.commons.codec.binary.Base64.encodeBase64String;
+
+import java.io.IOException;
+
 import lombok.RequiredArgsConstructor;
 
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -67,7 +71,16 @@ public class TimeStampValidationResultMapper extends AbstractTspMapper {
             .serialNumber(signingCertificate.getSerialNumber())
             .expirationDate(dateConverter.toZonedDateTime(signingCertificate.getNotAfter()))
             .issuer(signingCertificate.getIssuer().toString())
+            .base64EncodedCertificate(encodeAsBase64String(signingCertificate))
             .build();
+    }
+
+    private String encodeAsBase64String(X509CertificateHolder signingCertificate) {
+        try {
+            return encodeBase64String(signingCertificate.getEncoded());
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to retrieve encoded signing certificate.", e);
+        }
     }
 
 }

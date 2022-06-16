@@ -17,6 +17,7 @@ import java.security.cert.X509Certificate;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.tsp.TimeStampResponse;
@@ -127,7 +128,7 @@ class TimeStampValidationResultMapperTest {
     }
 
     @Test
-    void mapsSigningCertificateIdentifier() throws Exception {
+    void mapsSigningCertificateIdentifier() {
         // given
         byte[] signingCertificateHash = "hash".getBytes(UTF_8);
         SigningCertificateHolder signingCertificateHolder = new SigningCertificateHolder(new AlgorithmIdentifier(id_SHA1),
@@ -179,10 +180,13 @@ class TimeStampValidationResultMapperTest {
         TimeStampValidationResult mappedValidationResult = testSubject.map(timeStampResponse, signingCertificateHolder, true);
 
         // then
+        String expectedBase64EncodedCertificate = Base64.encodeBase64String(certificate.getEncoded());
+
         SigningCertificateInformation expectedCertificateInformation = SigningCertificateInformation.builder()
             .expirationDate(mappedExpirationDate)
             .serialNumber(certificate.getSerialNumber())
             .issuer(certificateHolder.getIssuer().toString())
+            .base64EncodedCertificate(expectedBase64EncodedCertificate)
             .build();
 
         assertThat(mappedValidationResult.getSigningCertificateInformation()).isEqualTo(expectedCertificateInformation);

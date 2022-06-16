@@ -86,12 +86,19 @@
 
             <tr>
                 <th scope="row" class="w-25">
-                    <span th:text="#{validate.result.signing-cert-included}">Signed by this TSA?</span>
+                    <span th:text="#{validate.result.signing-cert-included}">Signing cert included</span>
                     <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right"
                        th:title="#{validate.result.signing-cert-included.description}"></i>
                 </th>
                 <td>
-                    <i class="bi" th:classappend="${validationResult.signingCertificateInformation}? 'bi-check-circle' : 'bi-x-circle'"></i>
+                    <i class="bi"
+                       th:classappend="${validationResult.signingCertificateInformation}? 'bi-check-circle' : 'bi-x-circle'"></i>
+                    <a th:href="'data:application/pkix-cert;base64,' + ${validationResult.signingCertificateInformation.base64EncodedCertificate}"
+                       target="_blank" download="signing-cert.crt" class="px-3"
+                       th:title="#{validate.result.download-cert}"
+                       th:if="${validationResult.signingCertificateInformation}">
+                        <i class="bi bi-download"></i>
+                    </a>
                 </td>
             </tr>
 

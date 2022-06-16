@@ -33,6 +33,8 @@ signed and who signed it:
 
 ![Validation Page](https://raw.githubusercontent.com/dnl50/tsa-server/develop/docs/images/validation-page.png "Validation Page")
 
+You can also download the signing certificate in case it is included in the response.
+
 ## Configuration
 
 All Parameters mentioned below can be configured in variety of ways. Please refer to the

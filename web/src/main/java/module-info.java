@@ -23,6 +23,8 @@ module tsa.web {
 
     requires org.apache.commons.codec;
 
+    requires org.apache.commons.io;
+
     requires org.apache.commons.lang3;
 
     requires com.fasterxml.jackson.databind;

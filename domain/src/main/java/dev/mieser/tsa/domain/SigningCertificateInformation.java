@@ -28,4 +28,9 @@ public class SigningCertificateInformation {
      */
     private final ZonedDateTime expirationDate;
 
+    /**
+     * The Base64 encoding of the ASN.1 DER X.509 encoded certificate which was used to sign the request.
+     */
+    private final String base64EncodedCertificate;
+
 }
