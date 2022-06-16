@@ -56,6 +56,10 @@ tasks.withType(Test::class).configureEach {
     useJUnitPlatform()
 }
 
+tasks.withType(JavaCompile::class).configureEach {
+    options.encoding = "UTF-8"
+}
+
 tasks.check {
     dependsOn(integrationTest)
     finalizedBy(tasks.jacocoTestReport)

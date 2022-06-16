@@ -41,6 +41,7 @@ dependencies {
     implementation("commons-codec:commons-codec")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.apache.commons:commons-lang3")
+    implementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
 
     testImplementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -58,10 +59,27 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
-// Copies each english properties resource bundle file into a file with the resource bundle's default name
-tasks.processResources {
+val generateApplicationVersionFile by tasks.registering {
+    val outputFile = file("$buildDir/application-version.txt")
+
+    inputs.property("version", version)
+    outputs.file(outputFile)
+
+    doLast {
+        outputFile.writeText(version.toString())
+    }
+}
+
+
+tasks.processResources.configure {
+    // Copies each english properties resource bundle file into a file with the resource bundle's default name
     from("src/main/resources/") {
         include("*_en.properties")
         rename("(.*)_en.properties", "$1.properties")
+    }
+
+    // this file is used to display the application version in the page footer
+    from(generateApplicationVersionFile) {
+        into("META-INF")
     }
 }

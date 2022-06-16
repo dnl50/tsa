@@ -1,11 +1,11 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head (#{error.title-prefix} + ' ' + ${status})"></head>
-<body class="bg-light">
+<body class="bg-light d-flex flex-column vh-100">
 
 <div th:replace="fragments/navbar :: navbar"></div>
 
-<div class="container">
+<div class="flex-grow-1 flex-shrink-0 container">
     <div class="row">
         <div class="col d-flex justify-content-center">
             <i class="display-1 bi bi-emoji-dizzy"></i>
@@ -19,5 +19,7 @@
         </div>
     </div>
 </div>
+
+<footer th:replace="fragments/footer.html :: footer"></footer>
 </body>
 </html>

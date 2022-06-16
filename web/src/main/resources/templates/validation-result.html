@@ -3,11 +3,11 @@
 
 <head th:replace="fragments/head :: head (#{history.page-title})"></head>
 
-<body class="bg-light">
+<body class="bg-light d-flex flex-column vh-100">
 
 <div th:replace="fragments/navbar.html :: navbar"></div>
 
-<div class="container">
+<div class="flex-grow-1 flex-shrink-0 container">
     <div class="row mb-3">
         <h1 th:text="#{validate.result.title}">Result</h1>
     </div>
@@ -137,5 +137,6 @@
 
 <script th:replace="fragments/tooltip-initializer :: tooltip-initializer"></script>
 
+<footer th:replace="fragments/footer.html :: footer"></footer>
 </body>
 </html>

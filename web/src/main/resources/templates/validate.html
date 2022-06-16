@@ -3,11 +3,11 @@
 
 <head th:replace="fragments/head :: head (#{validate.page-title})"></head>
 
-<body class="bg-light">
+<body class="bg-light d-flex flex-column vh-100">
 
 <div th:replace="fragments/navbar.html :: navbar"></div>
 
-<div class="container">
+<div class="flex-grow-1 flex-shrink-0 container">
     <form th:action="@{/web/validate}" th:object="${response}" method="post">
         <div class="mb-3">
             <input type="text" class="form-control" id="tspResponse" aria-describedby="tspResponseHelp" th:field="*{base64EncodedResponse}">
@@ -19,5 +19,6 @@
     </form>
 </div>
 
+<footer th:replace="fragments/footer.html :: footer"></footer>
 </body>
 </html>

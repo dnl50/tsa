@@ -3,7 +3,7 @@
 
 <head th:replace="fragments/head :: head (#{history.page-title})"></head>
 
-<body class="bg-light">
+<body class="bg-light d-flex flex-column vh-100">
 
 <div th:replace="fragments/navbar.html :: navbar"></div>
 
@@ -24,10 +24,10 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="flex-grow-1 flex-shrink-0 container-fluid">
 
     <div class="row">
-        <div class="col col-xxl-11 mx-auto">
+        <div class="col col-xxl-11 mx-auto pb-4">
             <table id="history" class="table table-hover align-middle table-striped">
                 <thead>
                 <tr>
@@ -93,5 +93,6 @@
 
 <script th:replace="fragments/tooltip-initializer :: tooltip-initializer"></script>
 
+<footer th:replace="fragments/footer.html :: footer"></footer>
 </body>
 </html>
