@@ -1,10 +1,10 @@
 import org.springframework.boot.gradle.tasks.run.BootRun
-import java.io.ByteArrayOutputStream
 
 plugins {
     `java-convention`
     `spotless-config`
     alias(libs.plugins.spring.boot)
+    alias(libs.plugins.gitProperties)
 }
 
 dependencies {
@@ -32,21 +32,13 @@ tasks.getByName<BootRun>("bootRun") {
     args = listOf("--spring.profiles.active=dev")
 }
 
-val shortCommitHash by tasks.registering(Exec::class) {
-    commandLine("git", "rev-parse", "--short", "HEAD")
-    standardOutput = ByteArrayOutputStream()
-}
-
 springBoot {
     buildInfo {
         properties {
-            additional = mapOf("commit" to DelegatingProvider(shortCommitHash.map { it.standardOutput.toString().trim() }))
             time = null
             artifact = ""
             group = ""
             name = ""
         }
-
-        dependsOn(shortCommitHash)
     }
 }

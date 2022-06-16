@@ -13,8 +13,11 @@ webjars-bootstrapIcons = "1.8.3"
 webjars-jquery = "3.6.0"
 webjars-datatables = "1.11.4"
 
+gradleGitProperties = "2.4.1"
+
 [libraries]
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk15on", version.ref = "bouncycastle" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+gitProperties = { id = "com.gorylenko.gradle-git-properties", version.ref = "gradleGitProperties"}
