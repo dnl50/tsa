@@ -1,6 +1,5 @@
 package dev.mieser.tsa.web.controller;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.MediaType;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Slf4j
 @Controller
-@RequiredArgsConstructor
 @RequestMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
 public class IndexController {
 

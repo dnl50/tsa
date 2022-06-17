@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,8 +27,7 @@ import dev.mieser.tsa.web.dto.datatable.Column;
 import dev.mieser.tsa.web.dto.datatable.DatatablesPagingRequest;
 import dev.mieser.tsa.web.paging.DatatablesPageableMapper;
 
-@WebMvcTest
-@ContextConfiguration(classes = HistoryRestController.class)
+@WebMvcTest(HistoryRestController.class)
 class HistoryRestControllerTest {
 
     @MockBean

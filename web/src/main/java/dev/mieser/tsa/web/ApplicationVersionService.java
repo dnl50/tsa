@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
  * Service to retrieve the current version of the application. The application version file is generated in the build
  * process.
  */
-@Service
 @Slf4j
+@Service("applicationVersionService")
 public class ApplicationVersionService {
 
     /**

@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import dev.mieser.tsa.domain.TimeStampResponseData;
@@ -33,8 +32,7 @@ import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
 import dev.mieser.tsa.signing.api.exception.TspResponseException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 
-@WebMvcTest
-@ContextConfiguration(classes = TimeStampAuthorityController.class)
+@WebMvcTest(TimeStampAuthorityController.class)
 class TimeStampAuthorityControllerTest {
 
     private static final String REQUEST_CONTENT_TYPE = "application/timestamp-query";

@@ -43,11 +43,15 @@ dependencies {
     implementation("org.apache.commons:commons-lang3")
     implementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
 
+    runtimeOnly("org.thymeleaf:thymeleaf-spring5")
+    runtimeOnly("org.thymeleaf.extras:thymeleaf-extras-java8time")
+
     testImplementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jsoup:jsoup:${libs.versions.jsoup.get()}")
 
-    integrationTestImplementation("org.hibernate.validator:hibernate-validator")
-    integrationTestRuntimeOnly("org.glassfish:jakarta.el")
+    testRuntimeOnly("org.hibernate.validator:hibernate-validator")
+    testRuntimeOnly("org.glassfish:jakarta.el")
 
     webResource("org.webjars:bootstrap:${libs.versions.webjars.bootstrap.get()}")
     webResource("org.webjars.npm:bootstrap-icons:${libs.versions.webjars.bootstrapIcons.get()}")

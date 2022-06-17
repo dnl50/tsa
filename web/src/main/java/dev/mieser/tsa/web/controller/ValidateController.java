@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -20,22 +19,21 @@ import dev.mieser.tsa.integration.api.ValidateTimeStampResponseService;
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 import dev.mieser.tsa.web.dto.TimeStampResponseDto;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
+@RequestMapping(path = "/web/validate", produces = MediaType.TEXT_HTML_VALUE)
 public class ValidateController {
 
     private final ValidateTimeStampResponseService validateTimeStampResponseService;
 
-    @GetMapping("/web/validate")
+    @GetMapping
     public String validateResponse(@ModelAttribute("response") TimeStampResponseDto response) {
         return "validate";
     }
 
-    @PostMapping("/web/validate")
-    public String validationResult(@Valid @ModelAttribute("response") TimeStampResponseDto response, BindingResult bindingResult,
-        Model model) {
+    @PostMapping
+    public String validationResult(@Valid @ModelAttribute("response") TimeStampResponseDto response,
+        BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             return "validate";
         }
@@ -46,8 +44,7 @@ public class ValidateController {
     }
 
     @ExceptionHandler(InvalidTspResponseException.class)
-    public ModelAndView handleInvalidTspResponse(InvalidTspResponseException e) {
-        log.info("Invalid TSP response.", e);
+    public ModelAndView handleInvalidTspResponse() {
         Map<String, Object> model = Map.of(
             "invalidTspResponse", true,
             "response", new TimeStampResponseDto());

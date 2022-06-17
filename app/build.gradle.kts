@@ -13,8 +13,6 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-tomcat")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.hibernate.validator:hibernate-validator")
 
     integrationTestImplementation("org.apache.commons:commons-lang3")
     integrationTestImplementation("io.rest-assured:rest-assured")
@@ -22,6 +20,7 @@ dependencies {
     integrationTestImplementation(libs.bouncycastle.bcpkix)
     integrationTestImplementation("com.fasterxml.jackson.core:jackson-databind")
 
+    runtimeOnly("org.hibernate.validator:hibernate-validator")
     runtimeOnly("org.springframework.boot:spring-boot-starter-actuator")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
