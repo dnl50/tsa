@@ -38,7 +38,7 @@ You can also download the signing certificate in case it is included in the resp
 ## Configuration
 
 All Parameters mentioned below can be configured in variety of ways. Please refer to the
-[Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.7.0/reference/html/features.html#features.external-config)
+[Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/2.7.2/reference/html/features.html#features.external-config)
 for more information.
 
 ### Time Stamp Protocol

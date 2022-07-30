@@ -1,12 +1,12 @@
 [versions]
-spring-boot = "2.7.0"
-tomcat = "9.0.63"
+spring-boot = "2.7.2"
+tomcat = "9.0.65"
 jacoco = "0.8.8"
-spotless = "6.7.1"
-mapstruct = "1.5.1.Final"
+spotless = "6.9.0"
+mapstruct = "1.5.2.Final"
 commonsIo = "2.11.0"
 bouncycastle = "1.70"
-jsoup = "1.15.1"
+jsoup = "1.15.2"
 
 webjars-locator = "0.45"
 webjars-bootstrap = "5.1.3"
