@@ -52,11 +52,11 @@ val integrationTest by tasks.registering(Test::class) {
     shouldRunAfter(tasks.test)
 }
 
-tasks.withType(Test::class).configureEach {
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
-tasks.withType(JavaCompile::class).configureEach {
+tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
 }
 
@@ -75,7 +75,7 @@ if (hasProperty("projectVersion")) {
     version = property("projectVersion")!!
 }
 
-tasks.withType(Jar::class).configureEach {
+tasks.withType<Jar>().configureEach {
     manifest {
         attributes("Implementation-Version" to archiveVersion)
     }
