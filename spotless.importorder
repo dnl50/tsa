@@ -1,6 +1,7 @@
 #Organize Import Order
 0=java
 1=javax
-2=lombok
-3=org
-4=com
+2=jakarta
+3=lombok
+4=org
+5=com

@@ -1,11 +1,11 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments/head :: head (#{history.page-title})"></head>
+<head th:replace="~{fragments/head :: head (#{history.page-title})}"></head>
 
 <body class="bg-light d-flex flex-column vh-100">
 
-<div th:replace="fragments/navbar.html :: navbar"></div>
+<div th:replace="~{fragments/navbar.html :: navbar}"></div>
 
 <div id="hashValueModal" class="modal fade" tabindex="-1" aria-labelledby="hashValueModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -91,8 +91,8 @@
     });
 </script>
 
-<script th:replace="fragments/tooltip-initializer :: tooltip-initializer"></script>
+<script th:replace="~{fragments/tooltip-initializer :: tooltip-initializer}"></script>
 
-<footer th:replace="fragments/footer.html :: footer"></footer>
+<footer th:replace="~{fragments/footer.html :: footer}"></footer>
 </body>
 </html>

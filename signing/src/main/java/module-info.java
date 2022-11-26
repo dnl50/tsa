@@ -1,9 +1,11 @@
 module tsa.signing {
-    requires java.validation;
+    requires jakarta.validation;
 
     requires spring.boot;
 
     requires spring.context;
+
+    requires spring.core;
 
     requires spring.boot.autoconfigure;
 

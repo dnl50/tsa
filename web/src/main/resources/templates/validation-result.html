@@ -1,11 +1,11 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments/head :: head (#{history.page-title})"></head>
+<head th:replace="~{fragments/head :: head (#{history.page-title})}"></head>
 
 <body class="bg-light d-flex flex-column vh-100">
 
-<div th:replace="fragments/navbar.html :: navbar"></div>
+<div th:replace="~{fragments/navbar.html :: navbar}"></div>
 
 <div class="flex-grow-1 flex-shrink-0 container">
     <div class="row mb-3">
@@ -142,8 +142,8 @@
 
 </div>
 
-<script th:replace="fragments/tooltip-initializer :: tooltip-initializer"></script>
+<script th:replace="~{fragments/tooltip-initializer :: tooltip-initializer}"></script>
 
-<footer th:replace="fragments/footer.html :: footer"></footer>
+<footer th:replace="~{fragments/footer.html :: footer}"></footer>
 </body>
 </html>

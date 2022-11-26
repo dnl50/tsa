@@ -1,6 +1,6 @@
 package dev.mieser.tsa.web.controller;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 

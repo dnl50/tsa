@@ -17,9 +17,9 @@ module tsa.web {
 
     requires org.slf4j;
 
-    requires java.servlet;
+    requires jakarta.servlet;
 
-    requires java.validation;
+    requires jakarta.validation;
 
     requires org.apache.commons.codec;
 

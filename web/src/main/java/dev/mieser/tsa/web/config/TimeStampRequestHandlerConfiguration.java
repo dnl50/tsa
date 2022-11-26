@@ -1,6 +1,6 @@
 package dev.mieser.tsa.web.config;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import lombok.RequiredArgsConstructor;
 

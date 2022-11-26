@@ -1,11 +1,11 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments/head :: head (#{validate.page-title})"></head>
+<head th:replace="~{fragments/head :: head (#{validate.page-title})}"></head>
 
 <body class="bg-light d-flex flex-column vh-100">
 
-<div th:replace="fragments/navbar.html :: navbar"></div>
+<div th:replace="~{fragments/navbar.html :: navbar}"></div>
 
 <div class="flex-grow-1 flex-shrink-0 container">
     <form th:action="@{/web/validate}" th:object="${response}" method="post">
@@ -19,6 +19,6 @@
     </form>
 </div>
 
-<footer th:replace="fragments/footer.html :: footer"></footer>
+<footer th:replace="~{fragments/footer.html :: footer}"></footer>
 </body>
 </html>

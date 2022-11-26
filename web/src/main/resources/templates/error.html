@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head (#{error.title-prefix} + ' ' + ${status})"></head>
+<head th:replace="~{fragments/head :: head (#{error.title-prefix} + ' ' + ${status})}"></head>
 <body class="bg-light d-flex flex-column vh-100">
 
-<div th:replace="fragments/navbar :: navbar"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="flex-grow-1 flex-shrink-0 container">
     <div class="row">
@@ -20,6 +20,6 @@
     </div>
 </div>
 
-<footer th:replace="fragments/footer.html :: footer"></footer>
+<footer th:replace="~{fragments/footer.html :: footer}"></footer>
 </body>
 </html>

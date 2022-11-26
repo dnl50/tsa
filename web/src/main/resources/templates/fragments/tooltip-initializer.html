@@ -1,6 +1,5 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<body class="bg-light">
 <script th:fragment="tooltip-initializer" th:inline="javascript">
     <!-- Enables Bootstrap Tooltips for all Elements with the 'data-bs-toggle' Attribute set to 'tooltip' -->
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -8,5 +7,4 @@
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 </script>
-</body>
 </html>

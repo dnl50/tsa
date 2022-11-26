@@ -1,7 +1,7 @@
 module tsa.persistence {
-    requires java.persistence;
+    requires jakarta.persistence;
 
-    requires java.validation;
+    requires jakarta.validation;
 
     requires java.compiler;
 

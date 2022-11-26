@@ -34,10 +34,7 @@ tasks.getByName<BootRun>("bootRun") {
 springBoot {
     buildInfo {
         properties {
-            time = null
-            artifact = ""
-            group = ""
-            name = ""
+            excludes.set(setOf("time", "artifact", "group", "name"))
         }
     }
 }
