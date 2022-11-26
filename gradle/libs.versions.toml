@@ -13,6 +13,7 @@ webjars-bootstrap = "5.2.2"
 webjars-bootstrapIcons = "1.10.2"
 webjars-jquery = "3.6.1"
 webjars-datatables = "1.13.1"
+webjars-poppers = "2.9.3"
 
 gradleGitProperties = "2.4.1"
 

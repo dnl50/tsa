@@ -55,6 +55,7 @@ dependencies {
     webResource("org.webjars:bootstrap:${libs.versions.webjars.bootstrap.get()}")
     webResource("org.webjars.npm:bootstrap-icons:${libs.versions.webjars.bootstrapIcons.get()}")
     webResource("org.webjars:jquery:${libs.versions.webjars.jquery.get()}")
+    webResource("org.webjars:popper.js:${libs.versions.webjars.poppers.get()}")
     webResource("org.webjars:datatables:${libs.versions.webjars.datatables.get()}") {
         exclude("org.webjars", "jquery")
     }
