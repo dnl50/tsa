@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import dev.mieser.tsa.web.formatter.HexJsonSerializer;
 
 @Configuration

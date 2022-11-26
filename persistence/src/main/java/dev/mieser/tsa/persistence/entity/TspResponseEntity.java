@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import dev.mieser.tsa.domain.FailureInfo;
 import dev.mieser.tsa.domain.ResponseStatus;
 
