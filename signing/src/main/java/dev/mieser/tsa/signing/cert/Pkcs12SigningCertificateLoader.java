@@ -11,10 +11,18 @@ import java.security.cert.X509Certificate;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+
+/**
+ * Loads the signing key pair from a PKCS#12 keystore.
+ */
 @RequiredArgsConstructor
-abstract class Pkcs12SigningCertificateLoader implements SigningCertificateLoader {
+public class Pkcs12SigningCertificateLoader implements SigningCertificateLoader {
 
     private static final String PKCS12_KEYSTORE_TYPE = "pkcs12";
+
+    private final ResourceLoader resourceLoader;
 
     private final String path;
 
@@ -38,15 +46,6 @@ abstract class Pkcs12SigningCertificateLoader implements SigningCertificateLoade
         return privateKey;
     }
 
-    /**
-     * @param path
-     *     The path to the PKCS#12 file, not empty.
-     * @return An input stream used to read the PKCS#12 file from.
-     * @throws IOException
-     *     When an error occurs opening the input stream.
-     */
-    abstract InputStream pkcs12InputStream(String path) throws IOException;
-
     private void extractCertificateAndPrivateKey() throws IOException {
         if (certificate != null && privateKey != null) {
             return;
@@ -58,12 +57,12 @@ abstract class Pkcs12SigningCertificateLoader implements SigningCertificateLoade
     }
 
     private KeyStore loadKeystore() throws IOException {
-        InputStream pkcs12InputStream = pkcs12InputStream(path);
-        if (pkcs12InputStream == null) {
+        Resource keyStoreResource = resourceLoader.getResource(path);
+        if (!keyStoreResource.exists()) {
             throw new IllegalStateException(format("PKCS#12 key store not found at '%s'.", path));
         }
 
-        try (pkcs12InputStream) {
+        try (InputStream pkcs12InputStream = keyStoreResource.getInputStream()) {
             KeyStore pkcs12Keystore = KeyStore.getInstance(PKCS12_KEYSTORE_TYPE);
             pkcs12Keystore.load(pkcs12InputStream, password);
 

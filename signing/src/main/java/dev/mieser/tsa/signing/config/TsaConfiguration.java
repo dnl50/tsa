@@ -1,10 +1,10 @@
 package dev.mieser.tsa.signing.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ResourceLoader;
 
 import dev.mieser.tsa.datetime.api.CurrentDateTimeService;
 import dev.mieser.tsa.datetime.api.DateConverter;
@@ -15,7 +15,10 @@ import dev.mieser.tsa.signing.TspParser;
 import dev.mieser.tsa.signing.TspValidator;
 import dev.mieser.tsa.signing.api.TimeStampAuthority;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
-import dev.mieser.tsa.signing.cert.*;
+import dev.mieser.tsa.signing.cert.Pkcs12SigningCertificateLoader;
+import dev.mieser.tsa.signing.cert.PublicKeyAnalyzer;
+import dev.mieser.tsa.signing.cert.SigningCertificateExtractor;
+import dev.mieser.tsa.signing.cert.SigningCertificateLoader;
 import dev.mieser.tsa.signing.mapper.TimeStampResponseMapper;
 import dev.mieser.tsa.signing.mapper.TimeStampValidationResultMapper;
 import dev.mieser.tsa.signing.serial.RandomSerialNumberGenerator;
@@ -61,20 +64,11 @@ public class TsaConfiguration {
     }
 
     @Bean
-    @ConditionalOnExpression("#{!('${tsa.certificate.path}' matches '^classpath:.*$')}")
-    SigningCertificateLoader fileSystemCertificateLoader(TsaProperties tsaProperties) {
+    SigningCertificateLoader signingCertificateLoader(TsaProperties tsaProperties, ResourceLoader resourceLoader) {
         char[] password = toCharArray(tsaProperties.getCertificate().getPassword());
+        String path = tsaProperties.getCertificate().getPath();
 
-        return new FileSystemCertificateLoader(tsaProperties.getCertificate().getPath(), password);
-    }
-
-    @Bean
-    @ConditionalOnExpression("#{'${tsa.certificate.path}' matches '^classpath:.*$'}")
-    SigningCertificateLoader classPathSystemCertificateLoader(TsaProperties tsaProperties) {
-        char[] password = toCharArray(tsaProperties.getCertificate().getPassword());
-        String path = tsaProperties.getCertificate().getPath().replace("classpath:", "");
-
-        return new ClasspathCertificateLoader(path, password);
+        return new Pkcs12SigningCertificateLoader(resourceLoader, path, password);
     }
 
     private char[] toCharArray(String password) {

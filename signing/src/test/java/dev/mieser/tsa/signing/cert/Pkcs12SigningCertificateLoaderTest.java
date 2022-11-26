@@ -2,6 +2,7 @@ package dev.mieser.tsa.signing.cert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.given;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,7 +15,13 @@ import java.security.spec.PKCS8EncodedKeySpec;
 
 import org.bouncycastle.util.io.pem.PemReader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 
+@ExtendWith(MockitoExtension.class)
 class Pkcs12SigningCertificateLoaderTest {
 
     private static final char[] NO_PASSWORD = new char[0];
@@ -22,11 +29,14 @@ class Pkcs12SigningCertificateLoaderTest {
     private static final char[] PASSWORD = "supersecurepassword".toCharArray();
 
     @Test
-    void canLoadCertificateWhenPkcs12FileIsNotPasswordProtected() throws Exception {
+    void canLoadCertificateWhenPkcs12FileIsNotPasswordProtected(@Mock ResourceLoader resourceLoaderMock) throws Exception {
         // given
         X509Certificate expectedCertificate = loadCertificate();
+        String keyStoreFile = "unprotected.p12";
 
-        var testSubject = new Pkcs12SigningCertificateLoaderImpl("unprotected.p12", NO_PASSWORD);
+        given(resourceLoaderMock.getResource(keyStoreFile)).willReturn(new ClassPathResource(keyStoreFile, getClass()));
+
+        var testSubject = new Pkcs12SigningCertificateLoader(resourceLoaderMock, keyStoreFile, NO_PASSWORD);
 
         // when
         X509Certificate actualCertificate = testSubject.loadCertificate();
@@ -36,11 +46,14 @@ class Pkcs12SigningCertificateLoaderTest {
     }
 
     @Test
-    void canLoadPrivateKeyWhenPkcs12FileIsNotPasswordProtected() throws Exception {
+    void canLoadPrivateKeyWhenPkcs12FileIsNotPasswordProtected(@Mock ResourceLoader resourceLoaderMock) throws Exception {
         // given
         PrivateKey expectedPrivateKey = loadPrivateKey();
+        String keyStoreFile = "unprotected.p12";
 
-        var testSubject = new Pkcs12SigningCertificateLoaderImpl("unprotected.p12", NO_PASSWORD);
+        given(resourceLoaderMock.getResource(keyStoreFile)).willReturn(new ClassPathResource(keyStoreFile, getClass()));
+
+        var testSubject = new Pkcs12SigningCertificateLoader(resourceLoaderMock, keyStoreFile, NO_PASSWORD);
 
         // when
         PrivateKey actualCertificate = testSubject.loadPrivateKey();
@@ -50,11 +63,14 @@ class Pkcs12SigningCertificateLoaderTest {
     }
 
     @Test
-    void canLoadCertificateWhenPkcs12FileIsPasswordProtected() throws Exception {
+    void canLoadCertificateWhenPkcs12FileIsPasswordProtected(@Mock ResourceLoader resourceLoaderMock) throws Exception {
         // given
         X509Certificate expectedCertificate = loadCertificate();
+        String keyStoreFile = "password-protected.p12";
 
-        var testSubject = new Pkcs12SigningCertificateLoaderImpl("password-protected.p12", PASSWORD);
+        given(resourceLoaderMock.getResource(keyStoreFile)).willReturn(new ClassPathResource(keyStoreFile, getClass()));
+
+        var testSubject = new Pkcs12SigningCertificateLoader(resourceLoaderMock, keyStoreFile, PASSWORD);
 
         // when
         X509Certificate actualCertificate = testSubject.loadCertificate();
@@ -64,11 +80,14 @@ class Pkcs12SigningCertificateLoaderTest {
     }
 
     @Test
-    void canLoadPrivateKeyWhenPkcs12FileIsPasswordProtected() throws Exception {
+    void canLoadPrivateKeyWhenPkcs12FileIsPasswordProtected(@Mock ResourceLoader resourceLoaderMock) throws Exception {
         /// given
         PrivateKey expectedPrivateKey = loadPrivateKey();
+        String keyStoreFile = "password-protected.p12";
 
-        var testSubject = new Pkcs12SigningCertificateLoaderImpl("password-protected.p12", PASSWORD);
+        given(resourceLoaderMock.getResource(keyStoreFile)).willReturn(new ClassPathResource(keyStoreFile, getClass()));
+
+        var testSubject = new Pkcs12SigningCertificateLoader(resourceLoaderMock, keyStoreFile, PASSWORD);
 
         // when
         PrivateKey actualCertificate = testSubject.loadPrivateKey();
@@ -78,14 +97,18 @@ class Pkcs12SigningCertificateLoaderTest {
     }
 
     @Test
-    void throwsExceptionWhenKeyStoreNotPresent() {
+    void throwsExceptionWhenKeyStoreNotPresent(@Mock ResourceLoader resourceLoaderMock) {
         // given
-        var testSubject = new Pkcs12SigningCertificateLoaderImpl("/unknown-file.p12", NO_PASSWORD);
+        String keyStoreFile = "unknown-file.p12";
+
+        given(resourceLoaderMock.getResource(keyStoreFile)).willReturn(new ClassPathResource(keyStoreFile, getClass()));
+
+        var testSubject = new Pkcs12SigningCertificateLoader(resourceLoaderMock, keyStoreFile, NO_PASSWORD);
 
         // when / then
         assertThatIllegalStateException()
             .isThrownBy(testSubject::loadCertificate)
-            .withMessage("PKCS#12 key store not found at '/unknown-file.p12'.");
+            .withMessage("PKCS#12 key store not found at 'unknown-file.p12'.");
     }
 
     private PrivateKey loadPrivateKey() throws Exception {
@@ -105,19 +128,6 @@ class Pkcs12SigningCertificateLoaderTest {
         try (InputStream certificateInputStream = getClass().getResourceAsStream("x509/cert.pem")) {
             return (X509Certificate) certFactory.generateCertificate(certificateInputStream);
         }
-    }
-
-    private static class Pkcs12SigningCertificateLoaderImpl extends Pkcs12SigningCertificateLoader {
-
-        private Pkcs12SigningCertificateLoaderImpl(String path, char[] password) {
-            super(path, password);
-        }
-
-        @Override
-        InputStream pkcs12InputStream(String path) {
-            return getClass().getResourceAsStream(path);
-        }
-
     }
 
 }
