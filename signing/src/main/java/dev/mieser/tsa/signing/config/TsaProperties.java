@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.validation.annotation.Validated;
 
 import dev.mieser.tsa.domain.HashAlgorithm;
@@ -62,6 +63,7 @@ public class TsaProperties {
      * Encapsulates the properties for configuring the TSA certificate.
      */
     @Valid
+    @NestedConfigurationProperty
     private CertificateLoaderProperties certificate = new CertificateLoaderProperties();
 
     @Getter

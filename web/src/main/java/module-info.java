@@ -3,6 +3,8 @@ module tsa.web {
 
     requires spring.context;
 
+    requires spring.core;
+
     requires spring.web;
 
     requires spring.webmvc;

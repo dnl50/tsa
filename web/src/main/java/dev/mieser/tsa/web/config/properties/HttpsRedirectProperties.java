@@ -19,10 +19,11 @@ public class HttpsRedirectProperties {
      * The TCP port of the Tomcat Connector which redirects all incoming requests to the default connector configured by
      * Spring's {@code server.*} Properties. Defaults to port {@code 80}.
      * <p/>
-     * Must be a value between {@code 1} and {@code 65535} (inclusive) which differs from the default Tomcat Connector port
-     * used for other requests.
+     * Must be a value between {@code 0} and {@code 65535} (inclusive) which differs from the default Tomcat Connector port
+     * used for other requests. A value of {@code 0} means that a random port outside the well-known port range will be
+     * chosen.
      */
-    @Min(1L)
+    @Min(0L)
     @Max(65535L)
     private int port = 80;
 

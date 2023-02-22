@@ -29,7 +29,7 @@ class TimeStampAuthorityControllerIntegrationTest {
 
     private final int serverPort;
 
-    TimeStampAuthorityControllerIntegrationTest(@Value("${tsa.server.port}") int serverPort) {
+    TimeStampAuthorityControllerIntegrationTest(@Value("${local.tsa.port}") int serverPort) {
         this.serverPort = serverPort;
     }
 

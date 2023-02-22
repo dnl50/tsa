@@ -23,12 +23,19 @@ import dev.mieser.tsa.web.filter.TimeStampProtocolFilter;
 @EnableConfigurationProperties(TimeStampRequestHandlerProperties.class)
 class TimeStampRequestHandlerConfiguration implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
+    public static final int TSA_CONNECTOR_MARKER_PORT = 318;
+
     private final TimeStampRequestHandlerProperties timeStampRequestHandlerProperties;
 
+    /**
+     * @implNote The redirect port is only set to make this connector distinguishable from other connectors. Requests are
+     * not redirected since no security constraint enforces the redirect.
+     */
     @Override
     public void customize(TomcatServletWebServerFactory factory) {
         var connector = new Connector();
         connector.setPort(timeStampRequestHandlerProperties.getPort());
+        connector.setRedirectPort(TSA_CONNECTOR_MARKER_PORT);
 
         factory.addAdditionalTomcatConnectors(connector);
     }

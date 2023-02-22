@@ -4,7 +4,7 @@ tsa:
   accepted-hash-algorithms:
     - SHA512
   server:
-    port: 56760
+    port: 0
 spring:
   jpa:
     hibernate:
