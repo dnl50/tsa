@@ -3,18 +3,12 @@ plugins {
     `spotless-config`
 }
 
-val webResource by configurations.creating
-val provided by configurations.creating
-listOf(webResource, provided).forEach { config ->
-    config.isCanBeResolved = true
-    config.isCanBeConsumed = false
+val provided by configurations.creating {
+    isCanBeResolved = true
+    isCanBeConsumed = false
 }
 
 configurations {
-    runtimeOnly {
-        extendsFrom(webResource)
-    }
-
     listOf(compileOnly, testImplementation).forEach { config ->
         config.configure {
             extendsFrom(provided)
@@ -52,11 +46,11 @@ dependencies {
     testRuntimeOnly("org.hibernate.validator:hibernate-validator")
     testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
 
-    webResource("org.webjars:bootstrap:${libs.versions.webjars.bootstrap.get()}")
-    webResource("org.webjars.npm:bootstrap-icons:${libs.versions.webjars.bootstrapIcons.get()}")
-    webResource("org.webjars:jquery:${libs.versions.webjars.jquery.get()}")
-    webResource("org.webjars:popper.js:${libs.versions.webjars.poppers.get()}")
-    webResource("org.webjars:datatables:${libs.versions.webjars.datatables.get()}") {
+    runtimeOnly("org.webjars:bootstrap:${libs.versions.webjars.bootstrap.get()}")
+    runtimeOnly("org.webjars.npm:bootstrap-icons:${libs.versions.webjars.bootstrapIcons.get()}")
+    runtimeOnly("org.webjars:jquery:${libs.versions.webjars.jquery.get()}")
+    runtimeOnly("org.webjars:popper.js:${libs.versions.webjars.poppers.get()}")
+    runtimeOnly("org.webjars:datatables:${libs.versions.webjars.datatables.get()}") {
         exclude("org.webjars", "jquery")
     }
 
