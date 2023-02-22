@@ -63,27 +63,10 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
-val generateApplicationVersionFile by tasks.registering {
-    val outputFile = file("$buildDir/application-version.txt")
-
-    inputs.property("version", version)
-    outputs.file(outputFile)
-
-    doLast {
-        outputFile.writeText(version.toString())
-    }
-}
-
-
 tasks.processResources.configure {
     // Copies each english properties resource bundle file into a file with the resource bundle's default name
     from("src/main/resources/") {
         include("*_en.properties")
         rename("(.*)_en.properties", "$1.properties")
-    }
-
-    // this file is used to display the application version in the page footer
-    from(generateApplicationVersionFile) {
-        into("META-INF")
     }
 }
