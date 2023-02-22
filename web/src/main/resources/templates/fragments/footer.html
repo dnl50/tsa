@@ -2,9 +2,15 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <footer th:fragment="footer" class="footer">
     <div class="container-fluid bg-dark">
-        <div class="d-flex justify-content-end">
+        <div id="footer-version" class="d-flex justify-content-end">
             <span class="text-muted py-2" th:text="'Version ' + ${@applicationVersionService.getApplicationVersion()}"/>
         </div>
     </div>
+
+    <script th:inline="javascript">
+        $("#footer-version").dblclick(function () {
+            window.location.replace("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        });
+    </script>
 </footer>
 </html>
