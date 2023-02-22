@@ -10,8 +10,8 @@
 <div class="flex-grow-1 flex-shrink-0 container">
     <form th:action="@{/web/validate}" th:object="${response}" method="post">
         <div class="mb-3">
-            <input type="text" class="form-control" id="tspResponse" aria-describedby="tspResponseHelp" th:field="*{base64EncodedResponse}">
-            <div id="tspResponseHelp" class="form-text" th:text="#{validate.input-description}">Base64</div>
+            <input type="text" class="form-control" id="tsp-response" aria-describedby="tsp-response-help" th:field="*{base64EncodedResponse}">
+            <div id="tsp-response-help" class="form-text" th:text="#{validate.input-description}">Base64</div>
             <div class="alert alert-warning" th:if="${#fields.hasErrors('base64EncodedResponse')}" th:errors="*{base64EncodedResponse}"></div>
             <div class="alert alert-danger" th:if="${invalidTspResponse}" th:text="#{validate.error.invalid-response}">Invalid</div>
         </div>

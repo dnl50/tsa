@@ -7,15 +7,15 @@
 
 <div th:replace="~{fragments/navbar.html :: navbar}"></div>
 
-<div id="hashValueModal" class="modal fade" tabindex="-1" aria-labelledby="hashValueModalLabel" aria-hidden="true">
+<div id="hash-value-modal" class="modal fade" tabindex="-1" aria-labelledby="hash-value-modal-label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 id="hashValueModalLabel" class="modal-title" th:text="#{history.hash-modal.title}">Hash</h5>
+                <h5 id="hash-value-modal-label" class="modal-title" th:text="#{history.hash-modal.title}">Hash</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <span class="text-break font-monospace" id="hashValueModalContent">dynamically replaced by jQuery onClick Handler</span>
+                <span class="text-break font-monospace" id="hash-value-modal-content">dynamically replaced by jQuery onClick Handler</span>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{history.hash-modal.close}">Close</button>
@@ -85,8 +85,8 @@
             const clickedRow = historyTable.row($(this).parents('tr'))
             const base64Hash = clickedRow.data().request.hash
 
-            $('#hashValueModalContent').text(base64Hash)
-            $('#hashValueModal').modal('show');
+            $('#hash-value-modal-content').text(base64Hash)
+            $('#hash-value-modal').modal('show');
         });
     });
 </script>
