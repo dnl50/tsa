@@ -1,6 +1,6 @@
 [versions]
-spring-boot = "3.0.0"
-tomcat = "10.1.1"
+spring-boot = "3.0.2"
+tomcat = "10.1.5"
 jacoco = "0.8.8"
 spotless = "6.12.0"
 mapstruct = "1.5.3.Final"

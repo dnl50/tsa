@@ -38,7 +38,7 @@ You can also download the signing certificate in case it is included in the resp
 ## Configuration
 
 All Parameters mentioned below can be configured in variety of ways. Please refer to the
-[Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/3.0.0/reference/html/features.html#features.external-config)
+[Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/3.0.2/reference/html/features.html#features.external-config)
 for more information.
 
 ### Time Stamp Protocol
@@ -84,7 +84,7 @@ that path will make the DB data persistent.
 
 ## Configure Logging
 
-By default, all log messages will be printed to STDOUT. If you want to configure the logging library used ([Logback](https://logback.qos.ch/)), please refer to the relevant section in the [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/3.0.0/reference/html/features.html#features.logging)
+By default, all log messages will be printed to STDOUT. If you want to configure the logging library used ([Logback](https://logback.qos.ch/)), please refer to the relevant section in the [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/3.0.2/reference/html/features.html#features.logging)
 
 ## Development
 
