@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -19,13 +20,13 @@ import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
 @ExtendWith(MockitoExtension.class)
 class QueryTimeStampResponseServiceImplTest {
 
-    private final TspResponseDataRepository tspResponseDataRepositoryMock;
+    @Mock
+    private TspResponseDataRepository tspResponseDataRepositoryMock;
 
-    private final QueryTimeStampResponseServiceImpl testSubject;
+    private QueryTimeStampResponseServiceImpl testSubject;
 
-    QueryTimeStampResponseServiceImplTest(@Mock TspResponseDataRepository tspResponseDataRepositoryMock) {
-        this.tspResponseDataRepositoryMock = tspResponseDataRepositoryMock;
-
+    @BeforeEach
+    void setUp() {
         this.testSubject = new QueryTimeStampResponseServiceImpl(tspResponseDataRepositoryMock);
     }
 

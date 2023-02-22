@@ -26,11 +26,8 @@ class HashBasedCertificateSelectorTest {
 
     private static final AlgorithmIdentifier SHA256_IDENTIFIER = new AlgorithmIdentifier(id_sha256);
 
-    private final DigestCalculatorProvider digestCalculatorProviderMock;
-
-    HashBasedCertificateSelectorTest(@Mock DigestCalculatorProvider digestCalculatorProviderMock) {
-        this.digestCalculatorProviderMock = digestCalculatorProviderMock;
-    }
+    @Mock
+    private DigestCalculatorProvider digestCalculatorProviderMock;
 
     @Test
     void matchThrowsExceptionWhenDigestCalculatorCannotBeConstructed(

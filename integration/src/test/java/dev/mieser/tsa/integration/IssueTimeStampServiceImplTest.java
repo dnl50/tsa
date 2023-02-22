@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -19,17 +20,16 @@ import dev.mieser.tsa.signing.api.TimeStampAuthority;
 @ExtendWith(MockitoExtension.class)
 class IssueTimeStampServiceImplTest {
 
-    private final TimeStampAuthority timeStampAuthorityMock;
+    @Mock
+    private TimeStampAuthority timeStampAuthorityMock;
 
-    private final TspResponseDataRepository responseDataRepositoryMock;
+    @Mock
+    private TspResponseDataRepository responseDataRepositoryMock;
 
-    private final IssueTimeStampServiceImpl testSubject;
+    private IssueTimeStampServiceImpl testSubject;
 
-    IssueTimeStampServiceImplTest(@Mock TimeStampAuthority timeStampAuthorityMock,
-        @Mock TspResponseDataRepository responseDataRepositoryMock) {
-        this.timeStampAuthorityMock = timeStampAuthorityMock;
-        this.responseDataRepositoryMock = responseDataRepositoryMock;
-
+    @BeforeEach
+    void setUp() {
         this.testSubject = new IssueTimeStampServiceImpl(timeStampAuthorityMock, responseDataRepositoryMock);
     }
 

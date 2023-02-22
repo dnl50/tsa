@@ -2,6 +2,7 @@ package dev.mieser.tsa.app;
 
 import static org.mockito.BDDMockito.then;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -13,15 +14,16 @@ import dev.mieser.tsa.signing.api.TimeStampValidator;
 @ExtendWith(MockitoExtension.class)
 class TsaServiceInitializerTest {
 
-    private final TimeStampAuthority timeStampAuthorityMock;
+    @Mock
+    private TimeStampAuthority timeStampAuthorityMock;
 
-    private final TimeStampValidator timeStampValidatorMock;
+    @Mock
+    private TimeStampValidator timeStampValidatorMock;
 
-    private final TsaServiceInitializer testSubject;
+    private TsaServiceInitializer testSubject;
 
-    TsaServiceInitializerTest(@Mock TimeStampAuthority timeStampAuthorityMock, @Mock TimeStampValidator timeStampValidatorMock) {
-        this.timeStampAuthorityMock = timeStampAuthorityMock;
-        this.timeStampValidatorMock = timeStampValidatorMock;
+    @BeforeEach
+    void setUp() {
         this.testSubject = new TsaServiceInitializer(timeStampAuthorityMock, timeStampValidatorMock);
     }
 

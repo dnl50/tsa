@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.willReturn;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,17 +22,16 @@ import dev.mieser.tsa.persistence.mapper.TspResponseMapper;
 @ExtendWith(MockitoExtension.class)
 class TspResponseDataRepositoryImplTest {
 
-    private final TspResponseMapper tspResponseMapperMock;
+    @Mock
+    private TspResponseMapper tspResponseMapperMock;
 
-    private final TspResponseEntityRepository repositoryMock;
+    @Mock
+    private TspResponseEntityRepository repositoryMock;
 
-    private final TspResponseDataRepositoryImpl testSubject;
+    private TspResponseDataRepositoryImpl testSubject;
 
-    TspResponseDataRepositoryImplTest(@Mock TspResponseMapper tspResponseMapperMock,
-        @Mock TspResponseEntityRepository repositoryMock) {
-        this.tspResponseMapperMock = tspResponseMapperMock;
-        this.repositoryMock = repositoryMock;
-
+    @BeforeEach
+    void setUp() {
         this.testSubject = new TspResponseDataRepositoryImpl(tspResponseMapperMock, repositoryMock);
     }
 

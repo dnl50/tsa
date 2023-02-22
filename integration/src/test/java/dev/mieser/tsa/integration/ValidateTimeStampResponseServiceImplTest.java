@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.then;
 
 import java.io.InputStream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -21,12 +22,13 @@ import dev.mieser.tsa.signing.api.TimeStampValidator;
 @ExtendWith(MockitoExtension.class)
 class ValidateTimeStampResponseServiceImplTest {
 
-    private final TimeStampValidator timeStampValidatorMock;
+    @Mock
+    private TimeStampValidator timeStampValidatorMock;
 
-    private final ValidateTimeStampResponseServiceImpl testSubject;
+    private ValidateTimeStampResponseServiceImpl testSubject;
 
-    ValidateTimeStampResponseServiceImplTest(@Mock TimeStampValidator timeStampValidatorMock) {
-        this.timeStampValidatorMock = timeStampValidatorMock;
+    @BeforeEach
+    void setUp() {
         this.testSubject = new ValidateTimeStampResponseServiceImpl(timeStampValidatorMock);
     }
 

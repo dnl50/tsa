@@ -21,6 +21,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.tsp.TimeStampResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -36,12 +37,13 @@ import dev.mieser.tsa.testutil.TimeStampResponseGenerator.ResponseProperties;
 @ExtendWith(MockitoExtension.class)
 class TimeStampValidationResultMapperTest {
 
-    private final DateConverter dateConverterMock;
+    @Mock
+    private DateConverter dateConverterMock;
 
-    private final TimeStampValidationResultMapper testSubject;
+    private TimeStampValidationResultMapper testSubject;
 
-    TimeStampValidationResultMapperTest(@Mock DateConverter dateConverterMock) {
-        this.dateConverterMock = dateConverterMock;
+    @BeforeEach
+    void setUp() {
         this.testSubject = new TimeStampValidationResultMapper(dateConverterMock);
     }
 
@@ -161,6 +163,7 @@ class TimeStampValidationResultMapperTest {
         X509Certificate certificate = loadEcCertificate();
         X509CertificateHolder certificateHolder = new X509CertificateHolder(certificate.getEncoded());
         ZonedDateTime mappedExpirationDate = ZonedDateTime.parse("2030-12-27T12:00:00+01:00");
+
         SigningCertificateHolder signingCertificateHolder = new SigningCertificateHolder(new AlgorithmIdentifier(id_SHA1),
             "hash".getBytes(UTF_8), certificateHolder);
 
@@ -174,6 +177,8 @@ class TimeStampValidationResultMapperTest {
             .build();
         TimeStampResponse timeStampResponse = generateTimeStampResponseMock(grantedResponseProperties);
 
+        given(dateConverterMock.toZonedDateTime(timeStampResponse.getTimeStampToken().getTimeStampInfo().getGenTime()))
+            .willReturn(ZonedDateTime.now());
         given(dateConverterMock.toZonedDateTime(certificateHolder.getNotAfter())).willReturn(mappedExpirationDate);
 
         // when

@@ -58,32 +58,26 @@ class BouncyCastleTimeStampAuthorityTest {
 
     private static final byte[] SHA_256_HASH = "32 character long ASCII sequence".getBytes(UTF_8);
 
-    private final TspParser tspParserMock;
+    @Mock
+    private TspParser tspParserMock;
 
-    private final TspValidator tspValidatorMock;
+    @Mock
+    private TspValidator tspValidatorMock;
 
-    private final SigningCertificateLoader signingCertificateLoaderMock;
+    @Mock
+    private SigningCertificateLoader signingCertificateLoaderMock;
 
-    private final CurrentDateTimeService currentDateTimeServiceMock;
+    @Mock
+    private CurrentDateTimeService currentDateTimeServiceMock;
 
-    private final SerialNumberGenerator serialNumberGeneratorMock;
+    @Mock
+    private SerialNumberGenerator serialNumberGeneratorMock;
 
-    private final TimeStampResponseMapper timeStampResponseMapperMock;
+    @Mock
+    private TimeStampResponseMapper timeStampResponseMapperMock;
 
-    private final PublicKeyAnalyzer publicKeyAnalyzerMock;
-
-    BouncyCastleTimeStampAuthorityTest(@Mock TspParser tspParserMock, @Mock TspValidator tspValidatorMock,
-        @Mock SigningCertificateLoader signingCertificateLoaderMock, @Mock CurrentDateTimeService currentDateTimeServiceMock,
-        @Mock SerialNumberGenerator serialNumberGeneratorMock, @Mock TimeStampResponseMapper timeStampResponseMapper,
-        @Mock PublicKeyAnalyzer publicKeyAnalyzerMock) {
-        this.tspParserMock = tspParserMock;
-        this.tspValidatorMock = tspValidatorMock;
-        this.signingCertificateLoaderMock = signingCertificateLoaderMock;
-        this.currentDateTimeServiceMock = currentDateTimeServiceMock;
-        this.serialNumberGeneratorMock = serialNumberGeneratorMock;
-        this.timeStampResponseMapperMock = timeStampResponseMapper;
-        this.publicKeyAnalyzerMock = publicKeyAnalyzerMock;
-    }
+    @Mock
+    private PublicKeyAnalyzer publicKeyAnalyzerMock;
 
     @Nested
     class InitializeTest {

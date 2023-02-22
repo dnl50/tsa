@@ -20,6 +20,7 @@ import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.tsp.TimeStampTokenInfo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -33,12 +34,13 @@ import dev.mieser.tsa.domain.TimeStampResponseData;
 @ExtendWith(MockitoExtension.class)
 class TimeStampResponseMapperTest {
 
-    private final DateConverter dateConverterMock;
+    @Mock
+    private DateConverter dateConverterMock;
 
-    private final TimeStampResponseMapper testSubject;
+    private TimeStampResponseMapper testSubject;
 
-    public TimeStampResponseMapperTest(@Mock DateConverter dateConverterMock) {
-        this.dateConverterMock = dateConverterMock;
+    @BeforeEach
+    void setUp() {
         this.testSubject = new TimeStampResponseMapper(dateConverterMock);
     }
 

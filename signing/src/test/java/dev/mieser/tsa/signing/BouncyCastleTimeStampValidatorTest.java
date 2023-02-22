@@ -38,29 +38,23 @@ import dev.mieser.tsa.signing.mapper.TimeStampValidationResultMapper;
 @ExtendWith(MockitoExtension.class)
 class BouncyCastleTimeStampValidatorTest {
 
-    private final TspParser tspParserMock;
+    @Mock
+    private TspParser tspParserMock;
 
-    private final SigningCertificateLoader signingCertificateLoaderMock;
+    @Mock
+    private SigningCertificateLoader signingCertificateLoaderMock;
 
-    private final PublicKeyAnalyzer publicKeyAnalyzerMock;
+    @Mock
+    private PublicKeyAnalyzer publicKeyAnalyzerMock;
 
-    private final TimeStampValidationResultMapper timeStampValidationResultMapperMock;
+    @Mock
+    private TimeStampValidationResultMapper timeStampValidationResultMapperMock;
 
-    private final TspValidator tspValidatorMock;
+    @Mock
+    private TspValidator tspValidatorMock;
 
-    private final SigningCertificateExtractor signingCertificateExtractorMock;
-
-    BouncyCastleTimeStampValidatorTest(@Mock TspParser tspParserMock, @Mock SigningCertificateLoader signingCertificateLoaderMock,
-        @Mock PublicKeyAnalyzer publicKeyAnalyzerMock,
-        @Mock TimeStampValidationResultMapper timeStampValidationResultMapperMock,
-        @Mock TspValidator tspValidatorMock, @Mock SigningCertificateExtractor signingCertificateExtractorMock) {
-        this.tspParserMock = tspParserMock;
-        this.signingCertificateLoaderMock = signingCertificateLoaderMock;
-        this.publicKeyAnalyzerMock = publicKeyAnalyzerMock;
-        this.timeStampValidationResultMapperMock = timeStampValidationResultMapperMock;
-        this.signingCertificateExtractorMock = signingCertificateExtractorMock;
-        this.tspValidatorMock = tspValidatorMock;
-    }
+    @Mock
+    private SigningCertificateExtractor signingCertificateExtractorMock;
 
     @Nested
     class ValidateResponseTest {
