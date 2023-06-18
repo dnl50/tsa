@@ -1,2 +1,0 @@
-org.springframework.context.ApplicationListener=\
-  dev.mieser.tsa.web.config.TsaPortInfoApplicationContextInitializer

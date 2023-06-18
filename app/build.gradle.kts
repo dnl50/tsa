@@ -1,40 +1,87 @@
-import org.springframework.boot.gradle.tasks.run.BootRun
-
 plugins {
-    `java-convention`
-    `spotless-config`
-    alias(libs.plugins.spring.boot)
-    alias(libs.plugins.gitProperties)
+    java
+    id("io.quarkus") version libs.versions.quarkus
+    id("com.diffplug.spotless") version libs.versions.spotless
 }
 
+repositories {
+    mavenCentral()
+}
+
+val openApiSpecification by configurations.creating {
+    isCanBeResolved = false
+    isCanBeConsumed = true
+}
+
+// TODO: archunit test
 dependencies {
-    implementation(project(":web"))
-    implementation(project(":signing"))
+    implementation(enforcedPlatform("io.quarkus.platform:quarkus-bom:${libs.versions.quarkus.get()}"))
 
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-tomcat")
+    implementation("io.quarkus:quarkus-smallrye-openapi")
+    implementation("io.quarkus:quarkus-arc")
+    implementation("io.quarkus:quarkus-hibernate-orm-panache")
 
-    integrationTestImplementation("org.apache.commons:commons-lang3")
-    integrationTestImplementation("io.rest-assured:rest-assured")
-    integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
-    integrationTestImplementation(libs.bouncycastle.bcpkix)
-    integrationTestImplementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("commons-io:commons-io")
+    implementation("org.apache.commons:commons-lang3")
 
-    runtimeOnly("org.hibernate.validator:hibernate-validator")
-    runtimeOnly("org.springframework.boot:spring-boot-starter-actuator")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    implementation("jakarta.validation:jakarta.validation-api")
+    implementation("jakarta.ws.rs:jakarta.ws.rs-api")
+    implementation("org.bouncycastle:bcpkix-jdk18on:${libs.versions.bouncycastle.get()}")
+    implementation("org.mapstruct:mapstruct:${libs.versions.mapstruct.get()}")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools:${libs.versions.spring.boot.get()}")
+    runtimeOnly("io.quarkus:quarkus-jdbc-h2")
+    runtimeOnly("io.quarkus:quarkus-flyway")
+    runtimeOnly("io.quarkus:quarkus-resteasy-reactive")
+    runtimeOnly("io.quarkus:quarkus-resteasy-reactive-jackson")
+    runtimeOnly("io.quarkus:quarkus-hibernate-validator")
+
+    compileOnly("org.projectlombok:lombok:${libs.versions.lombok.get()}")
+
+    annotationProcessor("org.projectlombok:lombok:${libs.versions.lombok.get()}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${libs.versions.mapstruct.get()}")
+
+    testImplementation("org.mockito:mockito-junit-jupiter")
+    testImplementation("io.quarkus:quarkus-junit5-mockito")
+    testImplementation("org.assertj:assertj-core:${libs.versions.assertj.get()}")
+    testImplementation("io.rest-assured:rest-assured")
+
+    testCompileOnly("org.projectlombok:lombok:${libs.versions.lombok.get()}")
+    testAnnotationProcessor("org.projectlombok:lombok:${libs.versions.lombok.get()}")
 }
 
-tasks.getByName<BootRun>("bootRun") {
-    args = listOf("--spring.profiles.active=dev")
+group = "dev.mieser.app.tsa"
+version = "1.0.0-SNAPSHOT"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
-springBoot {
-    buildInfo {
-        properties {
-            excludes.set(setOf("time", "artifact", "group", "name"))
-        }
+tasks.withType<Test>().configureEach {
+    systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs.add("-parameters")
+}
+
+val openApiSpecificationFile = file("$buildDir/openapi-specification.json")
+
+tasks.test.configure {
+    outputs.file(openApiSpecificationFile)
+    systemProperty("openapi.specification.target-file", openApiSpecificationFile.absolutePath)
+}
+
+artifacts {
+    add(openApiSpecification.name, openApiSpecificationFile) {
+        builtBy(tasks.test)
+    }
+}
+
+spotless {
+    java {
+        importOrderFile("$rootDir/spotless.importorder")
+        removeUnusedImports()
+        eclipse().configFile("$rootDir/eclipse-formatter.xml")
     }
 }

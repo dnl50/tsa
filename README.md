@@ -1,9 +1,10 @@
 # Time Stamp Authority
 
+**TODO: document changes after Quarkus migration**
+
 This is a Java implementation of a Time Stamp Authority using the Time-Stamp Protocol (_TSP_) as defined
 in [RFC 3161](https://tools.ietf.org/html/rfc3161) and
-[RFC 5816](https://tools.ietf.org/html/rfc5816). It uses Bouncy Castle, Spring Boot, Spring Data JPA and Thymeleaf under
-the hood.
+[RFC 5816](https://tools.ietf.org/html/rfc5816). It uses Bouncy Castle and Quarkus under the hood.
 
 ## Features
 
