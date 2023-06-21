@@ -1,7 +1,5 @@
 package dev.mieser.tsa.datetime.config;
 
-import java.time.ZoneId;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 
@@ -15,7 +13,7 @@ public class DateTimeConfig {
     @Produces
     @ApplicationScoped
     DateConverter dateConverter() {
-        return new DateConverterImpl(ZoneId.systemDefault());
+        return new DateConverterImpl();
     }
 
     @Produces

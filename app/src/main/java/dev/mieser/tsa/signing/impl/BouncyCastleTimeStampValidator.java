@@ -26,7 +26,6 @@ import org.bouncycastle.tsp.TimeStampResponse;
 import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
-import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
@@ -118,7 +117,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
             X509Certificate signingCertificate = signingCertificateLoader.loadCertificate();
             String jcaAlgorithmName = signingCertificate.getPublicKey().getAlgorithm();
             PublicKeyAlgorithm publicKeyAlgorithm = PublicKeyAlgorithm.fromJcaName(jcaAlgorithmName)
-                .orElseThrow(() -> new TsaInitializationException(
+                .orElseThrow(() -> new IllegalStateException(
                     String.format("Unsupported public key algorithm '%s'.", jcaAlgorithmName)));
 
             var signingCertificateHolder = new X509CertificateHolder(signingCertificate.getEncoded());
@@ -133,7 +132,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
             };
 
         } catch (IOException | CertificateEncodingException | OperatorCreationException e) {
-            throw new TsaInitializationException("Failed to initialize content verifier provider.", e);
+            throw new IllegalStateException("Failed to initialize content verifier provider.", e);
         }
     }
 

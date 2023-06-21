@@ -1,10 +1,13 @@
 package dev.mieser.tsa.signing.impl;
 
-import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
+import dev.mieser.tsa.domain.HashAlgorithm;
 
 class TspValidatorTest {
 
@@ -22,10 +25,11 @@ class TspValidatorTest {
         assertThat(known).isFalse();
     }
 
-    @Test
-    void isKnownHashAlgorithmReturnsTrueWhenHashAlgorithmIsKnown() {
+    @ParameterizedTest
+    @EnumSource
+    void isKnownHashAlgorithmReturnsTrueWhenHashAlgorithmIsKnown(HashAlgorithm hashAlgorithm) {
         // given
-        String oid = SHA512.getObjectIdentifier();
+        String oid = hashAlgorithm.getObjectIdentifier();
 
         // when
         boolean known = testSubject.isKnownHashAlgorithm(new ASN1ObjectIdentifier(oid));

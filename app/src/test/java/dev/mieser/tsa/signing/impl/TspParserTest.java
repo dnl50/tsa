@@ -2,7 +2,6 @@ package dev.mieser.tsa.signing.impl;
 
 import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -12,14 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1Boolean;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.tsp.MessageImprint;
 import org.bouncycastle.asn1.tsp.TimeStampReq;
-import org.bouncycastle.asn1.tsp.TimeStampResp;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
@@ -85,22 +83,21 @@ class TspParserTest {
     @Test
     void parseResponseReturnsExpectedResponse() throws Exception {
         // given
-        TimeStampResp timeStampResponse = parseTimeStampResponse();
-        InputStream tspResponseInputStream = new ByteArrayInputStream(timeStampResponse.getEncoded());
+        byte[] timeStampResponse = readAsnEncodedTimeStampResponse();
+        InputStream tspResponseInputStream = new ByteArrayInputStream(timeStampResponse);
 
         // when
         TimeStampResponse parsedResponse = testSubject.parseResponse(tspResponseInputStream);
 
         // then
-        assertThat(parsedResponse.getEncoded()).isEqualTo(timeStampResponse.getEncoded());
+        assertThat(parsedResponse.getEncoded()).isEqualTo(timeStampResponse);
     }
 
     @Test
     void parseResponseDoesNotCloseInputStream() throws Exception {
         // given
-        TimeStampResp timeStampResponse = parseTimeStampResponse();
-        CloseAwareInputStream tspResponseInputStream = new CloseAwareInputStream(
-            new ByteArrayInputStream(timeStampResponse.getEncoded()));
+        byte[] timeStampResponse = readAsnEncodedTimeStampResponse();
+        CloseAwareInputStream tspResponseInputStream = new CloseAwareInputStream(new ByteArrayInputStream(timeStampResponse));
 
         // when
         testSubject.parseResponse(tspResponseInputStream);
@@ -118,14 +115,9 @@ class TspParserTest {
         return new TimeStampReq(messageImprint, policyId, nonce, ASN1Boolean.TRUE, null);
     }
 
-    private TimeStampResp parseTimeStampResponse() throws IOException {
+    private byte[] readAsnEncodedTimeStampResponse() throws IOException {
         try (InputStream resourceInputStream = getClass().getResourceAsStream("tsp-response.base64")) {
-            String base64EncodedResponse = IOUtils.toString(resourceInputStream, UTF_8);
-            byte[] asn1EncodedTspResponse = decodeBase64(base64EncodedResponse);
-
-            try (ASN1InputStream asn1InputStream = new ASN1InputStream(asn1EncodedTspResponse)) {
-                return TimeStampResp.getInstance(asn1InputStream.readObject());
-            }
+            return Base64.decodeBase64(IOUtils.toString(resourceInputStream, UTF_8));
         }
     }
 

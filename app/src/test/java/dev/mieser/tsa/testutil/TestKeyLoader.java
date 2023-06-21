@@ -43,7 +43,7 @@ public class TestKeyLoader {
      */
     public static synchronized X509Certificate loadRsaCertificate() {
         if (rsaCertificate == null) {
-            rsaCertificate = loadCertificateFromClasspath("/rsa/cert.pem");
+            rsaCertificate = loadCertificateFromClasspath("rsa/cert.pem");
         }
 
         return rsaCertificate;
@@ -55,7 +55,7 @@ public class TestKeyLoader {
      */
     public static synchronized RSAPrivateKey loadRsaPrivateKey() {
         if (rsaPrivateKey == null) {
-            rsaPrivateKey = loadPrivateKeyFromClasspath("/rsa/key.pem", "RSA");
+            rsaPrivateKey = loadPrivateKeyFromClasspath("rsa/key.pem", "RSA");
         }
 
         return rsaPrivateKey;
@@ -68,7 +68,7 @@ public class TestKeyLoader {
      */
     public static synchronized X509Certificate loadDsaCertificate() {
         if (dsaCertificate == null) {
-            dsaCertificate = loadCertificateFromClasspath("/dsa/cert.pem");
+            dsaCertificate = loadCertificateFromClasspath("dsa/cert.pem");
         }
 
         return dsaCertificate;
@@ -80,7 +80,7 @@ public class TestKeyLoader {
      */
     public static synchronized DSAPrivateKey loadDsaPrivateKey() {
         if (dsaPrivateKey == null) {
-            dsaPrivateKey = loadPrivateKeyFromClasspath("/dsa/key.pem", "DSA");
+            dsaPrivateKey = loadPrivateKeyFromClasspath("dsa/key.pem", "DSA");
         }
 
         return dsaPrivateKey;
@@ -93,7 +93,7 @@ public class TestKeyLoader {
      */
     public static synchronized X509Certificate loadEcCertificate() {
         if (ecCertificate == null) {
-            ecCertificate = loadCertificateFromClasspath("/ec/cert.pem");
+            ecCertificate = loadCertificateFromClasspath("ec/cert.pem");
         }
 
         return ecCertificate;
@@ -105,7 +105,7 @@ public class TestKeyLoader {
      */
     public static synchronized ECPrivateKey loadEcPrivateKey() {
         if (ecPrivateKey == null) {
-            ecPrivateKey = loadPrivateKeyFromClasspath("/ec/key.pem", "EC");
+            ecPrivateKey = loadPrivateKeyFromClasspath("ec/key.pem", "EC");
         }
 
         return ecPrivateKey;

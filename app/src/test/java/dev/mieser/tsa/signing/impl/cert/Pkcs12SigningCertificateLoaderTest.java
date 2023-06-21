@@ -1,6 +1,7 @@
 package dev.mieser.tsa.signing.impl.cert;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.*;
 import java.security.KeyFactory;
@@ -9,6 +10,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 
+import org.apache.commons.io.FileUtils;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -115,8 +117,8 @@ class Pkcs12SigningCertificateLoaderTest {
 
     private File copyResourceToTempDirectory(String resourcePath) throws IOException {
         var tempFile = new File(tempDir, "file");
-        try (var inputStream = getClass().getResourceAsStream(resourcePath); var outputStream = new FileOutputStream(tempFile)) {
-            inputStream.transferTo(outputStream);
+        try (var inputStream = getClass().getResourceAsStream(resourcePath);) {
+            FileUtils.copyInputStreamToFile(inputStream, tempFile);
         }
 
         return tempFile;

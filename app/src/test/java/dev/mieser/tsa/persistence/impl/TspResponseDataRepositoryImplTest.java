@@ -15,11 +15,14 @@ import dev.mieser.tsa.domain.ResponseStatus;
 import dev.mieser.tsa.domain.TimeStampRequestData;
 import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
+import dev.mieser.tsa.quarkus.TsaTestProfile;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 
 @QuarkusTest
 @TestTransaction
+@TestProfile(TsaTestProfile.class)
 class TspResponseDataRepositoryImplTest {
 
     private final TspResponseDataRepository testSubject;

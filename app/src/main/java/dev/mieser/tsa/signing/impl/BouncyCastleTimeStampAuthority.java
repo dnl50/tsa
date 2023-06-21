@@ -1,7 +1,5 @@
 package dev.mieser.tsa.signing.impl;
 
-import static java.lang.String.format;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -69,7 +67,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
         TimeStampRequest timeStampRequest = tspParser.parseRequest(tspRequestInputStream);
         if (!tspValidator.isKnownHashAlgorithm(timeStampRequest.getMessageImprintAlgOID())) {
             throw new UnknownHashAlgorithmException(
-                format("Unknown hash algorithm OID '%s'.", timeStampRequest.getMessageImprintAlgOID().getId()));
+                String.format("Unknown hash algorithm OID '%s'.", timeStampRequest.getMessageImprintAlgOID().getId()));
         }
 
         return generateTspResponse(timeStampRequest);
@@ -145,12 +143,12 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
         X509Certificate signingCertificate = signingCertificateLoader.loadCertificate();
         String jcaAlgorithmName = signingCertificate.getPublicKey().getAlgorithm();
         PublicKeyAlgorithm publicKeyAlgorithm = PublicKeyAlgorithm.fromJcaName(jcaAlgorithmName)
-            .orElseThrow(
-                () -> new TsaInitializationException(format("Public Key algorithm '%s' is not supported.", jcaAlgorithmName)));
+            .orElseThrow(() -> new IllegalArgumentException(
+                String.format("Public Key algorithm '%s' is not supported.", jcaAlgorithmName)));
 
         PrivateKey signingPrivateKey = signingCertificateLoader.loadPrivateKey();
         String signingAlgorithmName = bouncyCastleSignatureAlgorithmName(publicKeyAlgorithm);
-        log.info("Public key algorithm is '{}', using signing algorithm '{}'.", publicKeyAlgorithm.getJcaName(),
+        log.info("Public key algorithm is '{}', using signature algorithm '{}'.", publicKeyAlgorithm.getJcaName(),
             signingAlgorithmName);
 
         return new JcaSimpleSignerInfoGeneratorBuilder().build(signingAlgorithmName, signingPrivateKey, signingCertificate);
@@ -168,7 +166,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
         case RSA, DSA -> publicKeyAlgorithm.getJcaName();
         };
 
-        return format("%swith%s", tsaProperties.signingDigestAlgorithm().name(), signatureAlgorithmSuffix);
+        return String.format("%swith%s", tsaProperties.signingDigestAlgorithm().name(), signatureAlgorithmSuffix);
     }
 
     /**
