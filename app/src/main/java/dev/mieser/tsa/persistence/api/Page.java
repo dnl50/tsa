@@ -9,9 +9,11 @@ import java.util.List;
  *     The number of this page starting at 1.
  * @param totalPages
  *     The total number of pages when using the specified size.
+ * @param totalElements
+ *     The total number of elements across all pages.
  * @param content
  *     The elements of this page.
  */
-public record Page<T> (int size, int pageNumber, long totalPages, List<T> content) {
+public record Page<T>(int size, int pageNumber, long totalPages, long totalElements, List<T> content) {
 
 }

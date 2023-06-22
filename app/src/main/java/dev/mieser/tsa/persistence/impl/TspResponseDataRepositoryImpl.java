@@ -44,7 +44,8 @@ public class TspResponseDataRepositoryImpl implements TspResponseDataRepository 
             .map(tspResponseMapper::toDomain)
             .collect(Collectors.toList());
 
-        return new Page<>(pageRequest.size(), pageRequest.pageNumber(), pagedQuery.pageCount(), mappedEntries);
+        return new Page<>(pageRequest.size(), pageRequest.pageNumber(), pagedQuery.pageCount(), pagedQuery.count(),
+            mappedEntries);
     }
 
     private Sort mapSort(PageRequest pageRequest) {
