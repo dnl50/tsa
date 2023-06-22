@@ -31,7 +31,7 @@ import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.impl.cert.SigningCertificateExtractor;
 import dev.mieser.tsa.signing.impl.cert.SigningCertificateHolder;
-import dev.mieser.tsa.signing.impl.cert.SigningCertificateLoader;
+import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampValidationResultMapper;
 
 @Slf4j
@@ -40,7 +40,7 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
 
     private final TspParser tspParser;
 
-    private final SigningCertificateLoader signingCertificateLoader;
+    private final SigningKeystoreLoader signingKeystoreLoader;
 
     private final TimeStampValidationResultMapper timeStampValidationResultMapper;
 
@@ -110,11 +110,11 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
     }
 
     /**
-     * @return The signature verifier backed by the {@link SigningCertificateLoader current} certificate.
+     * @return The signature verifier backed by the {@link SigningKeystoreLoader current} certificate.
      */
     private ContentVerifierProvider buildContentVerifierProvider() {
         try {
-            X509Certificate signingCertificate = signingCertificateLoader.loadCertificate();
+            X509Certificate signingCertificate = signingKeystoreLoader.loadCertificate();
             String jcaAlgorithmName = signingCertificate.getPublicKey().getAlgorithm();
             PublicKeyAlgorithm publicKeyAlgorithm = PublicKeyAlgorithm.fromJcaName(jcaAlgorithmName)
                 .orElseThrow(() -> new IllegalStateException(

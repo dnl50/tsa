@@ -24,7 +24,7 @@ public class SigningCertificateResourceLifecycleManager implements QuarkusTestRe
             Path temporaryKeystoreFile = Files.createTempDirectory("tsa").resolve(KEYSTORE_FILE_NAME);
             FileUtils.copyInputStreamToFile(pkcs12Keystore, temporaryKeystoreFile.toFile());
 
-            return Map.of("tsa.certificate.path", temporaryKeystoreFile.toAbsolutePath().toString());
+            return Map.of("tsa.keystore.path", temporaryKeystoreFile.toAbsolutePath().toString());
         } catch (IOException e) {
             throw new IllegalStateException("Failed to copy keystore to temporary directory", e);
         }

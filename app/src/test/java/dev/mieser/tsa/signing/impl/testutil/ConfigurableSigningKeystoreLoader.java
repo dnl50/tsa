@@ -5,17 +5,17 @@ import java.security.cert.X509Certificate;
 
 import lombok.Setter;
 
-import dev.mieser.tsa.signing.impl.cert.SigningCertificateLoader;
+import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
 import dev.mieser.tsa.testutil.TestKeyLoader;
 
 /**
- * {@link SigningCertificateLoader}, which uses the {@link TestKeyLoader} to load a certificate and its corresponding
+ * {@link SigningKeystoreLoader}, which uses the {@link TestKeyLoader} to load a certificate and its corresponding
  * private key.
  *
  * @see TsaConfiguration
  */
 @Setter
-public class ConfigurableSigningCertificateLoader implements SigningCertificateLoader {
+public class ConfigurableSigningKeystoreLoader implements SigningKeystoreLoader {
 
     private TsaConfiguration configuration;
 

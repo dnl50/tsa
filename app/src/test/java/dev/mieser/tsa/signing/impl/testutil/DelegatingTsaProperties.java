@@ -36,7 +36,7 @@ public class DelegatingTsaProperties implements TsaProperties {
     }
 
     @Override
-    public CertificateLoaderProperties certificate() {
+    public KeystoreLoaderProperties keystore() {
         throw new UnsupportedOperationException("Not required for unit testing.");
     }
 

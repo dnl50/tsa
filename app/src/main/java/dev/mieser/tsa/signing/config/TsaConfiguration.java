@@ -11,9 +11,9 @@ import dev.mieser.tsa.signing.impl.BouncyCastleTimeStampAuthority;
 import dev.mieser.tsa.signing.impl.BouncyCastleTimeStampValidator;
 import dev.mieser.tsa.signing.impl.TspParser;
 import dev.mieser.tsa.signing.impl.TspValidator;
-import dev.mieser.tsa.signing.impl.cert.Pkcs12SigningCertificateLoader;
+import dev.mieser.tsa.signing.impl.cert.Pkcs12SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.cert.SigningCertificateExtractor;
-import dev.mieser.tsa.signing.impl.cert.SigningCertificateLoader;
+import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampResponseMapper;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampValidationResultMapper;
 import dev.mieser.tsa.signing.impl.serial.RandomSerialNumberGenerator;
@@ -25,13 +25,13 @@ public class TsaConfiguration {
     TimeStampAuthority timeStampAuthority(TsaProperties tsaProperties,
         TspParser tspParser,
         TspValidator tspValidator,
-        SigningCertificateLoader signingCertificateLoader,
+        SigningKeystoreLoader signingKeystoreLoader,
         CurrentDateService currentDateService,
         DateConverter dateConverter) {
         return new BouncyCastleTimeStampAuthority(tsaProperties,
             tspParser,
             tspValidator,
-            signingCertificateLoader,
+            signingKeystoreLoader,
             currentDateService,
             new RandomSerialNumberGenerator(),
             new TimeStampResponseMapper(dateConverter));
@@ -40,12 +40,12 @@ public class TsaConfiguration {
     @Produces
     @ApplicationScoped
     TimeStampValidator timeStampValidator(TspParser tspParser,
-        SigningCertificateLoader signingCertificateLoader,
+        SigningKeystoreLoader signingKeystoreLoader,
         DateConverter dateConverter,
         TspValidator tspValidator,
         SigningCertificateExtractor signingCertificateExtractor) {
         return new BouncyCastleTimeStampValidator(tspParser,
-            signingCertificateLoader,
+            signingKeystoreLoader,
             new TimeStampValidationResultMapper(dateConverter),
             tspValidator,
             signingCertificateExtractor);
@@ -69,12 +69,12 @@ public class TsaConfiguration {
 
     @Produces
     @ApplicationScoped
-    SigningCertificateLoader signingCertificateLoader(TsaProperties tsaProperties) {
-        char[] password = tsaProperties.certificate().password()
+    SigningKeystoreLoader signingCertificateLoader(TsaProperties tsaProperties) {
+        char[] password = tsaProperties.keystore().password()
             .map(String::toCharArray)
             .orElse(new char[0]);
 
-        return new Pkcs12SigningCertificateLoader(tsaProperties.certificate().path(), password);
+        return new Pkcs12SigningKeystoreLoader(tsaProperties.keystore().path(), password);
     }
 
 }

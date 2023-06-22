@@ -50,10 +50,11 @@ import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
-import dev.mieser.tsa.signing.impl.cert.SigningCertificateLoader;
+import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
+import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampResponseMapper;
 import dev.mieser.tsa.signing.impl.serial.SerialNumberGenerator;
-import dev.mieser.tsa.signing.impl.testutil.ConfigurableSigningCertificateLoader;
+import dev.mieser.tsa.signing.impl.testutil.ConfigurableSigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.testutil.CurrentDateServiceStub;
 import dev.mieser.tsa.signing.impl.testutil.DelegatingTsaProperties;
 import dev.mieser.tsa.signing.impl.testutil.TsaConfiguration;
@@ -63,7 +64,7 @@ class BouncyCastleTimeStampAuthorityTest {
 
     private final DelegatingTsaProperties delegatingTsaProperties = new DelegatingTsaProperties();
 
-    private final ConfigurableSigningCertificateLoader configurableSigningCertificateLoader = new ConfigurableSigningCertificateLoader();
+    private final ConfigurableSigningKeystoreLoader configurableSigningCertificateLoader = new ConfigurableSigningKeystoreLoader();
 
     private final CurrentDateServiceStub currentDateServiceStub = new CurrentDateServiceStub();
 
@@ -90,7 +91,7 @@ class BouncyCastleTimeStampAuthorityTest {
     class InitializationTest {
 
         @Test
-        void throwsExceptionWhenUnsupportedPublicKeyAlgorithmIsDetected(@Mock SigningCertificateLoader certificateLoaderMock,
+        void throwsExceptionWhenUnsupportedPublicKeyAlgorithmIsDetected(@Mock SigningKeystoreLoader certificateLoaderMock,
             @Mock X509Certificate certificateMock, @Mock PublicKey publicKeyMock) throws Exception {
             // given
             var configuration = new TsaConfiguration(EC, SHA512, SHA512, Set.of(), "1.2");

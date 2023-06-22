@@ -13,10 +13,10 @@ import java.security.cert.X509Certificate;
 import lombok.RequiredArgsConstructor;
 
 /**
- * {@link SigningCertificateLoader} which supports PKCS#12 key stores.
+ * {@link SigningKeystoreLoader} which supports PKCS#12 key stores.
  */
 @RequiredArgsConstructor
-public class Pkcs12SigningCertificateLoader implements SigningCertificateLoader {
+public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
 
     private static final String PKCS12_KEYSTORE_TYPE = "pkcs12";
 

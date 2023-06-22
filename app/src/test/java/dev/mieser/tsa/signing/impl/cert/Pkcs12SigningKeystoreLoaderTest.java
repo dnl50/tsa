@@ -15,7 +15,7 @@ import org.bouncycastle.util.io.pem.PemReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-class Pkcs12SigningCertificateLoaderTest {
+class Pkcs12SigningKeystoreLoaderTest {
 
     private static final char[] NO_PASSWORD = new char[0];
 
@@ -30,7 +30,7 @@ class Pkcs12SigningCertificateLoaderTest {
         X509Certificate expectedCertificate = loadCertificate();
         File tempFile = copyResourceToTempDirectory("unprotected.p12");
 
-        var testSubject = new Pkcs12SigningCertificateLoader(tempFile, NO_PASSWORD);
+        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile, NO_PASSWORD);
 
         // when
         X509Certificate actualCertificate = testSubject.loadCertificate();
@@ -45,7 +45,7 @@ class Pkcs12SigningCertificateLoaderTest {
         PrivateKey expectedPrivateKey = loadPrivateKey();
         File tempFile = copyResourceToTempDirectory("unprotected.p12");
 
-        var testSubject = new Pkcs12SigningCertificateLoader(tempFile, NO_PASSWORD);
+        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile, NO_PASSWORD);
 
         // when
         PrivateKey actualCertificate = testSubject.loadPrivateKey();
@@ -60,7 +60,7 @@ class Pkcs12SigningCertificateLoaderTest {
         X509Certificate expectedCertificate = loadCertificate();
         File tempFile = copyResourceToTempDirectory("password-protected.p12");
 
-        var testSubject = new Pkcs12SigningCertificateLoader(tempFile, PASSWORD);
+        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile, PASSWORD);
 
         // when
         X509Certificate actualCertificate = testSubject.loadCertificate();
@@ -75,7 +75,7 @@ class Pkcs12SigningCertificateLoaderTest {
         PrivateKey expectedPrivateKey = loadPrivateKey();
         File tempFile = copyResourceToTempDirectory("password-protected.p12");
 
-        var testSubject = new Pkcs12SigningCertificateLoader(tempFile, PASSWORD);
+        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile, PASSWORD);
 
         // when
         PrivateKey actualCertificate = testSubject.loadPrivateKey();
@@ -89,7 +89,7 @@ class Pkcs12SigningCertificateLoaderTest {
         // given
         String keyStoreFile = "unknown-file.p12";
 
-        var testSubject = new Pkcs12SigningCertificateLoader(new File(tempDir, keyStoreFile), NO_PASSWORD);
+        var testSubject = new Pkcs12SigningKeystoreLoader(new File(tempDir, keyStoreFile), NO_PASSWORD);
 
         // when / then
         assertThatExceptionOfType(FileNotFoundException.class)
