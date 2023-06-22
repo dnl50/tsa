@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -200,8 +201,9 @@ class BouncyCastleTimeStampAuthorityTest {
             });
         }
 
-        @Test
-        void signsValidRequest() throws Exception {
+        @ParameterizedTest
+        @EnumSource
+        void signsValidRequest(PublicKeyAlgorithm algorithm) throws Exception {
             // given
             byte[] sha256Hash = Base64.getDecoder().decode("n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=");
             var nonce = BigInteger.valueOf(53_125L);
@@ -209,7 +211,7 @@ class BouncyCastleTimeStampAuthorityTest {
             var sha256Request = new TimeStampReq(sha256Imprint, null, new ASN1Integer(nonce), ASN1Boolean.TRUE, null);
             byte[] asnEncodedRequest = sha256Request.getEncoded();
 
-            var configuration = new TsaConfiguration(EC, SHA256, SHA256, Set.of(SHA512, SHA256), "1.2");
+            var configuration = new TsaConfiguration(algorithm, SHA256, SHA256, Set.of(SHA512, SHA256), "1.2");
             delegatingTsaProperties.setConfiguration(configuration);
             configurableSigningCertificateLoader.setConfiguration(configuration);
 

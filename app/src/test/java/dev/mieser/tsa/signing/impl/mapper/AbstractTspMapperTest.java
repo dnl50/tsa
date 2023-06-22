@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.function.Function;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,12 +34,8 @@ class AbstractTspMapperTest {
 
     @Test
     void mapToHashAlgorithmThrowsExceptionWhenHashAlgorithmIsUnknown() {
-        // given
-        var md5Oid = new ASN1ObjectIdentifier("1.2.840.113549.2.5");
-
-        // when / then
         assertThatIllegalStateException()
-            .isThrownBy(() -> testSubject.mapToHashAlgorithm(md5Oid))
+            .isThrownBy(() -> testSubject.mapToHashAlgorithm(PKCSObjectIdentifiers.md5))
             .withMessage("Unknown hash algorithm with OID '1.2.840.113549.2.5'.");
     }
 
