@@ -42,8 +42,9 @@ dependencies {
 
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("io.quarkus:quarkus-junit5-mockito")
-    testImplementation("org.assertj:assertj-core:${libs.versions.assertj.get()}")
     testImplementation("io.rest-assured:rest-assured")
+    testImplementation("org.assertj:assertj-core:${libs.versions.assertj.get()}")
+    testImplementation("com.tngtech.archunit:archunit:${libs.versions.archunit.get()}")
 
     testCompileOnly("org.projectlombok:lombok:${libs.versions.lombok.get()}")
     testAnnotationProcessor("org.projectlombok:lombok:${libs.versions.lombok.get()}")
@@ -84,4 +85,11 @@ spotless {
         removeUnusedImports()
         eclipse().configFile("$rootDir/eclipse-formatter.xml")
     }
+}
+
+quarkus {
+    set("native.container-build", true.toString())
+    set("native.compression.level", 9.toString())
+    set("package.type", "native")
+    finalName.set("tsa-${project.version}")
 }
