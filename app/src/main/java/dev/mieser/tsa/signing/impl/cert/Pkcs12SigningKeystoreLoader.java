@@ -3,14 +3,17 @@ package dev.mieser.tsa.signing.impl.cert;
 import static java.util.Collections.list;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * {@link SigningKeystoreLoader} which supports PKCS#12 key stores.
@@ -18,9 +21,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
 
+    private static final String CLASSPATH_MARKER = "classpath:";
+
     private static final String PKCS12_KEYSTORE_TYPE = "pkcs12";
 
-    private final File path;
+    private final String path;
 
     private final char[] password;
 
@@ -53,7 +58,7 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
     }
 
     private KeyStore loadKeystore() throws IOException {
-        try (var inputStream = new BufferedInputStream(new FileInputStream(path))) {
+        try (var inputStream = openStream()) {
             var keyStore = KeyStore.getInstance(PKCS12_KEYSTORE_TYPE);
             keyStore.load(inputStream, password);
 
@@ -61,8 +66,18 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
         } catch (KeyStoreException e) {
             throw new IllegalStateException("PKCS#12 keystores are not supported by the JVM.", e);
         } catch (CertificateException | NoSuchAlgorithmException e) {
-            throw new IllegalStateException(String.format("Failed to load PKCS#12 Keystore from '%s'.", path.getAbsolutePath()),
-                e);
+            throw new IllegalStateException(String.format("Failed to load PKCS#12 Keystore from '%s'.", path), e);
+        }
+    }
+
+    private InputStream openStream() throws IOException {
+        if (path.toLowerCase().startsWith(CLASSPATH_MARKER)) {
+            String pathWithoutClasspathPrefix = StringUtils.removeStartIgnoreCase(path, CLASSPATH_MARKER);
+            InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(pathWithoutClasspathPrefix);
+            return Objects.requireNonNull(resourceStream,
+                String.format("Classpath resource '%s' not found.", pathWithoutClasspathPrefix));
+        } else {
+            return new BufferedInputStream(new FileInputStream(path));
         }
     }
 

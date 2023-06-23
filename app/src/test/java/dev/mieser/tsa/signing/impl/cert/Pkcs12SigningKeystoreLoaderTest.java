@@ -1,7 +1,7 @@
 package dev.mieser.tsa.signing.impl.cert;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.io.*;
 import java.security.KeyFactory;
@@ -25,75 +25,75 @@ class Pkcs12SigningKeystoreLoaderTest {
     private File tempDir;
 
     @Test
-    void canLoadCertificateWhenPkcs12FileIsNotPasswordProtected() throws Exception {
+    void canLoadKeystoreFromClasspath() throws Exception {
         // given
-        X509Certificate expectedCertificate = loadCertificate();
-        File tempFile = copyResourceToTempDirectory("unprotected.p12");
+        var testSubject = new Pkcs12SigningKeystoreLoader("classpath:keystore/ec.p12", NO_PASSWORD);
 
-        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile, NO_PASSWORD);
-
-        // when
-        X509Certificate actualCertificate = testSubject.loadCertificate();
-
-        // then
-        assertThat(actualCertificate).isEqualTo(expectedCertificate);
+        // when / then
+        assertThat(testSubject.loadCertificate()).isNotNull();
     }
 
     @Test
-    void canLoadPrivateKeyWhenPkcs12FileIsNotPasswordProtected() throws Exception {
+    void canLoadKeystoreWhenPkcs12FileIsNotPasswordProtected() throws Exception {
         // given
+        X509Certificate expectedCertificate = loadCertificate();
         PrivateKey expectedPrivateKey = loadPrivateKey();
         File tempFile = copyResourceToTempDirectory("unprotected.p12");
 
-        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile, NO_PASSWORD);
-
-        // when
-        PrivateKey actualCertificate = testSubject.loadPrivateKey();
-
-        // then
-        assertThat(actualCertificate).isEqualTo(expectedPrivateKey);
-    }
-
-    @Test
-    void canLoadCertificateWhenPkcs12FileIsPasswordProtected() throws Exception {
-        // given
-        X509Certificate expectedCertificate = loadCertificate();
-        File tempFile = copyResourceToTempDirectory("password-protected.p12");
-
-        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile, PASSWORD);
+        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile.getAbsolutePath(), NO_PASSWORD);
 
         // when
         X509Certificate actualCertificate = testSubject.loadCertificate();
+        PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
 
         // then
-        assertThat(actualCertificate).isEqualTo(expectedCertificate);
+        assertSoftly(softly -> {
+            softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
+            softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
+        });
     }
 
     @Test
-    void canLoadPrivateKeyWhenPkcs12FileIsPasswordProtected() throws Exception {
-        /// given
+    void canLoadKeystoreWhenPkcs12FileIsPasswordProtected() throws Exception {
+        // given
+        X509Certificate expectedCertificate = loadCertificate();
         PrivateKey expectedPrivateKey = loadPrivateKey();
         File tempFile = copyResourceToTempDirectory("password-protected.p12");
 
-        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile, PASSWORD);
+        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile.getAbsolutePath(), PASSWORD);
 
         // when
-        PrivateKey actualCertificate = testSubject.loadPrivateKey();
+        X509Certificate actualCertificate = testSubject.loadCertificate();
+        PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
 
         // then
-        assertThat(actualCertificate).isEqualTo(expectedPrivateKey);
+        assertSoftly(softly -> {
+            softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
+            softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
+        });
     }
 
     @Test
-    void throwsExceptionWhenKeyStoreNotFound() {
+    void throwsExceptionWhenKeyStoreFileNotFound() {
         // given
         String keyStoreFile = "unknown-file.p12";
 
-        var testSubject = new Pkcs12SigningKeystoreLoader(new File(tempDir, keyStoreFile), NO_PASSWORD);
+        var testSubject = new Pkcs12SigningKeystoreLoader(new File(tempDir, keyStoreFile).getAbsolutePath(), NO_PASSWORD);
 
         // when / then
         assertThatExceptionOfType(FileNotFoundException.class)
             .isThrownBy(testSubject::loadCertificate);
+    }
+
+    @Test
+    void throwsExceptionWhenClasspathResourceWasNotFound() {
+        // given
+        var testSubject = new Pkcs12SigningKeystoreLoader("classpath:unknown-resource.p12", NO_PASSWORD);
+
+        // when / then
+        assertThatException()
+            .isThrownBy(testSubject::loadCertificate)
+            .withMessage("Classpath resource 'unknown-resource.p12' not found.");
     }
 
     private PrivateKey loadPrivateKey() throws Exception {

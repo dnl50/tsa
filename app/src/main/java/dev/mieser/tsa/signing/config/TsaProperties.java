@@ -1,6 +1,5 @@
 package dev.mieser.tsa.signing.config;
 
-import java.io.File;
 import java.util.Optional;
 import java.util.Set;
 
@@ -61,10 +60,12 @@ public interface TsaProperties {
     interface KeystoreLoaderProperties {
 
         /**
-         * The file system path to the PKCS#12 file containing the certificate and private key.
+         * The path to the PKCS#12 file containing the certificate and private key. When the path begins with {@code classpath:}
+         * the keystore is read from the classpath. Loading a keystore from the classpath is a convenience feature for
+         * development purposes and will not work in a GraalVM native image.
          */
-        @NotNull
-        File path();
+        @NotEmpty
+        String path();
 
         /**
          * The password of the PKCS#12 file containing the certificate and private key.
