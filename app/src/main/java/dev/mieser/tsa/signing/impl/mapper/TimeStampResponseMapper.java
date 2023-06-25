@@ -31,11 +31,11 @@ public class TimeStampResponseMapper extends AbstractTspMapper {
      */
     public TimeStampResponseData map(TimeStampRequest timeStampRequest, TimeStampResponse timeStampResponse, Date receptionTime) {
         TimeStampRequestData requestData = TimeStampRequestData
-            .builder(mapToHashAlgorithm(timeStampRequest.getMessageImprintAlgOID()), timeStampRequest.getMessageImprintDigest())
+            .builder(mapToHashAlgorithm(timeStampRequest.getMessageImprintAlgOID()), timeStampRequest.getMessageImprintDigest(),
+                asnEncoded(timeStampRequest, TimeStampRequest::getEncoded))
             .nonce(timeStampRequest.getNonce())
             .certificateRequested(timeStampRequest.getCertReq())
             .tsaPolicyId(mapIfNotNull(timeStampRequest.getReqPolicy(), ASN1ObjectIdentifier::getId))
-            .asnEncoded(asnEncoded(timeStampRequest, TimeStampRequest::getEncoded))
             .build();
 
         return TimeStampResponseData.builder(

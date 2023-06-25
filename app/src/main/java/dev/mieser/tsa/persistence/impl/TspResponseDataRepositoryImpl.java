@@ -39,7 +39,7 @@ public class TspResponseDataRepositoryImpl implements TspResponseDataRepository 
     @Override
     public Page<TimeStampResponseData> findAll(PageRequest pageRequest) {
         var pagedQuery = repository.findAll(mapSort(pageRequest))
-            .page(pageRequest.pageNumber(), pageRequest.size());
+            .page(pageRequest.pageNumber() - 1, pageRequest.size());
         var mappedEntries = pagedQuery.stream()
             .map(tspResponseMapper::toDomain)
             .collect(Collectors.toList());

@@ -7,13 +7,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import dev.mieser.tsa.quarkus.TsaTestProfile;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 
 @QuarkusTest
-@TestProfile(TsaTestProfile.class)
 public class ExportOpenApiDocumentationTest {
 
     private static final String TARGET_FILE_PATH_PROPERTY = "openapi.specification.target-file";

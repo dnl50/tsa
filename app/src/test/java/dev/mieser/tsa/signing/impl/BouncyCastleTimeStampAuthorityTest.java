@@ -226,11 +226,10 @@ class BouncyCastleTimeStampAuthorityTest {
             TimeStampResponseData response = testSubject.signRequest(new ByteArrayInputStream(asnEncodedRequest));
 
             // then
-            var expectedRequest = TimeStampRequestData.builder(SHA256, sha256Hash)
+            var expectedRequest = TimeStampRequestData.builder(SHA256, sha256Hash, asnEncodedRequest)
                 .nonce(nonce)
                 .certificateRequested(true)
                 .tsaPolicyId(null)
-                .asnEncoded(asnEncodedRequest)
                 .build();
             var expectedResponse = TimeStampResponseData
                 .builder(ResponseStatus.GRANTED, now, expectedRequest, "not-assertable-here".getBytes())

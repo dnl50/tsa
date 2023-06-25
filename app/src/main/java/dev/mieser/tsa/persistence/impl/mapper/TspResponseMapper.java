@@ -16,8 +16,6 @@ public interface TspResponseMapper {
 
     TimeStampResponseData toDomain(TspResponseEntity entity);
 
-    TimeStampRequestData toDomain(TspRequestEntity entity);
-
     TspResponseEntity fromDomain(TimeStampResponseData domain);
 
     @Mapping(target = "id", ignore = true)

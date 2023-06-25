@@ -70,12 +70,14 @@ class TimeStampResponseMapperTest {
         var statusString = "Unsupported Hash Algorithm";
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
         byte[] requestHash = "sha256".getBytes(UTF_8);
+        byte[] asnEncodedRequest = "TSP request".getBytes(UTF_8);
         byte[] asnEncodedResponse = "TSP response".getBytes(UTF_8);
         ZonedDateTime receptionTime = ZonedDateTime.parse("2021-12-25T20:30:36+01:00");
         Date receptionTimeAsDate = Date.from(receptionTime.toInstant());
 
         given(timeStampRequestMock.getMessageImprintAlgOID()).willReturn(hashAlgorithmOid);
         given(timeStampRequestMock.getMessageImprintDigest()).willReturn(requestHash);
+        given(timeStampRequestMock.getEncoded()).willReturn(asnEncodedRequest);
 
         given(timeStampResponseMock.getStatus()).willReturn(PKIStatus.REJECTION);
         given(timeStampResponseMock.getStatusString()).willReturn(statusString);
@@ -88,7 +90,7 @@ class TimeStampResponseMapperTest {
             receptionTimeAsDate);
 
         // then
-        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder(SHA256, requestHash).build();
+        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder(SHA256, requestHash, asnEncodedRequest).build();
 
         TimeStampResponseData expectedResponseData = TimeStampResponseData
             .builder(ResponseStatus.REJECTION, receptionTime, expectedRequestData, asnEncodedResponse)
@@ -106,6 +108,7 @@ class TimeStampResponseMapperTest {
         // given
         var hashAlgorithmOid = new ASN1ObjectIdentifier(SHA256.getObjectIdentifier());
         byte[] requestHash = "sha256".getBytes(UTF_8);
+        byte[] asnEncodedRequest = "TSP request".getBytes(UTF_8);
         byte[] asnEncodedResponse = "TSP response".getBytes(UTF_8);
         BigInteger responseSerialNumber = BigInteger.valueOf(1337L);
         ZonedDateTime genTime = ZonedDateTime.parse("2021-11-13T16:20:51+01:00");
@@ -113,6 +116,7 @@ class TimeStampResponseMapperTest {
 
         given(timeStampRequestMock.getMessageImprintAlgOID()).willReturn(hashAlgorithmOid);
         given(timeStampRequestMock.getMessageImprintDigest()).willReturn(requestHash);
+        given(timeStampRequestMock.getEncoded()).willReturn(asnEncodedRequest);
 
         given(timeStampResponseMock.getStatus()).willReturn(PKIStatus.GRANTED);
         given(timeStampResponseMock.getTimeStampToken()).willReturn(timeStampTokenMock);
@@ -129,7 +133,7 @@ class TimeStampResponseMapperTest {
         TimeStampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock, genTimeDate);
 
         // then
-        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder(SHA256, requestHash).build();
+        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder(SHA256, requestHash, asnEncodedRequest).build();
 
         TimeStampResponseData expectedResponseData = TimeStampResponseData
             .builder(ResponseStatus.GRANTED, genTime, expectedRequestData, asnEncodedResponse)
@@ -168,11 +172,10 @@ class TimeStampResponseMapperTest {
             receptionTimeAsDate);
 
         // then
-        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder(SHA512, hash)
+        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder(SHA512, hash, asnEncodedRequest)
             .nonce(nonce)
             .tsaPolicyId(policyOid)
             .certificateRequested(true)
-            .asnEncoded(asnEncodedRequest)
             .build();
 
         TimeStampResponseData expectedResponseData = TimeStampResponseData

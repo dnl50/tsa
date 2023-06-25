@@ -51,10 +51,11 @@ public class TimeStampRequestData {
      */
     private final byte[] asnEncoded;
 
-    public static TimeStampRequestDataBuilder builder(HashAlgorithm hashAlgorithm, byte[] hash) {
+    public static TimeStampRequestDataBuilder builder(HashAlgorithm hashAlgorithm, byte[] hash, byte[] asnEncodedRequest) {
         return new TimeStampRequestDataBuilder()
             .hashAlgorithm(hashAlgorithm)
-            .hash(hash);
+            .hash(hash)
+            .asnEncoded(asnEncodedRequest);
     }
 
 }

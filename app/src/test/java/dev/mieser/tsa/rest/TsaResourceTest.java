@@ -18,13 +18,12 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.junit.jupiter.api.Test;
 
 import dev.mieser.tsa.domain.ResponseStatus;
-import dev.mieser.tsa.quarkus.TsaTestProfile;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 
 @QuarkusTest
-@TestProfile(TsaTestProfile.class)
+@TestTransaction
 public class TsaResourceTest {
 
     @Test
@@ -41,6 +40,7 @@ public class TsaResourceTest {
         // when
         byte[] issuedResponse = RestAssured.given()
             .contentType("application/timestamp-query")
+            .accept("application/timestamp-reply")
             .body(asnEncodedRequest)
             .post("/tsa/sign")
             .then()
@@ -56,6 +56,7 @@ public class TsaResourceTest {
     void returnsBadRequestWhenRequestIsInvalid() {
         RestAssured.given()
             .contentType("application/timestamp-query")
+            .accept("application/timestamp-reply")
             .body("I'm a TSP request, trust me!".getBytes(UTF_8))
             .post("/tsa/sign")
             .then()
@@ -72,6 +73,7 @@ public class TsaResourceTest {
         // when / then
         RestAssured.given()
             .contentType("application/timestamp-query")
+            .accept("application/timestamp-reply")
             .body(md5Request.getEncoded())
             .post("/tsa/sign")
             .then()
