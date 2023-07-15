@@ -50,6 +50,10 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:${libs.versions.lombok.get()}")
 }
 
+if (hasProperty("projectVersion")) {
+    version = property("projectVersion")!!
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
