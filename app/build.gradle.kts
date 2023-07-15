@@ -13,13 +13,13 @@ val openApiSpecification by configurations.creating {
     isCanBeConsumed = true
 }
 
-// TODO: archunit test
 dependencies {
     implementation(enforcedPlatform("io.quarkus.platform:quarkus-bom:${libs.versions.quarkus.get()}"))
 
     implementation("io.quarkus:quarkus-smallrye-openapi")
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-hibernate-orm-panache")
+    implementation("io.quarkus:quarkus-container-image-docker")
 
     implementation("commons-io:commons-io")
     implementation("org.apache.commons:commons-lang3")
@@ -49,9 +49,6 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok:${libs.versions.lombok.get()}")
     testAnnotationProcessor("org.projectlombok:lombok:${libs.versions.lombok.get()}")
 }
-
-group = "dev.mieser.app.tsa"
-version = "1.0.0-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -88,8 +85,18 @@ spotless {
 }
 
 quarkus {
-    set("native.container-build", true.toString())
-    set("native.compression.level", 9.toString())
+    set("native.container-build", "true")
+    set("native.compression.level", "9")
+    set("container-image.build", "true")
+    set("container-image.group", "dnl50")
+    set("container-image.name", "tsa-server")
     set("package.type", "native")
     finalName.set("tsa-${project.version}")
+}
+
+// TODO: for some reason quarkus does recognize that the JDBC URL is set in the prod profile. therefore it
+//  creates a h2 db in server mode (using the H2DevServicesProcessor) which runs on the host machine and sets the JDBC URL
+//  to something like "jdbc:h2:tcp://localhost:53233/mem:test" which obviously does not work inside the docker container
+tasks.quarkusIntTest.configure {
+    systemProperty("quarkus.datasource.jdbc.url", "jdbc:h2:file:/work/data")
 }
