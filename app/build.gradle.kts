@@ -98,5 +98,5 @@ quarkus {
 //  creates a h2 db in server mode (using the H2DevServicesProcessor) which runs on the host machine and sets the JDBC URL
 //  to something like "jdbc:h2:tcp://localhost:53233/mem:test" which obviously does not work inside the docker container
 tasks.quarkusIntTest.configure {
-    systemProperty("quarkus.datasource.jdbc.url", "jdbc:h2:file:/work/data")
+    systemProperty("quarkus.datasource.jdbc.url", "jdbc:h2:file:/work/data/tsa")
 }
