@@ -86,7 +86,6 @@ spotless {
 
 quarkus {
     set("native.container-build", "true")
-    set("native.compression.level", "9")
     set("container-image.build", "true")
     set("container-image.group", "dnl50")
     set("container-image.name", "tsa-server")
