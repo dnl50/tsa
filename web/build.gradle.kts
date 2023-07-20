@@ -14,7 +14,7 @@ dependencies {
     ))
 }
 
-val copySpec by tasks.registering(Copy::class) {
+val copyOpenApiSpec by tasks.registering(Copy::class) {
     from(openApiSpecification)
     into(buildDir)
 }

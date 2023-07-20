@@ -6,7 +6,7 @@ on:
 
 jobs:
   push_to_registry:
-    name: Push Docker image to Docker Hub
+    name: Push Docker images to Docker Hub
     runs-on: ubuntu-latest
     steps:
       - name: Check out
@@ -27,7 +27,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Image
+      - name: Build and Push Backend Image
         run: ./gradlew -PprojectVersion="${GITHUB_REF##*/}" build -Dquarkus.native.compression.level=9 -Dquarkus.container-image.push=true
 
       - name: Update Docker Hub description

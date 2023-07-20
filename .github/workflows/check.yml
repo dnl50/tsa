@@ -30,3 +30,11 @@ jobs:
 
       - name: Run Gradle 'build' Task
         run: ./gradlew build
+
+      - name: Copy OpenAPI Specification
+        run: ./gradlew copyOpenApiSpec
+
+      - name: Build Svelte App
+        uses: docker/build-push-action@v4
+        with:
+          context: web
