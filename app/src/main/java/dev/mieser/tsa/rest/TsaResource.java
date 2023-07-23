@@ -16,7 +16,6 @@ import dev.mieser.tsa.integration.api.IssueTimeStampService;
 import dev.mieser.tsa.integration.api.ValidateTimeStampResponseService;
 import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
-import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 
 @Transactional
 @Path("/tsa")
@@ -39,7 +38,7 @@ public class TsaResource {
                      responseCode = HttpStatusCode.BAD_REQUEST,
                      description = "When the time stamp query uses an unsupported hash algorithm or the request cannot be parsed.")
     })
-    public byte[] sign(InputStream timestampQueryStream) throws InvalidTspRequestException, UnknownHashAlgorithmException {
+    public byte[] sign(InputStream timestampQueryStream) throws InvalidTspRequestException {
         return issueTimeStampService.signTimestampRequest(timestampQueryStream).getAsnEncoded();
     }
 
@@ -53,10 +52,10 @@ public class TsaResource {
                      description = "When the time stamp response was parsed successfully."),
         @APIResponse(
                      responseCode = HttpStatusCode.BAD_REQUEST,
-                     description = "When the time stamp query uses an unsupported hash algorithm or the response cannot be parsed.")
+                     description = "When the response cannot be parsed.")
     })
     public TimeStampValidationResult validate(
-        InputStream timestampResponse) throws InvalidTspResponseException, UnknownHashAlgorithmException {
+        InputStream timestampResponse) throws InvalidTspResponseException {
         return validateTimeStampResponseService.validateTimeStampResponse(timestampResponse);
     }
 

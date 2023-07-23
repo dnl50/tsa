@@ -1,6 +1,6 @@
 package dev.mieser.tsa.signing.impl;
 
-import static dev.mieser.tsa.domain.HashAlgorithm.*;
+import static dev.mieser.tsa.signing.config.HashAlgorithm.*;
 import static dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -27,7 +27,6 @@ import org.bouncycastle.asn1.ASN1Boolean;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.tsp.MessageImprint;
 import org.bouncycastle.asn1.tsp.TimeStampReq;
 import org.bouncycastle.asn1.tsp.TimeStampResp;
@@ -50,7 +49,6 @@ import dev.mieser.tsa.domain.TimeStampRequestData;
 import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
-import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampResponseMapper;
@@ -81,7 +79,6 @@ class BouncyCastleTimeStampAuthorityTest {
     void setUp() {
         testSubject = new BouncyCastleTimeStampAuthority(delegatingTsaProperties,
             new TspParser(),
-            new TspValidator(),
             configurableSigningCertificateLoader,
             currentDateServiceStub,
             serialNumberGeneratorMock,
@@ -102,8 +99,8 @@ class BouncyCastleTimeStampAuthorityTest {
             given(certificateMock.getPublicKey()).willReturn(publicKeyMock);
             given(publicKeyMock.getAlgorithm()).willReturn("EdDSA");
 
-            var testSubject = new BouncyCastleTimeStampAuthority(delegatingTsaProperties, new TspParser(), new TspValidator(),
-                certificateLoaderMock, currentDateServiceStub, serialNumberGeneratorMock,
+            var testSubject = new BouncyCastleTimeStampAuthority(delegatingTsaProperties, new TspParser(), certificateLoaderMock,
+                currentDateServiceStub, serialNumberGeneratorMock,
                 new TimeStampResponseMapper(dateConverterMock));
 
             // when / then
@@ -158,26 +155,6 @@ class BouncyCastleTimeStampAuthorityTest {
         }
 
         @Test
-        void throwsExceptionWhenUnknownHashAlgorithmIsUsed() throws Exception {
-            // given
-            var md5Imprint = new MessageImprint(new AlgorithmIdentifier(PKCSObjectIdentifiers.md5),
-                "098f6bcd4621d373cade4e832627b4f6".getBytes(UTF_8));
-            var md5Request = new TimeStampReq(md5Imprint, null, null, ASN1Boolean.FALSE, null);
-            InputStream tspRequestStream = new ByteArrayInputStream(md5Request.getEncoded());
-
-            var configuration = new TsaConfiguration(EC, SHA512, SHA512, Set.of(SHA512), "1.2");
-            delegatingTsaProperties.setConfiguration(configuration);
-            configurableSigningCertificateLoader.setConfiguration(configuration);
-
-            testSubject.initialize();
-
-            // when / then
-            assertThatExceptionOfType(UnknownHashAlgorithmException.class)
-                .isThrownBy(() -> testSubject.signRequest(tspRequestStream))
-                .withMessage("Unknown hash algorithm OID '1.2.840.113549.2.5'.");
-        }
-
-        @Test
         void rejectsRequestWhenHashAlgorithmIsNotAllowed() throws Exception {
             // given
             var sha1Imprint = new MessageImprint(new AlgorithmIdentifier(OIWObjectIdentifiers.idSHA1),
@@ -226,7 +203,7 @@ class BouncyCastleTimeStampAuthorityTest {
             TimeStampResponseData response = testSubject.signRequest(new ByteArrayInputStream(asnEncodedRequest));
 
             // then
-            var expectedRequest = TimeStampRequestData.builder(SHA256, sha256Hash, asnEncodedRequest)
+            var expectedRequest = TimeStampRequestData.builder(SHA256.getObjectIdentifier(), sha256Hash, asnEncodedRequest)
                 .nonce(nonce)
                 .certificateRequested(true)
                 .tsaPolicyId(null)

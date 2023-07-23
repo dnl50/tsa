@@ -8,8 +8,6 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +24,12 @@ import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Store;
 
 import dev.mieser.tsa.datetime.api.CurrentDateService;
-import dev.mieser.tsa.domain.HashAlgorithm;
 import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.signing.api.TimeStampAuthority;
-import dev.mieser.tsa.signing.api.exception.*;
+import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
+import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
+import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
+import dev.mieser.tsa.signing.api.exception.TspResponseException;
 import dev.mieser.tsa.signing.config.TsaProperties;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
@@ -47,8 +47,6 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
 
     private final TspParser tspParser;
 
-    private final TspValidator tspValidator;
-
     private final SigningKeystoreLoader signingKeystoreLoader;
 
     private final CurrentDateService currentDateService;
@@ -60,16 +58,10 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
     private TimeStampResponseGenerator timeStampResponseGenerator;
 
     @Override
-    public TimeStampResponseData signRequest(
-        InputStream tspRequestInputStream) throws InvalidTspRequestException, UnknownHashAlgorithmException {
+    public TimeStampResponseData signRequest(InputStream tspRequestInputStream) throws InvalidTspRequestException {
         verifyTsaIsInitialized();
 
         TimeStampRequest timeStampRequest = tspParser.parseRequest(tspRequestInputStream);
-        if (!tspValidator.isKnownHashAlgorithm(timeStampRequest.getMessageImprintAlgOID())) {
-            throw new UnknownHashAlgorithmException(
-                String.format("Unknown hash algorithm OID '%s'.", timeStampRequest.getMessageImprintAlgOID().getId()));
-        }
-
         return generateTspResponse(timeStampRequest);
     }
 
@@ -110,7 +102,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
             timeStampTokenGenerator.addCertificates(tokenGeneratorCertificateStore());
 
             this.timeStampResponseGenerator = new TimeStampResponseGenerator(timeStampTokenGenerator,
-                acceptedHashAlgorithmIdentifiers());
+                tsaProperties.acceptedHashAlgorithms());
 
             log.info(
                 "Successfully initialized TSA. Tokens are issued under policy OID '{}'. The following hash algorithms are accepted: {}",
@@ -167,15 +159,6 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
         };
 
         return String.format("%swith%s", tsaProperties.signingDigestAlgorithm().name(), signatureAlgorithmSuffix);
-    }
-
-    /**
-     * @return The OIDs of the accepted hash algorithms.
-     */
-    private Set<String> acceptedHashAlgorithmIdentifiers() {
-        return tsaProperties.acceptedHashAlgorithms().stream()
-            .map(HashAlgorithm::getObjectIdentifier)
-            .collect(Collectors.toSet());
     }
 
     /**

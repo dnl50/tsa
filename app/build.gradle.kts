@@ -19,7 +19,7 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-openapi")
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-hibernate-orm-panache")
-    implementation("io.quarkus:quarkus-container-image-docker")
+    implementation("io.quarkus:quarkus-hibernate-validator")
 
     implementation("commons-io:commons-io")
     implementation("org.apache.commons:commons-lang3")
@@ -33,7 +33,7 @@ dependencies {
     runtimeOnly("io.quarkus:quarkus-flyway")
     runtimeOnly("io.quarkus:quarkus-resteasy-reactive")
     runtimeOnly("io.quarkus:quarkus-resteasy-reactive-jackson")
-    runtimeOnly("io.quarkus:quarkus-hibernate-validator")
+    runtimeOnly("io.quarkus:quarkus-container-image-docker")
 
     compileOnly("org.projectlombok:lombok:${libs.versions.lombok.get()}")
 

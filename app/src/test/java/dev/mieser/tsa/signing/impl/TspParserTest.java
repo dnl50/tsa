@@ -1,6 +1,6 @@
 package dev.mieser.tsa.signing.impl;
 
-import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
+import static dev.mieser.tsa.signing.config.HashAlgorithm.SHA512;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

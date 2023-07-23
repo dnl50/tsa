@@ -8,7 +8,6 @@ import java.security.cert.X509Certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.DefaultCMSSignatureAlgorithmNameGenerator;
 import org.bouncycastle.cms.SignerInformationVerifier;
@@ -27,7 +26,6 @@ import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
-import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.impl.cert.SigningCertificateExtractor;
 import dev.mieser.tsa.signing.impl.cert.SigningCertificateHolder;
@@ -43,8 +41,6 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
     private final SigningKeystoreLoader signingKeystoreLoader;
 
     private final TimeStampValidationResultMapper timeStampValidationResultMapper;
-
-    private final TspValidator tspValidator;
 
     private final SigningCertificateExtractor signingCertificateExtractor;
 
@@ -62,35 +58,16 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
     }
 
     @Override
-    public TimeStampValidationResult validateResponse(
-        InputStream tspResponseInputStream) throws InvalidTspResponseException, UnknownHashAlgorithmException {
+    public TimeStampValidationResult validateResponse(InputStream tspResponseInputStream) throws InvalidTspResponseException {
         verifyInitialized();
 
         TimeStampResponse timeStampResponse = tspParser.parseResponse(tspResponseInputStream);
 
-        verifyHashAlgorithmIsKnown(timeStampResponse);
         SigningCertificateHolder signingCertificate = signingCertificateExtractor.extractSigningCertificate(timeStampResponse)
             .orElse(null);
 
         return timeStampValidationResultMapper.map(timeStampResponse, signingCertificate,
             wasSignedByThisTsa(timeStampResponse));
-    }
-
-    /**
-     * @param timeStampResponse
-     *     The response to check, not {@code null}.
-     * @throws UnknownHashAlgorithmException
-     *     When the response contains a token which references an unknown hash algorithm.
-     */
-    private void verifyHashAlgorithmIsKnown(TimeStampResponse timeStampResponse) throws UnknownHashAlgorithmException {
-        if (containsTimeStampToken(timeStampResponse)) {
-            ASN1ObjectIdentifier hashAlgorithmOid = timeStampResponse.getTimeStampToken().getTimeStampInfo()
-                .getMessageImprintAlgOID();
-            if (!tspValidator.isKnownHashAlgorithm(hashAlgorithmOid)) {
-                throw new UnknownHashAlgorithmException(
-                    String.format("Unknown hash algorithm OID '%s'.", hashAlgorithmOid.getId()));
-            }
-        }
     }
 
     /**

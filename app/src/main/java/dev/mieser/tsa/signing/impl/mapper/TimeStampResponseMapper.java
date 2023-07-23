@@ -31,7 +31,7 @@ public class TimeStampResponseMapper extends AbstractTspMapper {
      */
     public TimeStampResponseData map(TimeStampRequest timeStampRequest, TimeStampResponse timeStampResponse, Date receptionTime) {
         TimeStampRequestData requestData = TimeStampRequestData
-            .builder(mapToHashAlgorithm(timeStampRequest.getMessageImprintAlgOID()), timeStampRequest.getMessageImprintDigest(),
+            .builder(timeStampRequest.getMessageImprintAlgOID().getId(), timeStampRequest.getMessageImprintDigest(),
                 asnEncoded(timeStampRequest, TimeStampRequest::getEncoded))
             .nonce(timeStampRequest.getNonce())
             .certificateRequested(timeStampRequest.getCertReq())

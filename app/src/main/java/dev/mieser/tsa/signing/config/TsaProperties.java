@@ -6,7 +6,7 @@ import java.util.Set;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-import dev.mieser.tsa.domain.HashAlgorithm;
+import dev.mieser.tsa.signing.config.validator.ValidDigestAlgorithmIdentifier;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 
@@ -34,14 +34,14 @@ public interface TsaProperties {
     HashAlgorithm signingDigestAlgorithm();
 
     /**
-     * The Hash Algorithms which are accepted by the Timestamp Authority. A TSP request specifying a known
-     * {@link HashAlgorithm} which is not part of this set will be rejected.
+     * The OIDs of the Hash Algorithms which are accepted by the Timestamp Authority.
      * <p/>
-     * {@link HashAlgorithm#SHA256} and {@link HashAlgorithm#SHA512} are accepted by default. Cannot be empty.
+     * SHA256 ({@code 2.16.840.1.101.3.4.2.1} and SHA512 ({@code 2.16.840.1.101.3.4.2.3}) are accepted by default. Cannot be
+     * empty.
      */
     @NotEmpty
-    @WithDefault("SHA256,SHA512")
-    Set<HashAlgorithm> acceptedHashAlgorithms();
+    @WithDefault("2.16.840.1.101.3.4.2.1,2.16.840.1.101.3.4.2.3")
+    Set<@NotEmpty @ValidDigestAlgorithmIdentifier String> acceptedHashAlgorithms();
 
     /**
      * The OID of the policy under which the TSP responses are produced.

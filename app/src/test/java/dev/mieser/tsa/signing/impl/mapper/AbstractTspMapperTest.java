@@ -14,40 +14,18 @@ import static org.mockito.Mockito.never;
 import java.io.IOException;
 import java.util.function.Function;
 
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import dev.mieser.tsa.domain.FailureInfo;
-import dev.mieser.tsa.domain.HashAlgorithm;
 import dev.mieser.tsa.domain.ResponseStatus;
 
 @ExtendWith(MockitoExtension.class)
 class AbstractTspMapperTest {
 
     private final AbstractTspMapper testSubject = new AbstractTspMapperImpl();
-
-    @Test
-    void mapToHashAlgorithmThrowsExceptionWhenHashAlgorithmIsUnknown() {
-        assertThatIllegalStateException()
-            .isThrownBy(() -> testSubject.mapToHashAlgorithm(PKCSObjectIdentifiers.md5))
-            .withMessage("Unknown hash algorithm with OID '1.2.840.113549.2.5'.");
-    }
-
-    @ParameterizedTest
-    @EnumSource
-    void mapToHashAlgorithmReturnsExpectedHashAlgorithm(HashAlgorithm expected) {
-        // given /
-        HashAlgorithm actual = testSubject.mapToHashAlgorithm(new ASN1ObjectIdentifier(expected.getObjectIdentifier()));
-
-        // then
-        assertThat(actual).isEqualTo(expected);
-    }
 
     @Test
     void mapIfNotNullReturnsNullWhenInputIsNull(@Mock Function<String, Integer> mapperFunctionMock) {

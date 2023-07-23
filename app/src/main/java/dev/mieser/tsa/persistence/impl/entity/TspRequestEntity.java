@@ -10,8 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import dev.mieser.tsa.domain.HashAlgorithm;
-
 @Data
 @Entity
 @Builder
@@ -25,8 +23,7 @@ public class TspRequestEntity {
     private long id;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private HashAlgorithm hashAlgorithm;
+    private String hashAlgorithmIdentifier;
 
     @NotNull
     @Convert(converter = Base64Converter.class)

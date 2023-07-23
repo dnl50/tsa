@@ -10,7 +10,6 @@ import dev.mieser.tsa.integration.api.IssueTimeStampService;
 import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
 import dev.mieser.tsa.signing.api.TimeStampAuthority;
 import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
-import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,8 +20,7 @@ public class IssueTimeStampServiceImpl implements IssueTimeStampService {
     private final TspResponseDataRepository responseDataRepository;
 
     @Override
-    public TimeStampResponseData signTimestampRequest(
-        InputStream tspRequestStream) throws InvalidTspRequestException, UnknownHashAlgorithmException {
+    public TimeStampResponseData signTimestampRequest(InputStream tspRequestStream) throws InvalidTspRequestException {
         TimeStampResponseData response = timeStampAuthority.signRequest(tspRequestStream);
         TimeStampResponseData savedResponse = responseDataRepository.save(response);
         log.info("Successfully saved TSP response with serial number '{}' with ID '{}'.", savedResponse.getSerialNumber(),

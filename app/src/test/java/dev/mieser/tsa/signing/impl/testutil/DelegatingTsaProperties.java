@@ -1,10 +1,11 @@
 package dev.mieser.tsa.signing.impl.testutil;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import lombok.Setter;
 
-import dev.mieser.tsa.domain.HashAlgorithm;
+import dev.mieser.tsa.signing.config.HashAlgorithm;
 import dev.mieser.tsa.signing.config.TsaProperties;
 
 /**
@@ -26,8 +27,10 @@ public class DelegatingTsaProperties implements TsaProperties {
     }
 
     @Override
-    public Set<HashAlgorithm> acceptedHashAlgorithms() {
-        return configuration.acceptedHashAlgorithms();
+    public Set<String> acceptedHashAlgorithms() {
+        return configuration.acceptedHashAlgorithms().stream()
+            .map(HashAlgorithm::getObjectIdentifier)
+            .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override

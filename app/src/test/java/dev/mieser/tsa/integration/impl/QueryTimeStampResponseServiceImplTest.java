@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import dev.mieser.tsa.domain.*;
 import dev.mieser.tsa.persistence.api.*;
+import dev.mieser.tsa.signing.config.HashAlgorithm;
 
 @ExtendWith(MockitoExtension.class)
 class QueryTimeStampResponseServiceImplTest {
@@ -48,7 +49,8 @@ class QueryTimeStampResponseServiceImplTest {
     void findByIdDelegatesToRepository() {
         // given
         var id = 1337L;
-        var request = TimeStampRequestData.builder(HashAlgorithm.SHA256, "sha256".getBytes(), "asn-encoded".getBytes())
+        var request = TimeStampRequestData
+            .builder(HashAlgorithm.SHA256.getObjectIdentifier(), "sha256".getBytes(), "asn-encoded".getBytes())
             .build();
         var response = TimeStampResponseData
             .builder(ResponseStatus.REJECTION, ZonedDateTime.now(), request, "asn-encoded".getBytes())

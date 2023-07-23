@@ -1,8 +1,8 @@
 package dev.mieser.tsa.signing.impl.mapper;
 
 import static dev.mieser.tsa.domain.FailureInfo.BAD_ALGORITHM;
-import static dev.mieser.tsa.domain.HashAlgorithm.SHA256;
-import static dev.mieser.tsa.domain.HashAlgorithm.SHA512;
+import static dev.mieser.tsa.signing.config.HashAlgorithm.SHA256;
+import static dev.mieser.tsa.signing.config.HashAlgorithm.SHA512;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -90,7 +90,8 @@ class TimeStampResponseMapperTest {
             receptionTimeAsDate);
 
         // then
-        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder(SHA256, requestHash, asnEncodedRequest).build();
+        TimeStampRequestData expectedRequestData = TimeStampRequestData
+            .builder(SHA256.getObjectIdentifier(), requestHash, asnEncodedRequest).build();
 
         TimeStampResponseData expectedResponseData = TimeStampResponseData
             .builder(ResponseStatus.REJECTION, receptionTime, expectedRequestData, asnEncodedResponse)
@@ -133,7 +134,8 @@ class TimeStampResponseMapperTest {
         TimeStampResponseData actualResponseData = testSubject.map(timeStampRequestMock, timeStampResponseMock, genTimeDate);
 
         // then
-        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder(SHA256, requestHash, asnEncodedRequest).build();
+        TimeStampRequestData expectedRequestData = TimeStampRequestData
+            .builder(SHA256.getObjectIdentifier(), requestHash, asnEncodedRequest).build();
 
         TimeStampResponseData expectedResponseData = TimeStampResponseData
             .builder(ResponseStatus.GRANTED, genTime, expectedRequestData, asnEncodedResponse)
@@ -172,7 +174,8 @@ class TimeStampResponseMapperTest {
             receptionTimeAsDate);
 
         // then
-        TimeStampRequestData expectedRequestData = TimeStampRequestData.builder(SHA512, hash, asnEncodedRequest)
+        TimeStampRequestData expectedRequestData = TimeStampRequestData
+            .builder(SHA512.getObjectIdentifier(), hash, asnEncodedRequest)
             .nonce(nonce)
             .tsaPolicyId(policyOid)
             .certificateRequested(true)

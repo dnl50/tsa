@@ -16,11 +16,11 @@ import lombok.Data;
 public class TimeStampRequestData {
 
     /**
-     * The hash algorithm which was used.
+     * The OID of the hash algorithm which was used.
      * <p/>
-     * Not {@code null}.
+     * Not {@code empty}.
      */
-    private final HashAlgorithm hashAlgorithm;
+    private final String hashAlgorithmIdentifier;
 
     /**
      * The data which should be signed.
@@ -51,9 +51,9 @@ public class TimeStampRequestData {
      */
     private final byte[] asnEncoded;
 
-    public static TimeStampRequestDataBuilder builder(HashAlgorithm hashAlgorithm, byte[] hash, byte[] asnEncodedRequest) {
+    public static TimeStampRequestDataBuilder builder(String hashAlgorithmIdentifier, byte[] hash, byte[] asnEncodedRequest) {
         return new TimeStampRequestDataBuilder()
-            .hashAlgorithm(hashAlgorithm)
+            .hashAlgorithmIdentifier(hashAlgorithmIdentifier)
             .hash(hash)
             .asnEncoded(asnEncodedRequest);
     }

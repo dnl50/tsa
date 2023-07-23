@@ -2,7 +2,7 @@ package dev.mieser.tsa.signing.impl.testutil;
 
 import java.util.Set;
 
-import dev.mieser.tsa.domain.HashAlgorithm;
+import dev.mieser.tsa.signing.config.HashAlgorithm;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
 
 /**

@@ -5,7 +5,6 @@ import java.io.InputStream;
 import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
-import dev.mieser.tsa.signing.api.exception.UnknownHashAlgorithmException;
 
 /**
  * Interface abstraction of a service verifying that <a href="https://www.ietf.org/rfc/rfc3161.txt">RFC 3161</a>
@@ -27,12 +26,9 @@ public interface TimeStampValidator {
      * @param tspResponseInputStream
      *     The input stream of an ASN.1 DER encoded TSP request, not {@code null}.
      * @return The verification result of the TSP response.
-     * @throws UnknownHashAlgorithmException
-     *     When the hash algorithm specified in the TSP request is unknown.
      * @throws InvalidTspResponseException
      *     When the specified input stream does not contain a valid ASN.1 DER encoded TSP response.
      */
-    TimeStampValidationResult validateResponse(
-        InputStream tspResponseInputStream) throws InvalidTspResponseException, UnknownHashAlgorithmException;
+    TimeStampValidationResult validateResponse(InputStream tspResponseInputStream) throws InvalidTspResponseException;
 
 }

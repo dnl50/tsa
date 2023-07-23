@@ -5,32 +5,16 @@ import static java.lang.String.format;
 import java.io.IOException;
 import java.util.function.Function;
 
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
 
 import dev.mieser.tsa.domain.FailureInfo;
-import dev.mieser.tsa.domain.HashAlgorithm;
 import dev.mieser.tsa.domain.ResponseStatus;
 
 /**
  * Abstract class for mapping Bouncy Castle-specific objects to domain objects.
  */
 abstract class AbstractTspMapper {
-
-    /**
-     * @param asnAlgorithmIdentifier
-     *     The ASN1 OID of the hash algorithm.
-     * @return The corresponding {@link HashAlgorithm}.
-     * @throws IllegalStateException
-     *     When the hash algorithm is not known.
-     */
-    protected HashAlgorithm mapToHashAlgorithm(ASN1ObjectIdentifier asnAlgorithmIdentifier) {
-        String hashAlgorithmOid = asnAlgorithmIdentifier.getId();
-
-        return HashAlgorithm.fromObjectIdentifier(hashAlgorithmOid)
-            .orElseThrow(() -> new IllegalStateException(format("Unknown hash algorithm with OID '%s'.", hashAlgorithmOid)));
-    }
 
     /**
      * @param status

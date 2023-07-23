@@ -12,12 +12,12 @@ import jakarta.inject.Inject;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.Test;
 
-import dev.mieser.tsa.domain.HashAlgorithm;
 import dev.mieser.tsa.domain.ResponseStatus;
 import dev.mieser.tsa.domain.TimeStampRequestData;
 import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.persistence.api.Page;
 import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
+import dev.mieser.tsa.signing.config.HashAlgorithm;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -94,7 +94,8 @@ class ResponseHistoryResourceTest {
     }
 
     private TimeStampResponseData saveGeneratedResponseInNewTransaction(ZonedDateTime receptionTime) {
-        var minimalRequest = TimeStampRequestData.builder(HashAlgorithm.SHA256, "sha-256".getBytes(), "asn-encoded".getBytes())
+        var minimalRequest = TimeStampRequestData
+            .builder(HashAlgorithm.SHA256.getObjectIdentifier(), "sha-256".getBytes(), "asn-encoded".getBytes())
             .build();
         var minimalResponse = TimeStampResponseData
             .builder(ResponseStatus.REJECTION, receptionTime, minimalRequest, "asn-encoded".getBytes()).build();
