@@ -1,6 +1,6 @@
 [versions]
-quarkus = "3.2.0.Final"
-bouncycastle = "1.75"
+quarkus = "3.2.4.Final"
+bouncycastle = "1.76"
 lombok = "1.18.28"
 assertj = "3.24.2"
 mapstruct = "1.5.5.Final"
