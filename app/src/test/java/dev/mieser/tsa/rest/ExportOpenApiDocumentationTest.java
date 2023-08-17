@@ -1,9 +1,9 @@
 package dev.mieser.tsa.rest;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ public class ExportOpenApiDocumentationTest {
             throw new IllegalStateException(String.format("System Property '%s' not set.", TARGET_FILE_PATH_PROPERTY));
         }
 
-        FileUtils.writeByteArrayToFile(new File(targetFilePath), content);
+        Files.write(Paths.get(targetFilePath), content);
     }
 
 }

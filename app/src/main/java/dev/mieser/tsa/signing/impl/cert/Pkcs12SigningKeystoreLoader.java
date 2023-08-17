@@ -34,20 +34,20 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
     private PrivateKey privateKey;
 
     @Override
-    public X509Certificate loadCertificate() throws IOException {
+    public X509Certificate loadCertificate() {
         extractCertificateAndPrivateKey();
 
         return certificate;
     }
 
     @Override
-    public PrivateKey loadPrivateKey() throws IOException {
+    public PrivateKey loadPrivateKey() {
         extractCertificateAndPrivateKey();
 
         return privateKey;
     }
 
-    private void extractCertificateAndPrivateKey() throws IOException {
+    private void extractCertificateAndPrivateKey() {
         if (certificate != null && privateKey != null) {
             return;
         }
@@ -57,7 +57,7 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
         this.privateKey = extractPrivateKey(keyStore);
     }
 
-    private KeyStore loadKeystore() throws IOException {
+    private KeyStore loadKeystore() {
         try (var inputStream = openStream()) {
             var keyStore = KeyStore.getInstance(PKCS12_KEYSTORE_TYPE);
             keyStore.load(inputStream, password);
@@ -65,7 +65,7 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
             return keyStore;
         } catch (KeyStoreException e) {
             throw new IllegalStateException("PKCS#12 keystores are not supported by the JVM.", e);
-        } catch (CertificateException | NoSuchAlgorithmException e) {
+        } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
             throw new IllegalStateException(String.format("Failed to load PKCS#12 Keystore from '%s'.", path), e);
         }
     }

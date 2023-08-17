@@ -14,13 +14,13 @@ public interface SigningKeystoreLoader {
      * @throws IOException
      *     When an error occurs while reading the certificate.
      */
-    X509Certificate loadCertificate() throws IOException;
+    X509Certificate loadCertificate();
 
     /**
      * @return The corresponding private key.
      * @throws IOException
      *     When an error occurs while reading the private key.
      */
-    PrivateKey loadPrivateKey() throws IOException;
+    PrivateKey loadPrivateKey();
 
 }

@@ -3,6 +3,7 @@ package dev.mieser.tsa.signing.api;
 import java.io.InputStream;
 
 import dev.mieser.tsa.domain.TimeStampValidationResult;
+import dev.mieser.tsa.signing.api.exception.InvalidCertificateException;
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 
@@ -13,7 +14,7 @@ import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 public interface TimeStampValidator {
 
     /**
-     * Initializes this validator.
+     * Initializes the validator.
      *
      * @throws TsaInitializationException
      *     When an error occurs while initializing the validator.
@@ -21,14 +22,29 @@ public interface TimeStampValidator {
     void initialize();
 
     /**
-     * Verifies whether a TSP response was issued by the corresponding TSA.
+     * Verifies whether the TSP response was signed using the private key of the currently configured certificate.
      *
-     * @param tspResponseInputStream
+     * @param tspResponse
      *     The input stream of an ASN.1 DER encoded TSP request, not {@code null}.
      * @return The verification result of the TSP response.
      * @throws InvalidTspResponseException
      *     When the specified input stream does not contain a valid ASN.1 DER encoded TSP response.
      */
-    TimeStampValidationResult validateResponse(InputStream tspResponseInputStream) throws InvalidTspResponseException;
+    TimeStampValidationResult validateResponse(InputStream tspResponse) throws InvalidTspResponseException;
+
+    /**
+     * Verifies whether the TSP response was signed using the private key of the currently configured certificate.
+     *
+     * @param tspResponse
+     *     The input stream of an ASN.1 DER encoded TSP request, not {@code null}.
+     * @param x509Certificate
+     *     An X.509 encoded certificate which the signature will be validated against, not {@code null}.
+     * @return The verification result of the TSP response.
+     * @throws InvalidTspResponseException
+     *     When the specified input stream does not contain a valid ASN.1 DER encoded TSP response.
+     * @implNote The specified input streams are not getting closed inside the method.
+     */
+    TimeStampValidationResult validateResponse(InputStream tspResponse,
+        InputStream x509Certificate) throws InvalidTspResponseException, InvalidCertificateException;
 
 }

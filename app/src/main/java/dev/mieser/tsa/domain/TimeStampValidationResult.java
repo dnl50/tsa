@@ -16,7 +16,7 @@ public class TimeStampValidationResult {
     private final ResponseStatus status;
 
     /**
-     * An optional reason text.
+     * An optional status description.
      */
     private final String statusString;
 
@@ -67,8 +67,8 @@ public class TimeStampValidationResult {
     private final SigningCertificateInformation signingCertificateInformation;
 
     /**
-     * A flag whether the response was signed by the certificate which is currently in use.
+     * Is the signature of the response valid?
      */
-    private final boolean signedByThisTsa;
+    private final boolean signatureValid;
 
 }

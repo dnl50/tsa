@@ -24,12 +24,11 @@ import org.bouncycastle.tsp.TimeStampResponse;
 
 import dev.mieser.tsa.domain.TimeStampValidationResult;
 import dev.mieser.tsa.signing.api.TimeStampValidator;
+import dev.mieser.tsa.signing.api.exception.InvalidCertificateException;
 import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
+import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
-import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
-import dev.mieser.tsa.signing.impl.cert.SigningCertificateExtractor;
-import dev.mieser.tsa.signing.impl.cert.SigningCertificateHolder;
-import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
+import dev.mieser.tsa.signing.impl.cert.*;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampValidationResultMapper;
 
 @Slf4j
@@ -44,62 +43,79 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
 
     private final SigningCertificateExtractor signingCertificateExtractor;
 
-    private SignerInformationVerifier signerInformationVerifier;
+    private final CertificateParser certificateParser;
+
+    private SignerInformationVerifier defaultSignatureVerifier;
 
     @Override
     public void initialize() {
-        if (signerInformationVerifier != null) {
+        if (defaultSignatureVerifier != null) {
             return;
         }
 
-        this.signerInformationVerifier = new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(),
-            new DefaultSignatureAlgorithmIdentifierFinder(),
-            buildContentVerifierProvider(), new BcDigestCalculatorProvider());
+        try {
+            defaultSignatureVerifier = buildSignerInformationVerifier(signingKeystoreLoader.loadCertificate());
+        } catch (InvalidCertificateException e) {
+            throw new TsaInitializationException("Failed to initialize signature verifier.", e);
+        }
     }
 
     @Override
-    public TimeStampValidationResult validateResponse(InputStream tspResponseInputStream) throws InvalidTspResponseException {
+    public TimeStampValidationResult validateResponse(InputStream tspResponse) throws InvalidTspResponseException {
         verifyInitialized();
 
-        TimeStampResponse timeStampResponse = tspParser.parseResponse(tspResponseInputStream);
+        return validateResponse(tspResponse, defaultSignatureVerifier);
+    }
+
+    @Override
+    public TimeStampValidationResult validateResponse(InputStream tspResponse,
+        InputStream x509Certificate) throws InvalidTspResponseException, InvalidCertificateException {
+        return validateResponse(tspResponse, buildSignerInformationVerifier(certificateParser.parseCertificate(x509Certificate)));
+    }
+
+    private void verifyInitialized() {
+        if (defaultSignatureVerifier == null) {
+            throw new TsaNotInitializedException();
+        }
+    }
+
+    private TimeStampValidationResult validateResponse(InputStream tspResponse,
+        SignerInformationVerifier signatureVerifier) throws InvalidTspResponseException {
+        TimeStampResponse timeStampResponse = tspParser.parseResponse(tspResponse);
 
         SigningCertificateHolder signingCertificate = signingCertificateExtractor.extractSigningCertificate(timeStampResponse)
             .orElse(null);
 
         return timeStampValidationResultMapper.map(timeStampResponse, signingCertificate,
-            wasSignedByThisTsa(timeStampResponse));
+            isSignatureValid(timeStampResponse, signatureVerifier));
     }
 
-    /**
-     * Verifies that the validator is initialized.
-     *
-     * @throws TsaNotInitializedException
-     *     When the {@link #initialize()} method has not yet been executed.
-     */
-    private void verifyInitialized() {
-        if (signerInformationVerifier == null) {
-            throw new TsaNotInitializedException();
+    private boolean isSignatureValid(TimeStampResponse timeStampResponse,
+        SignerInformationVerifier signatureVerifier) {
+        if (timeStampResponse.getTimeStampToken() == null) {
+            return false;
+        }
+
+        try {
+            timeStampResponse.getTimeStampToken().validate(signatureVerifier);
+            return true;
+        } catch (TSPException e) {
+            log.debug("Failed to validate signature.", e);
+            return false;
         }
     }
 
-    private boolean containsTimeStampToken(TimeStampResponse timeStampResponse) {
-        return timeStampResponse.getTimeStampToken() != null;
-    }
-
-    /**
-     * @return The signature verifier backed by the {@link SigningKeystoreLoader current} certificate.
-     */
-    private ContentVerifierProvider buildContentVerifierProvider() {
+    private SignerInformationVerifier buildSignerInformationVerifier(
+        X509Certificate signerCertificate) throws InvalidCertificateException {
         try {
-            X509Certificate signingCertificate = signingKeystoreLoader.loadCertificate();
-            String jcaAlgorithmName = signingCertificate.getPublicKey().getAlgorithm();
+            String jcaAlgorithmName = signerCertificate.getPublicKey().getAlgorithm();
             PublicKeyAlgorithm publicKeyAlgorithm = PublicKeyAlgorithm.fromJcaName(jcaAlgorithmName)
-                .orElseThrow(() -> new IllegalStateException(
+                .orElseThrow(() -> new InvalidCertificateException(
                     String.format("Unsupported public key algorithm '%s'.", jcaAlgorithmName)));
 
-            var signingCertificateHolder = new X509CertificateHolder(signingCertificate.getEncoded());
+            var signingCertificateHolder = new X509CertificateHolder(signerCertificate.getEncoded());
 
-            return switch (publicKeyAlgorithm) {
+            ContentVerifierProvider verifierProvider = switch (publicKeyAlgorithm) {
             case RSA -> new BcRSAContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
                 .build(signingCertificateHolder);
             case EC -> new BcECContentVerifierProviderBuilder(new DefaultDigestAlgorithmIdentifierFinder())
@@ -108,27 +124,10 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
                 .build(signingCertificateHolder);
             };
 
+            return new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(),
+                new DefaultSignatureAlgorithmIdentifierFinder(), verifierProvider, new BcDigestCalculatorProvider());
         } catch (IOException | CertificateEncodingException | OperatorCreationException e) {
             throw new IllegalStateException("Failed to initialize content verifier provider.", e);
-        }
-    }
-
-    /**
-     * @param timeStampResponse
-     *     The response to check, not {@code null}.
-     * @return {@code true}, iff the response contains a token which was signed by this TSA.
-     */
-    private boolean wasSignedByThisTsa(TimeStampResponse timeStampResponse) {
-        if (!containsTimeStampToken(timeStampResponse)) {
-            return false;
-        }
-
-        try {
-            timeStampResponse.getTimeStampToken().validate(signerInformationVerifier);
-            return true;
-        } catch (TSPException e) {
-            log.info("TSP Response was not signed by this TSA", e);
-            return false;
         }
     }
 

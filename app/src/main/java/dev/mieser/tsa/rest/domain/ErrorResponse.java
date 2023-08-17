@@ -1,4 +1,4 @@
-package dev.mieser.tsa.rest.providers;
+package dev.mieser.tsa.rest.domain;
 
 /**
  * @param message

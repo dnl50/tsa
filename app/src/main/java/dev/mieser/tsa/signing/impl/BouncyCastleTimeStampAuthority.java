@@ -18,6 +18,7 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
 import org.bouncycastle.operator.DigestCalculator;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.tsp.*;
 import org.bouncycastle.util.CollectionStore;
@@ -126,12 +127,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
             .get(hashAlgorithmIdentifier);
     }
 
-    /**
-     * @return The {@link SignerInfoGenerator} which is used to sign the TSP request.
-     * @throws Exception
-     *     When an error occurs while building the signer info generator.
-     */
-    private SignerInfoGenerator buildSignerInfoGenerator() throws Exception {
+    private SignerInfoGenerator buildSignerInfoGenerator() throws OperatorCreationException, CertificateEncodingException {
         X509Certificate signingCertificate = signingKeystoreLoader.loadCertificate();
         String jcaAlgorithmName = signingCertificate.getPublicKey().getAlgorithm();
         PublicKeyAlgorithm publicKeyAlgorithm = PublicKeyAlgorithm.fromJcaName(jcaAlgorithmName)

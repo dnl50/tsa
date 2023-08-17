@@ -81,8 +81,8 @@ class Pkcs12SigningKeystoreLoaderTest {
         var testSubject = new Pkcs12SigningKeystoreLoader(new File(tempDir, keyStoreFile).getAbsolutePath(), NO_PASSWORD);
 
         // when / then
-        assertThatExceptionOfType(FileNotFoundException.class)
-            .isThrownBy(testSubject::loadCertificate);
+        assertThatIllegalStateException().isThrownBy(testSubject::loadCertificate)
+            .withMessageMatching("Failed to load PKCS#12 Keystore from '.*unknown-file\\.p12'\\.");
     }
 
     @Test

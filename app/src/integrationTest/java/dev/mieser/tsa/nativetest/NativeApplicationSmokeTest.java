@@ -14,6 +14,7 @@ import org.bouncycastle.asn1.tsp.TimeStampReq;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.junit.jupiter.api.Test;
 
+import dev.mieser.tsa.rest.domain.TsaMediaType;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
@@ -35,8 +36,8 @@ public class NativeApplicationSmokeTest {
 
         // when / then
         RestAssured.given()
-            .contentType("application/timestamp-query")
-            .accept("application/timestamp-reply")
+            .contentType(TsaMediaType.TIMESTAMP_QUERY)
+            .accept(TsaMediaType.TIMESTAMP_REPLY)
             .body(asnEncodedRequest)
             .post("/tsa/sign")
             .then()

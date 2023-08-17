@@ -28,12 +28,12 @@ public class TimeStampValidationResultMapper extends AbstractTspMapper {
      *     The time stamp response to map, not {@code null}.
      * @param signingCertificateHolder
      *     The signing certificate referenced in the time stamp response, can be null.
-     * @param signedByThisTsa
+     * @param signatureValid
      *     A flag whether the time stamp response was signed by the certificate currently in use by this TSA.
      * @return The mapped result.
      */
     public TimeStampValidationResult map(TimeStampResponse timeStampResponse, SigningCertificateHolder signingCertificateHolder,
-        boolean signedByThisTsa) {
+        boolean signatureValid) {
         TimeStampTokenInfo timeStampInfo = timeStampResponse.getTimeStampToken() != null
             ? timeStampResponse.getTimeStampToken().getTimeStampInfo()
             : null;
@@ -49,7 +49,7 @@ public class TimeStampValidationResultMapper extends AbstractTspMapper {
             .hash(mapIfNotNull(timeStampInfo, TimeStampTokenInfo::getMessageImprintDigest))
             .signingCertificateIdentifier(mapIfNotNull(signingCertificateHolder, this::mapCertificateIdentifier))
             .signingCertificateInformation(mapIfNotNull(signingCertificateHolder, this::mapCertificateInformation))
-            .signedByThisTsa(signedByThisTsa)
+            .signatureValid(signatureValid)
             .build();
     }
 

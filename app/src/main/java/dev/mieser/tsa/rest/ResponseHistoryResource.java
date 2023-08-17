@@ -11,6 +11,8 @@ import jakarta.ws.rs.core.MediaType;
 
 import lombok.RequiredArgsConstructor;
 
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
@@ -19,6 +21,8 @@ import dev.mieser.tsa.integration.api.QueryTimeStampResponseService;
 import dev.mieser.tsa.persistence.api.Page;
 import dev.mieser.tsa.persistence.api.PageRequest;
 import dev.mieser.tsa.rest.converter.SortQueryParamConverter;
+import dev.mieser.tsa.rest.domain.HttpStatusCode;
+import io.quarkus.hibernate.validator.runtime.jaxrs.ViolationReport;
 
 @Transactional
 @Path("/history/responses")
@@ -54,7 +58,8 @@ public class ResponseHistoryResource {
                      description = "The specified page with the configured size."),
         @APIResponse(
                      responseCode = HttpStatusCode.BAD_REQUEST,
-                     description = "When a validation constraint is violated.")
+                     description = "When a validation constraint is violated.",
+                     content = @Content(schema = @Schema(implementation = ViolationReport.class)))
     })
     public Page<TimeStampResponseData> findAll(
         @QueryParam("page") @Min(1) int page,

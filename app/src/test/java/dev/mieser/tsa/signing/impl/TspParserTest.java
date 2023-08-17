@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1Boolean;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -116,8 +114,8 @@ class TspParserTest {
     }
 
     private byte[] readAsnEncodedTimeStampResponse() throws IOException {
-        try (InputStream resourceInputStream = getClass().getResourceAsStream("tsp-response.base64")) {
-            return Base64.decodeBase64(IOUtils.toString(resourceInputStream, UTF_8));
+        try (InputStream resourceInputStream = getClass().getResourceAsStream("digicert-response-2023-08-13.asn1")) {
+            return resourceInputStream.readAllBytes();
         }
     }
 

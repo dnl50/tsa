@@ -10,6 +10,7 @@ import dev.mieser.tsa.signing.api.TimeStampValidator;
 import dev.mieser.tsa.signing.impl.BouncyCastleTimeStampAuthority;
 import dev.mieser.tsa.signing.impl.BouncyCastleTimeStampValidator;
 import dev.mieser.tsa.signing.impl.TspParser;
+import dev.mieser.tsa.signing.impl.cert.CertificateParser;
 import dev.mieser.tsa.signing.impl.cert.Pkcs12SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.cert.SigningCertificateExtractor;
 import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
@@ -38,23 +39,18 @@ public class TsaConfiguration {
     @ApplicationScoped
     TimeStampValidator timeStampValidator(TspParser tspParser,
         SigningKeystoreLoader signingKeystoreLoader,
-        DateConverter dateConverter,
-        SigningCertificateExtractor signingCertificateExtractor) {
+        DateConverter dateConverter) {
         return new BouncyCastleTimeStampValidator(tspParser,
             signingKeystoreLoader,
             new TimeStampValidationResultMapper(dateConverter),
-            signingCertificateExtractor);
+            new SigningCertificateExtractor(),
+            new CertificateParser());
     }
 
     @Produces
     @ApplicationScoped
     TspParser tspParser() {
         return new TspParser();
-    }
-
-    @ApplicationScoped
-    SigningCertificateExtractor signingCertificateExtractor() {
-        return new SigningCertificateExtractor();
     }
 
     @Produces
