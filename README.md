@@ -33,7 +33,7 @@ ASN.1 DER-encoded Time-Stamp Request must be supplied in the request body.
 ### REST API
 
 The available REST Endpoints are documented in a OpenAPI specification which can be explored using a Swagger UI which is
-available under `/q/swagger-ui`.
+available under `/api/q/swagger-ui`.
 
 ## Configuration
 
