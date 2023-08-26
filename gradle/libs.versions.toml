@@ -1,5 +1,5 @@
 [versions]
-quarkus = "3.2.4.Final"
+quarkus = "3.3.0"
 bouncycastle = "1.76"
 lombok = "1.18.28"
 assertj = "3.24.2"
