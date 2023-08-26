@@ -67,11 +67,11 @@ tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-parameters")
 }
 
-val openApiSpecificationFile = file("$buildDir/openapi-specification.json")
+val openApiSpecificationFile = layout.buildDirectory.file("openapi-specification.json")
 
 tasks.test.configure {
     outputs.file(openApiSpecificationFile)
-    systemProperty("openapi.specification.target-file", openApiSpecificationFile.absolutePath)
+    systemProperty("openapi.specification.target-file", openApiSpecificationFile.get().asFile.absolutePath)
 }
 
 artifacts {
