@@ -43,7 +43,7 @@
 			{#each pages as page}
 				<NavLi href={page.path} active={activePage === page.path}>{page.title}</NavLi>
 			{/each}
-			<NavLi href="https://github.com/dnl50/tsa-server">
+			<NavLi href="https://github.com/dnl50/tsa">
 				<span class="inline-flex">
 					<!-- only shown in burger extended burger menu -->
 					<span {hidden} class="pr-1.5">GitHub</span>
