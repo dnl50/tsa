@@ -62,7 +62,7 @@ public class ResponseHistoryResource {
                      content = @Content(schema = @Schema(implementation = ViolationReport.class)))
     })
     public Page<TimeStampResponseData> findAll(
-        @QueryParam("page") @Min(1) int page,
+        @DefaultValue("1") @QueryParam("page") @Min(1) int page,
         @DefaultValue("50") @QueryParam("size") @Min(1) @Max(500) int size,
         @Pattern(regexp = SortQueryParamConverter.PATTERN, flags = CASE_INSENSITIVE) @QueryParam("sort") String sort) {
         return queryTimeStampResponseService.findAll(new PageRequest(page, size, sortQueryParamConverter.fromString(sort)));
