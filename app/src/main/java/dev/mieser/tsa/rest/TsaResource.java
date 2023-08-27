@@ -27,7 +27,7 @@ import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 import io.quarkus.hibernate.validator.runtime.jaxrs.ViolationReport;
 
 @Transactional
-@Path("/tsa")
+@Path("/")
 @RequiredArgsConstructor
 public class TsaResource {
 

@@ -39,7 +39,7 @@ public class NativeApplicationSmokeTest {
             .contentType(TsaMediaType.TIMESTAMP_QUERY)
             .accept(TsaMediaType.TIMESTAMP_REPLY)
             .body(asnEncodedRequest)
-            .post("/tsa/sign")
+            .post("/sign")
             .then()
             .statusCode(200);
     }
