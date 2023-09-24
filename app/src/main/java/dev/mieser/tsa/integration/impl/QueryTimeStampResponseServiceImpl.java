@@ -21,7 +21,7 @@ public class QueryTimeStampResponseServiceImpl implements QueryTimeStampResponse
     }
 
     @Override
-    public Optional<TimeStampResponseData> findById(Long id) {
+    public Optional<TimeStampResponseData> findById(long id) {
         return responseDataRepository.findById(id);
     }
 

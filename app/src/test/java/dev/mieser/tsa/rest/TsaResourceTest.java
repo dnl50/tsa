@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 
 import org.bouncycastle.asn1.ASN1Boolean;
@@ -18,16 +19,19 @@ import org.bouncycastle.asn1.tsp.MessageImprint;
 import org.bouncycastle.asn1.tsp.TimeStampReq;
 import org.bouncycastle.asn1.tsp.TimeStampResp;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import dev.mieser.tsa.domain.ResponseStatus;
 import dev.mieser.tsa.domain.TimeStampValidationResult;
+import dev.mieser.tsa.persistence.api.TspResponseDataRepository;
 import dev.mieser.tsa.rest.domain.ErrorResponse;
 import dev.mieser.tsa.rest.domain.TsaMediaType;
 import dev.mieser.tsa.testutil.CertificateGenerator;
 import dev.mieser.tsa.testutil.TestKeyLoader;
 import io.quarkus.hibernate.validator.runtime.jaxrs.ViolationReport;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
@@ -37,6 +41,18 @@ import io.restassured.RestAssured;
 public class TsaResourceTest {
 
     private static final String FILE_NAME = "file";
+
+    private final TspResponseDataRepository tspResponseDataRepository;
+
+    @Inject
+    TsaResourceTest(TspResponseDataRepository tspResponseDataRepository) {
+        this.tspResponseDataRepository = tspResponseDataRepository;
+    }
+
+    @AfterEach
+    void tearDown() {
+        QuarkusTransaction.requiringNew().run(tspResponseDataRepository::deleteAll);
+    }
 
     @Nested
     class Sign {

@@ -3,9 +3,11 @@ package dev.mieser.tsa.integration.config;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.Produces;
 
+import dev.mieser.tsa.integration.api.DeleteTimestampResponseService;
 import dev.mieser.tsa.integration.api.IssueTimeStampService;
 import dev.mieser.tsa.integration.api.QueryTimeStampResponseService;
 import dev.mieser.tsa.integration.api.ValidateTimeStampResponseService;
+import dev.mieser.tsa.integration.impl.DeleteTimestampResponseServiceImpl;
 import dev.mieser.tsa.integration.impl.IssueTimeStampServiceImpl;
 import dev.mieser.tsa.integration.impl.QueryTimeStampResponseServiceImpl;
 import dev.mieser.tsa.integration.impl.ValidateTimeStampResponseServiceImpl;
@@ -32,6 +34,12 @@ public class IntegrationConfig {
     @ApplicationScoped
     ValidateTimeStampResponseService validateTimeStampResponseService(TimeStampValidator timeStampValidator) {
         return new ValidateTimeStampResponseServiceImpl(timeStampValidator);
+    }
+
+    @Produces
+    @ApplicationScoped
+    DeleteTimestampResponseService deleteTimestampResponseService(TspResponseDataRepository responseDataRepository) {
+        return new DeleteTimestampResponseServiceImpl(responseDataRepository);
     }
 
 }

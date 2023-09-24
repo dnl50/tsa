@@ -8,8 +8,10 @@ import java.time.ZonedDateTime;
 import java.util.Comparator;
 
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import dev.mieser.tsa.domain.ResponseStatus;
@@ -33,12 +35,17 @@ class ResponseHistoryResourceTest {
         this.tspResponseDataRepository = tspResponseDataRepository;
     }
 
+    @AfterEach
+    void tearDown() {
+        QuarkusTransaction.requiringNew().run(tspResponseDataRepository::deleteAll);
+    }
+
     @Test
     void queryByIdReturnsNotFoundWhenResponseDoesNotExist() {
         given().accept(ContentType.JSON)
             .get("/history/responses/-1")
             .then().assertThat()
-            .statusCode(404);
+            .statusCode(Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
@@ -51,7 +58,7 @@ class ResponseHistoryResourceTest {
             .accept(ContentType.JSON)
             .get("/history/responses/{id}", savedResponse.getId())
             .then().assertThat()
-            .statusCode(200)
+            .statusCode(Status.OK.getStatusCode())
             .extract()
             .as(TimeStampResponseData.class);
 
@@ -76,7 +83,7 @@ class ResponseHistoryResourceTest {
             .param("sort", "receptionTime,desc")
             .get("/history/responses")
             .then().assertThat()
-            .statusCode(200)
+            .statusCode(Status.OK.getStatusCode())
             .and()
             .extract().as(new TypeRef<>() {});
 
@@ -91,6 +98,55 @@ class ResponseHistoryResourceTest {
                 .containsSubsequence(latestResponse, secondLatestResponse)
                 .doesNotContain(thirdLatestResponse);
         });
+    }
+
+    @Test
+    void deleteByIdReturnsNotFoundWhenResponseDoesNotExist() {
+        given().accept(ContentType.JSON)
+            .delete("/history/responses/-1")
+            .then().assertThat()
+            .statusCode(Status.NOT_FOUND.getStatusCode());
+    }
+
+    @Test
+    void deleteByIdDeletesResponse() {
+        // given
+        TimeStampResponseData responseToDelete = saveGeneratedResponseInNewTransaction(ZonedDateTime.now());
+
+        // when
+        given().accept(ContentType.JSON)
+            .delete("/history/responses/{id}", responseToDelete.getId())
+            .then().assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+
+        // then
+        given().accept(ContentType.JSON)
+            .get("/history/responses/{id}", responseToDelete.getId())
+            .then().assertThat()
+            .statusCode(Status.NOT_FOUND.getStatusCode());
+    }
+
+    @Test
+    void deleteAll() {
+        // given
+        saveGeneratedResponseInNewTransaction(ZonedDateTime.now());
+
+        // when
+        given().accept(ContentType.JSON)
+            .delete("/history/responses")
+            .then().assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+
+        // then
+        Page<TimeStampResponseData> returnedPage = given().accept(ContentType.JSON)
+            .get("/history/responses")
+            .then().assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .and()
+            .extract()
+            .as(new TypeRef<>() {});
+
+        assertThat(returnedPage.totalElements()).isZero();
     }
 
     private TimeStampResponseData saveGeneratedResponseInNewTransaction(ZonedDateTime receptionTime) {

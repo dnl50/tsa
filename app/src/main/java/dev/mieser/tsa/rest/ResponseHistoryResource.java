@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import dev.mieser.tsa.domain.TimeStampResponseData;
+import dev.mieser.tsa.integration.api.DeleteTimestampResponseService;
 import dev.mieser.tsa.integration.api.QueryTimeStampResponseService;
 import dev.mieser.tsa.persistence.api.Page;
 import dev.mieser.tsa.persistence.api.PageRequest;
@@ -30,6 +32,8 @@ import io.quarkus.hibernate.validator.runtime.jaxrs.ViolationReport;
 public class ResponseHistoryResource {
 
     private final QueryTimeStampResponseService queryTimeStampResponseService;
+
+    private final DeleteTimestampResponseService deleteTimestampResponseService;
 
     private final SortQueryParamConverter sortQueryParamConverter;
 
@@ -66,6 +70,37 @@ public class ResponseHistoryResource {
         @DefaultValue("50") @QueryParam("size") @Min(1) @Max(500) int size,
         @Pattern(regexp = SortQueryParamConverter.PATTERN, flags = CASE_INSENSITIVE) @QueryParam("sort") String sort) {
         return queryTimeStampResponseService.findAll(new PageRequest(page, size, sortQueryParamConverter.fromString(sort)));
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @APIResponses({
+        @APIResponse(
+                     responseCode = HttpStatusCode.NO_CONTENT,
+                     description = "When the saved response was deleted successfully."),
+        @APIResponse(
+                     responseCode = HttpStatusCode.NOT_FOUND,
+                     description = "When the response with the specified ID was not found.")
+    })
+    public Response deleteById(@PathParam("id") long id) {
+        boolean deleted = deleteTimestampResponseService.deleteById(id);
+        if (!deleted) {
+            throw new NotFoundException();
+        }
+
+        return Response.noContent().build();
+    }
+
+    @DELETE
+    @Path("/")
+    @APIResponses({
+        @APIResponse(
+                     responseCode = HttpStatusCode.NO_CONTENT,
+                     description = "When all responses were deleted successfully.")
+    })
+    public Response deleteAll() {
+        deleteTimestampResponseService.deleteAll();
+        return Response.noContent().build();
     }
 
 }

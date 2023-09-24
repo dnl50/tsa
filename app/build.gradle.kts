@@ -20,6 +20,7 @@ dependencies {
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-hibernate-orm-panache")
     implementation("io.quarkus:quarkus-hibernate-validator")
+    implementation("io.quarkus:quarkus-websockets")
 
     implementation("commons-io:commons-io")
     implementation("org.apache.commons:commons-lang3")

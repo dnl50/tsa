@@ -32,7 +32,7 @@ public class TspResponseDataRepositoryImpl implements TspResponseDataRepository 
     }
 
     @Override
-    public Optional<TimeStampResponseData> findById(Long id) {
+    public Optional<TimeStampResponseData> findById(long id) {
         return repository.findByIdOptional(id).map(tspResponseMapper::toDomain);
     }
 
@@ -46,6 +46,16 @@ public class TspResponseDataRepositoryImpl implements TspResponseDataRepository 
 
         return new Page<>(pageRequest.size(), pageRequest.pageNumber(), pagedQuery.pageCount(), pagedQuery.count(),
             mappedEntries);
+    }
+
+    @Override
+    public boolean deleteById(long id) {
+        return repository.deleteById(id);
+    }
+
+    @Override
+    public void deleteAll() {
+        repository.deleteAll();
     }
 
     private Sort mapSort(PageRequest pageRequest) {

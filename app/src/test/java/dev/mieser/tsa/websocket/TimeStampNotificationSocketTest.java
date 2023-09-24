@@ -1,4 +1,4 @@
-package dev.mieser.tsa.nativetest;
+package dev.mieser.tsa.websocket;
 
 import static io.restassured.RestAssured.given;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -8,9 +8,10 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.security.MessageDigest;
 
+import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.Session;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.bouncycastle.asn1.ASN1Boolean;
 import org.bouncycastle.asn1.ASN1Integer;
@@ -26,23 +27,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.persistence.api.Page;
 import dev.mieser.tsa.rest.domain.TsaMediaType;
-import dev.mieser.tsa.websocket.CachingHistoryWebsocketClient;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 
-@QuarkusIntegrationTest
-@QuarkusTestResource(KeystoreResourceLifecycleManager.class)
-class NativeApplicationSmokeTest {
+@QuarkusTest
+public class TimeStampNotificationSocketTest {
+
+    private final ObjectMapper objectMapper;
 
     @TestHTTPResource("/history/responses")
     URI websocketUri;
 
+    @Inject
+    TimeStampNotificationSocketTest(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @Test
-    void signRequest() throws Exception {
-        var client = new CachingHistoryWebsocketClient(new ObjectMapper().findAndRegisterModules());
+    void signedResponsesArePropagatedViaWebsocket() throws Exception {
+        var client = new CachingHistoryWebsocketClient(objectMapper);
 
         try (Session ignored = ContainerProvider.getWebSocketContainer().connectToServer(client, websocketUri)) {
             var expectedResponse = signRequestViaHttpEndpoint();
@@ -51,8 +56,8 @@ class NativeApplicationSmokeTest {
     }
 
     private TimeStampResponseData signRequestViaHttpEndpoint() throws Exception {
-        byte[] sha512Digest = MessageDigest.getInstance("SHA-512").digest("test".getBytes(UTF_8));
-        var messageImprint = new MessageImprint(new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha512), sha512Digest);
+        byte[] sha256Digest = MessageDigest.getInstance("SHA-256").digest("test".getBytes(UTF_8));
+        var messageImprint = new MessageImprint(new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha256), sha256Digest);
         byte[] asnEncodedRequest = new TimeStampReq(messageImprint,
             new ASN1ObjectIdentifier("1.3.3.7"),
             new ASN1Integer(BigInteger.TEN),
@@ -65,7 +70,7 @@ class NativeApplicationSmokeTest {
             .body(asnEncodedRequest)
             .post("/sign")
             .then().assertThat()
-            .statusCode(Response.Status.OK.getStatusCode());
+            .statusCode(Status.OK.getStatusCode());
 
         return given()
             .accept(ContentType.JSON)
@@ -73,7 +78,7 @@ class NativeApplicationSmokeTest {
             .param("sort", "receptionTime,desc")
             .get("/history/responses")
             .then().assertThat()
-            .statusCode(Response.Status.OK.getStatusCode())
+            .statusCode(Status.OK.getStatusCode())
             .and()
             .extract()
             .as(new TypeRef<Page<TimeStampResponseData>>() {})

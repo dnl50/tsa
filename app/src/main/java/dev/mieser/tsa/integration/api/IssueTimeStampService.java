@@ -10,4 +10,8 @@ public interface IssueTimeStampService {
     TimeStampResponseData signTimestampRequest(
         InputStream tspRequestStream) throws InvalidTspRequestException;
 
+    void registerListener(TimeStampListener listener);
+
+    void unregisterListener(TimeStampListener listener);
+
 }

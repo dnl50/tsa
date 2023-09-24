@@ -10,6 +10,6 @@ public interface QueryTimeStampResponseService {
 
     Page<TimeStampResponseData> findAll(PageRequest pageRequest);
 
-    Optional<TimeStampResponseData> findById(Long id);
+    Optional<TimeStampResponseData> findById(long id);
 
 }

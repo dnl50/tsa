@@ -8,8 +8,12 @@ public interface TspResponseDataRepository {
 
     TimeStampResponseData save(TimeStampResponseData response);
 
-    Optional<TimeStampResponseData> findById(Long id);
+    Optional<TimeStampResponseData> findById(long id);
 
     Page<TimeStampResponseData> findAll(PageRequest pageRequest);
+
+    boolean deleteById(long id);
+
+    void deleteAll();
 
 }
