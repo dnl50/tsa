@@ -24,4 +24,6 @@ COPY --chown=1001:root build/*-runner /work/application
 EXPOSE 8080
 USER 1001
 
+VOLUME ["/work/data"]
+
 CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
