@@ -1,8 +1,8 @@
 [versions]
-quarkus = "3.3.3"
-bouncycastle = "1.76"
-lombok = "1.18.28"
+quarkus = "3.6.1"
+bouncycastle = "1.77"
+lombok = "1.18.30"
 assertj = "3.24.2"
 mapstruct = "1.5.5.Final"
-spotless = "6.21.0"
-archunit = "1.1.0"
+spotless = "6.23.3"
+archunit = "1.2.1"

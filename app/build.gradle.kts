@@ -56,7 +56,7 @@ if (hasProperty("projectVersion")) {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 tasks.withType<Test>().configureEach {
