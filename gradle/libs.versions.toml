@@ -1,25 +1,8 @@
 [versions]
-spring-boot = "3.0.2"
-tomcat = "10.1.5"
-jacoco = "0.8.8"
-spotless = "6.12.0"
-mapstruct = "1.5.3.Final"
-commonsIo = "2.11.0"
-bouncycastle = "1.72"
-jsoup = "1.15.4"
-
-webjars-locator = "0.46"
-webjars-bootstrap = "5.2.2"
-webjars-bootstrapIcons = "1.10.2"
-webjars-jquery = "3.6.1"
-webjars-datatables = "1.13.1"
-webjars-poppers = "2.9.3"
-
-gradleGitProperties = "2.4.1"
-
-[libraries]
-bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
-
-[plugins]
-spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
-gitProperties = { id = "com.gorylenko.gradle-git-properties", version.ref = "gradleGitProperties"}
+quarkus = "3.6.1"
+bouncycastle = "1.77"
+lombok = "1.18.30"
+assertj = "3.24.2"
+mapstruct = "1.5.5.Final"
+spotless = "6.23.3"
+archunit = "1.2.1"

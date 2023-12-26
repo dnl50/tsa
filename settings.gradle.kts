@@ -1,12 +1,4 @@
-rootProject.name = "tsa-server"
+rootProject.name = "tsa"
 
-include(
-        "domain",
-        "signing",
-        "datetime",
-        "app",
-        "web",
-        "integration",
-        "persistence",
-        "test-util"
-)
+include("app")
+include("web")

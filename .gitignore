@@ -1,21 +1,42 @@
-# Logs and databases #
-######################
-*.log
+# Gradle
+.gradle/
+build/
 
-# Gradle Files #
-################
-.gradle
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
 
-# Build output directies
-/build
-*/build
-
-# IntelliJ specific files/directories
-out
+# IntelliJ
 .idea
 *.ipr
-*.iws
 *.iml
+*.iws
+
+# NetBeans
+nb-configuration.xml
+
+# Visual Studio Code
+.vscode
+.factorypath
+
+# OSX
+.DS_Store
+
+# Vim
+*.swp
+*.swo
+
+# patch
+*.orig
+*.rej
+
+# Local environment
+.env
+
+# Plugin directory
+/.quarkus/cli/plugins/
 
 # H2 File
 *.db
