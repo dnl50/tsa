@@ -39,7 +39,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: $RUNNER_TEMP/tsa
+          asset_path: ${{ runner.temp }}/tsa
           asset_name: tsa
           asset_content_type: application/octet-stream
 
