@@ -28,7 +28,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Backend Image
-        run: ./gradlew -PprojectVersion="${GITHUB_REF##*/}" build -Dquarkus.native.compression.level=9 -Dquarkus.container-image.push=true
+        run: ./gradlew build -Dquarkus.native.compression.level=9 -Dquarkus.container-image.push=true
 
       - name: Update Docker Hub description
         if: ${{ github.event.action == 'released' }}

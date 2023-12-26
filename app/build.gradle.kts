@@ -2,6 +2,7 @@ plugins {
     java
     id("io.quarkus") version libs.versions.quarkus
     id("com.diffplug.spotless") version libs.versions.spotless
+    id("dev.mieser.versioning")
 }
 
 repositories {
