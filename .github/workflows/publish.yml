@@ -2,7 +2,7 @@ name: Publish Docker image
 
 on:
   release:
-    types: [released, prereleased]
+    types: [ released, prereleased ]
 
 jobs:
   push_to_registry:
@@ -29,6 +29,19 @@ jobs:
 
       - name: Build and Push Backend Image
         run: ./gradlew build -Dquarkus.native.compression.level=9 -Dquarkus.container-image.push=true
+
+      - name: Copy Linux Binary to Temporary Folder
+        run: cp app/build/tsa-*-runner $RUNNER_TEMP/tsa
+
+      - name: Upload Linux Binary as Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: $RUNNER_TEMP/tsa
+          asset_name: tsa
+          asset_content_type: application/octet-stream
 
       - name: Update Docker Hub description
         if: ${{ github.event.action == 'released' }}
