@@ -78,7 +78,7 @@ path to a valid certificate for development is error-prone though. That's what t
 automatically enabled when running Quarkus using the `quarkusDev` Gradle Task. The dev mode has the following effects:
 
 * application data is written into an in-memory Database which will be scrapped on application shutdown
-* uses a self-singed EC certificate for signing TSP requests
+* uses a self-signed EC certificate for signing TSP requests
 
 ### Using the code formatter
 
