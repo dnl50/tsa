@@ -16,5 +16,5 @@ dependencies {
 
 val copyOpenApiSpec by tasks.registering(Copy::class) {
     from(openApiSpecification)
-    into(buildDir)
+    into(layout.buildDirectory)
 }
