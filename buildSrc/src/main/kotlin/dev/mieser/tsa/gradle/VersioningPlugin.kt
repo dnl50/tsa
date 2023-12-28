@@ -46,7 +46,7 @@ class VersioningPlugin : Plugin<Project> {
             return project.property(PROJECT_VERSION_PROPERTY_NAME) as String
         }
 
-        return readRefFromEnvironment()?.run { formatRef(this) }
+        return readRefFromEnvironment()?.run(::formatRef)
     }
 
     private fun readRefFromEnvironment(): Ref? {
