@@ -86,3 +86,7 @@ The source code is formatted using the Eclipse Code Formatter. The formatter con
 under `/eclipse-formatter.xml`. A custom import order configuration file os located under `/spotless.importorder`. The
 code can also be formatted using the [Spotless Gradle Plugin](https://github.com/diffplug/spotless). Just execute
 the `spotlessApply` Gradle Task and you are good to go! 
+
+## License
+
+This project is licensed under the terms of the MIT license.
