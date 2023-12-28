@@ -35,6 +35,11 @@ ASN.1 DER-encoded Time-Stamp Request must be supplied in the request body.
 The available REST Endpoints are documented in a OpenAPI specification which can be explored using a Swagger UI which is
 available under `/tsa/q/swagger-ui`.
 
+### WebSocket Endpoint
+
+The application exposes an WebSocket endpoint under `/tsa/history/responses`. The JSON representation of every TSP
+response will be broadcast there.
+
 ## Configuration
 
 All Parameters mentioned below can be configured in variety of ways. Please refer to
@@ -85,7 +90,7 @@ automatically enabled when running Quarkus using the `quarkusDev` Gradle Task. T
 The source code is formatted using the Eclipse Code Formatter. The formatter config file is located
 under `/eclipse-formatter.xml`. A custom import order configuration file os located under `/spotless.importorder`. The
 code can also be formatted using the [Spotless Gradle Plugin](https://github.com/diffplug/spotless). Just execute
-the `spotlessApply` Gradle Task and you are good to go! 
+the `spotlessApply` Gradle Task and you are good to go!
 
 ## License
 
