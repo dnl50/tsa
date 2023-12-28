@@ -3,6 +3,7 @@ package dev.mieser.tsa.signing.config;
 import java.util.Optional;
 import java.util.Set;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -34,14 +35,13 @@ public interface TsaProperties {
     HashAlgorithm signingDigestAlgorithm();
 
     /**
-     * The OIDs of the Hash Algorithms which are accepted by the Timestamp Authority.
+     * The names/OIDs of the digest algorithms which are accepted by the Timestamp Authority.
      * <p/>
-     * SHA256 ({@code 2.16.840.1.101.3.4.2.1} and SHA512 ({@code 2.16.840.1.101.3.4.2.3}) are accepted by default. Cannot be
-     * empty.
+     * SHA256 and SHA512 are accepted by default. Cannot be empty.
      */
     @NotEmpty
-    @WithDefault("2.16.840.1.101.3.4.2.1,2.16.840.1.101.3.4.2.3")
-    Set<@NotEmpty @ValidDigestAlgorithmIdentifier String> acceptedHashAlgorithms();
+    @WithDefault("SHA256,SHA512")
+    Set<@NotBlank @ValidDigestAlgorithmIdentifier String> acceptedHashAlgorithms();
 
     /**
      * The OID of the policy under which the TSP responses are produced.

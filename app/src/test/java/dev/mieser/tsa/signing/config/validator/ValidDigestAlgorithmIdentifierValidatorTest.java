@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullSource;
@@ -29,14 +30,11 @@ class ValidDigestAlgorithmIdentifierValidatorTest {
         assertThat(violations).isEmpty();
     }
 
-    @ValueSource(strings = {
-        "Hello there!",
-        "0.4.0.127.0.7.1.1.4.1.3" // SHA256WITHPLAIN-ECDSA (not a digest algorithm)
-    })
-    @ParameterizedTest
-    void invalidOid(String invalidOid) {
+    @Test
+    void invalidValue() {
         // given
-        var holder = new AlgorithmHolder(invalidOid);
+        String invalidValue = "Hello there!";
+        var holder = new AlgorithmHolder(invalidValue);
 
         // when
         Set<ConstraintViolation<AlgorithmHolder>> violations = validate(holder);
@@ -45,16 +43,19 @@ class ValidDigestAlgorithmIdentifierValidatorTest {
         assertThat(violations).singleElement()
             .extracting(ConstraintViolation::getMessage)
             .asString()
-            .isEqualTo("%s is not a valid digest algorithm OID.", invalidOid);
+            .isEqualTo("%s is neither an OID nor a known digest algorithm name.", invalidValue);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
-        "2.16.840.1.101.3.4.2.1", // SHA256,
+        "2.16.840.1.101.3.4.2.1",
+        "SHA256",
         "2.16.840.1.101.3.4.2.3", // SHA512
-        "1.2.840.113549.2.5" // MD5
+        "SHA512",
+        "1.2.840.113549.2.5", // MD5
+        "MD5"
     })
-    void validOid(String validOid) {
+    void validOidOrName(String validOid) {
         // given
         var holder = new AlgorithmHolder(validOid);
 

@@ -32,7 +32,8 @@ public class TsaConfiguration {
             signingKeystoreLoader,
             currentDateService,
             new RandomSerialNumberGenerator(),
-            new TimeStampResponseMapper(dateConverter));
+            new TimeStampResponseMapper(dateConverter),
+            new DigestAlgorithmConverter());
     }
 
     @Produces

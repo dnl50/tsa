@@ -31,6 +31,7 @@ import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.TspResponseException;
+import dev.mieser.tsa.signing.config.DigestAlgorithmConverter;
 import dev.mieser.tsa.signing.config.TsaProperties;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
@@ -55,6 +56,8 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
     private final SerialNumberGenerator serialNumberGenerator;
 
     private final TimeStampResponseMapper timeStampResponseMapper;
+
+    private final DigestAlgorithmConverter digestAlgorithmConverter;
 
     private TimeStampResponseGenerator timeStampResponseGenerator;
 
@@ -103,7 +106,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
             timeStampTokenGenerator.addCertificates(tokenGeneratorCertificateStore());
 
             this.timeStampResponseGenerator = new TimeStampResponseGenerator(timeStampTokenGenerator,
-                tsaProperties.acceptedHashAlgorithms());
+                digestAlgorithmConverter.convert(tsaProperties.acceptedHashAlgorithms()));
 
             log.info(
                 "Successfully initialized TSA. Tokens are issued under policy OID '{}'. The following hash algorithms are accepted: {}",

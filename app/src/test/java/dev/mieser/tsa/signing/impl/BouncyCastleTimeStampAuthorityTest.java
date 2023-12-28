@@ -49,6 +49,7 @@ import dev.mieser.tsa.domain.TimeStampRequestData;
 import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
+import dev.mieser.tsa.signing.config.DigestAlgorithmConverter;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampResponseMapper;
@@ -82,7 +83,8 @@ class BouncyCastleTimeStampAuthorityTest {
             configurableSigningCertificateLoader,
             currentDateServiceStub,
             serialNumberGeneratorMock,
-            new TimeStampResponseMapper(dateConverterMock));
+            new TimeStampResponseMapper(dateConverterMock),
+            new DigestAlgorithmConverter());
     }
 
     @Nested
@@ -99,9 +101,13 @@ class BouncyCastleTimeStampAuthorityTest {
             given(certificateMock.getPublicKey()).willReturn(publicKeyMock);
             given(publicKeyMock.getAlgorithm()).willReturn("EdDSA");
 
-            var testSubject = new BouncyCastleTimeStampAuthority(delegatingTsaProperties, new TspParser(), certificateLoaderMock,
-                currentDateServiceStub, serialNumberGeneratorMock,
-                new TimeStampResponseMapper(dateConverterMock));
+            var testSubject = new BouncyCastleTimeStampAuthority(delegatingTsaProperties,
+                new TspParser(),
+                certificateLoaderMock,
+                currentDateServiceStub,
+                serialNumberGeneratorMock,
+                new TimeStampResponseMapper(dateConverterMock),
+                new DigestAlgorithmConverter());
 
             // when / then
             assertThatExceptionOfType(TsaInitializationException.class)
