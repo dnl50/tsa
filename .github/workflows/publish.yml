@@ -31,7 +31,7 @@ jobs:
         run: ./gradlew build -Dquarkus.native.compression.level=9 -Dquarkus.container-image.push=true
 
       - name: Copy Linux Binary to Temporary Folder
-        run: cp app/build/tsa-*-runner $RUNNER_TEMP/tsa
+        run: cp app/build/tsa-*-runner $RUNNER_TEMP/tsa-linux-amd64
 
       - name: Upload Linux Binary as Release Asset
         uses: actions/upload-release-asset@v1
@@ -39,8 +39,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ runner.temp }}/tsa
-          asset_name: tsa
+          asset_path: ${{ runner.temp }}/tsa-linux-amd64
+          asset_name: tsa-linux-amd64
           asset_content_type: application/octet-stream
 
       - name: Update Docker Hub description
