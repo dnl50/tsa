@@ -31,6 +31,13 @@ class VersioningPlugin : Plugin<Project> {
             log.info("Setting project version to '{}'.", this)
             project.version = this
         }
+
+        project.tasks.register("printVersion") {
+            description = "Print the Project Version to stdout"
+            doLast {
+                println(project.version)
+            }
+        }
     }
 
     private fun determineVersion(project: Project): String? {
