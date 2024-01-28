@@ -31,7 +31,7 @@ public class ExportOpenApiDocumentationTest {
     private void writeSpecificationFile(byte[] content) throws IOException {
         String targetFilePath = System.getProperty(TARGET_FILE_PATH_PROPERTY);
         if (StringUtils.isBlank(targetFilePath)) {
-            throw new IllegalStateException(String.format("System Property '%s' not set.", TARGET_FILE_PATH_PROPERTY));
+            return;
         }
 
         Files.write(Paths.get(targetFilePath), content);

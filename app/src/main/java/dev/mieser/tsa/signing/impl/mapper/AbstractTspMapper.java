@@ -82,7 +82,7 @@ abstract class AbstractTspMapper {
      * @param <T>
      *     The type of the object to get the ASN.1 encoding of.
      */
-    protected interface AsnEncodingConverter<T> {
+    public interface AsnEncodingConverter<T> {
 
         byte[] convertToAsn(T obj) throws IOException;
 
