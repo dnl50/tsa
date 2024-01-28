@@ -1,7 +1,8 @@
 plugins {
     java
-    id("io.quarkus") version libs.versions.quarkus
-    id("com.diffplug.spotless") version libs.versions.spotless
+    alias(libs.plugins.quarkus)
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.lombok)
     id("dev.mieser.versioning")
 }
 
@@ -15,7 +16,7 @@ val openApiSpecification by configurations.creating {
 }
 
 dependencies {
-    implementation(enforcedPlatform("io.quarkus:quarkus-bom:${libs.versions.quarkus.get()}"))
+    implementation(enforcedPlatform(libs.quarkus.bom))
 
     implementation("io.quarkus:quarkus-smallrye-openapi")
     implementation("io.quarkus:quarkus-arc")
@@ -28,35 +29,27 @@ dependencies {
 
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("jakarta.ws.rs:jakarta.ws.rs-api")
-    implementation("org.bouncycastle:bcpkix-jdk18on:${libs.versions.bouncycastle.get()}")
-    implementation("org.mapstruct:mapstruct:${libs.versions.mapstruct.get()}")
+    implementation(libs.bouncycastle)
+    implementation(libs.mapstruct.runtime)
 
     runtimeOnly("io.quarkus:quarkus-jdbc-h2")
     runtimeOnly("io.quarkus:quarkus-flyway")
     runtimeOnly("io.quarkus:quarkus-resteasy-reactive-jackson")
     runtimeOnly("io.quarkus:quarkus-container-image-docker")
 
-    compileOnly("org.projectlombok:lombok:${libs.versions.lombok.get()}")
-
-    annotationProcessor("org.projectlombok:lombok:${libs.versions.lombok.get()}")
-    annotationProcessor("org.mapstruct:mapstruct-processor:${libs.versions.mapstruct.get()}")
+    annotationProcessor(libs.mapstruct.processor)
 
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("io.quarkus:quarkus-junit5-mockito")
     testImplementation("io.rest-assured:rest-assured")
-    testImplementation("org.assertj:assertj-core:${libs.versions.assertj.get()}")
-    testImplementation("com.tngtech.archunit:archunit:${libs.versions.archunit.get()}")
-
-    testCompileOnly("org.projectlombok:lombok:${libs.versions.lombok.get()}")
-    testAnnotationProcessor("org.projectlombok:lombok:${libs.versions.lombok.get()}")
-}
-
-if (hasProperty("projectVersion")) {
-    version = property("projectVersion")!!
+    testImplementation(testLibs.assertj)
+    testImplementation(testLibs.archunit)
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 tasks.withType<Test>().configureEach {
