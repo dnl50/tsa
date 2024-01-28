@@ -90,10 +90,3 @@ quarkus {
     set("package.type", "native")
     finalName.set("tsa-${project.version}")
 }
-
-// TODO: for some reason quarkus does recognize that the JDBC URL is set in the prod profile. therefore it
-//  creates a h2 db in server mode (using the H2DevServicesProcessor) which runs on the host machine and sets the JDBC URL
-//  to something like "jdbc:h2:tcp://localhost:53233/mem:test" which obviously does not work inside the docker container
-tasks.quarkusIntTest {
-    systemProperty("quarkus.datasource.jdbc.url", "jdbc:h2:file:/work/data/tsa")
-}
