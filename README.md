@@ -23,7 +23,7 @@ from `/work/keystore.p12` by default.
 
 The main purpose of this application is to sign TSP requests using
 the [HTTP Protocol](https://datatracker.ietf.org/doc/html/rfc3161.html#section-3.4). The application therefore offers an
-HTTP endpoint under `/tsa/sign` which accepts `POST` requests with the content type `application/timestamp-query`. The
+HTTP endpoint under `/sign` which accepts `POST` requests with the content type `application/timestamp-query`. The
 ASN.1 DER-encoded Time-Stamp Request must be supplied in the request body.
 
 ### Web UI
@@ -32,12 +32,13 @@ ASN.1 DER-encoded Time-Stamp Request must be supplied in the request body.
 
 ### REST API
 
-The available REST Endpoints are documented in a OpenAPI specification which can be explored using a Swagger UI which is
-available under `/tsa/q/swagger-ui`.
+The available REST Endpoints are documented in a OpenAPI specification which can be downloaded from `/q/openapi`.
+When the application is run in `dev` mode using the `quarkusDev` command you can also explore it using a Swagger UI
+which can be accessed under `/q/swagger-ui`.
 
 ### WebSocket Endpoint
 
-The application exposes an WebSocket endpoint under `/tsa/history/responses`. The JSON representation of every TSP
+The application exposes an WebSocket endpoint under `/history/responses`. The JSON representation of every TSP
 response will be broadcast there.
 
 ## Configuration
