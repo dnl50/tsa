@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
+
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 /**
@@ -14,18 +16,29 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
  * system and adds an argument to the {@code docker run} command executed by Quarkus so that the temporary file on the
  * host system is mounted in the container.
  */
+@Slf4j
 public class KeystoreResourceLifecycleManager implements QuarkusTestResourceLifecycleManager {
+
+    private Path temporaryFile;
 
     @Override
     public Map<String, String> start() {
-        Path tempFileOnHostSystem = copyKeystoreToTemporaryFile();
+        temporaryFile = copyKeystoreToTemporaryFile();
 
-        return Map.of("quarkus.test.arg-line", String.format("-v %s:/work/keystore.p12", tempFileOnHostSystem.toAbsolutePath()));
+        return Map.of("quarkus.test.arg-line", String.format("-v %s:/work/keystore.p12", temporaryFile.toAbsolutePath()));
     }
 
     @Override
     public void stop() {
-        // the temp file is automatically deleted on JVM shutdown
+        if (temporaryFile == null) {
+            return;
+        }
+
+        try {
+            Files.delete(temporaryFile);
+        } catch (Exception e) {
+            log.warn("Failed to delete temporary file.", e);
+        }
     }
 
     private Path copyKeystoreToTemporaryFile() {
