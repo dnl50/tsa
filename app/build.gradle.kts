@@ -34,7 +34,7 @@ dependencies {
 
     runtimeOnly("io.quarkus:quarkus-jdbc-h2")
     runtimeOnly("io.quarkus:quarkus-flyway")
-    runtimeOnly("io.quarkus:quarkus-resteasy-reactive-jackson")
+    runtimeOnly("io.quarkus:quarkus-rest-jackson")
     runtimeOnly("io.quarkus:quarkus-container-image-docker")
 
     annotationProcessor(libs.mapstruct.processor)
