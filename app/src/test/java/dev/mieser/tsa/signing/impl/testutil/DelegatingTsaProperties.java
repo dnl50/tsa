@@ -39,6 +39,11 @@ public class DelegatingTsaProperties implements TsaProperties {
     }
 
     @Override
+    public boolean includeTsaName() {
+        return true;
+    }
+
+    @Override
     public KeystoreLoaderProperties keystore() {
         throw new UnsupportedOperationException("Not required for unit testing.");
     }

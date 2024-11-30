@@ -14,13 +14,18 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
 import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.tsp.*;
+import org.bouncycastle.tsp.TSPException;
+import org.bouncycastle.tsp.TimeStampRequest;
+import org.bouncycastle.tsp.TimeStampResponse;
+import org.bouncycastle.tsp.TimeStampResponseGenerator;
+import org.bouncycastle.tsp.TimeStampTokenGenerator;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Store;
 
@@ -104,6 +109,11 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
             var timeStampTokenGenerator = new TimeStampTokenGenerator(signerInfoGenerator, signerCertDigestCalculator,
                 new ASN1ObjectIdentifier(tsaProperties.policyOid()));
             timeStampTokenGenerator.addCertificates(tokenGeneratorCertificateStore());
+            if (tsaProperties.includeTsaName()) {
+                X509CertificateHolder signingCertificate = new X509CertificateHolder(signingKeystoreLoader.loadCertificate()
+                    .getEncoded());
+                timeStampTokenGenerator.setTSA(new GeneralName(signingCertificate.getSubject()));
+            }
 
             this.timeStampResponseGenerator = new TimeStampResponseGenerator(timeStampTokenGenerator,
                 digestAlgorithmConverter.convert(tsaProperties.acceptedHashAlgorithms()));

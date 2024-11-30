@@ -12,5 +12,5 @@ import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
  * @see ConfigurableSigningKeystoreLoader
  */
 public record TsaConfiguration(PublicKeyAlgorithm publicKeyAlgorithm, HashAlgorithm signingDigestAlgorithm,
-    HashAlgorithm essCertIdAlgorithm, Set<HashAlgorithm> acceptedHashAlgorithms, String policyOid) {
+    HashAlgorithm essCertIdAlgorithm, Set<HashAlgorithm> acceptedHashAlgorithms, String policyOid, boolean include) {
 }

@@ -3,6 +3,7 @@ package dev.mieser.tsa.signing.impl;
 import static dev.mieser.tsa.signing.config.HashAlgorithm.*;
 import static dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -15,7 +16,6 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -30,7 +30,10 @@ import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.tsp.MessageImprint;
 import org.bouncycastle.asn1.tsp.TimeStampReq;
 import org.bouncycastle.asn1.tsp.TimeStampResp;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.tsp.TimeStampResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,7 +45,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.mieser.tsa.datetime.api.DateConverter;
+import dev.mieser.tsa.datetime.impl.DateConverterImpl;
 import dev.mieser.tsa.domain.FailureInfo;
 import dev.mieser.tsa.domain.ResponseStatus;
 import dev.mieser.tsa.domain.TimeStampRequestData;
@@ -53,11 +56,12 @@ import dev.mieser.tsa.signing.config.DigestAlgorithmConverter;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampResponseMapper;
-import dev.mieser.tsa.signing.impl.serial.SerialNumberGenerator;
 import dev.mieser.tsa.signing.impl.testutil.ConfigurableSigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.testutil.CurrentDateServiceStub;
 import dev.mieser.tsa.signing.impl.testutil.DelegatingTsaProperties;
+import dev.mieser.tsa.signing.impl.testutil.SerialNumberGeneratorStub;
 import dev.mieser.tsa.signing.impl.testutil.TsaConfiguration;
+import dev.mieser.tsa.testutil.TestKeyLoader;
 
 @ExtendWith(MockitoExtension.class)
 class BouncyCastleTimeStampAuthorityTest {
@@ -68,11 +72,7 @@ class BouncyCastleTimeStampAuthorityTest {
 
     private final CurrentDateServiceStub currentDateServiceStub = new CurrentDateServiceStub();
 
-    @Mock
-    private DateConverter dateConverterMock;
-
-    @Mock
-    private SerialNumberGenerator serialNumberGeneratorMock;
+    private final SerialNumberGeneratorStub serialNumberGeneratorStub = new SerialNumberGeneratorStub();
 
     private BouncyCastleTimeStampAuthority testSubject;
 
@@ -82,8 +82,8 @@ class BouncyCastleTimeStampAuthorityTest {
             new TspParser(),
             configurableSigningCertificateLoader,
             currentDateServiceStub,
-            serialNumberGeneratorMock,
-            new TimeStampResponseMapper(dateConverterMock),
+            serialNumberGeneratorStub,
+            new TimeStampResponseMapper(new DateConverterImpl()),
             new DigestAlgorithmConverter());
     }
 
@@ -94,7 +94,7 @@ class BouncyCastleTimeStampAuthorityTest {
         void throwsExceptionWhenUnsupportedPublicKeyAlgorithmIsDetected(@Mock SigningKeystoreLoader certificateLoaderMock,
             @Mock X509Certificate certificateMock, @Mock PublicKey publicKeyMock) throws Exception {
             // given
-            var configuration = new TsaConfiguration(EC, SHA512, SHA512, Set.of(), "1.2");
+            var configuration = new TsaConfiguration(EC, SHA512, SHA512, Set.of(), "1.2", false);
             delegatingTsaProperties.setConfiguration(configuration);
 
             given(certificateLoaderMock.loadCertificate()).willReturn(certificateMock);
@@ -105,8 +105,8 @@ class BouncyCastleTimeStampAuthorityTest {
                 new TspParser(),
                 certificateLoaderMock,
                 currentDateServiceStub,
-                serialNumberGeneratorMock,
-                new TimeStampResponseMapper(dateConverterMock),
+                serialNumberGeneratorStub,
+                new TimeStampResponseMapper(new DateConverterImpl()),
                 new DigestAlgorithmConverter());
 
             // when / then
@@ -131,18 +131,20 @@ class BouncyCastleTimeStampAuthorityTest {
         static Stream<Arguments> supportedTsaConfigurations() {
             return Stream.of(
                 // ECDSA
-                arguments(named("SHA512withECDSA", new TsaConfiguration(EC, SHA512, SHA256, Set.of(SHA1, SHA512), "1.3.3.7"))),
-                arguments(named("SHA256withECDSA", new TsaConfiguration(EC, SHA256, SHA512, Set.of(SHA1), "1.2"))),
-                arguments(named("SHA1withECDSA", new TsaConfiguration(EC, SHA1, SHA512, Set.of(SHA256), "1.3.3.7"))),
+                arguments(
+                    named("SHA512withECDSA", new TsaConfiguration(EC, SHA512, SHA256, Set.of(SHA1, SHA512), "1.3.3.7", false))),
+                arguments(named("SHA256withECDSA", new TsaConfiguration(EC, SHA256, SHA512, Set.of(SHA1), "1.2", false))),
+                arguments(named("SHA1withECDSA", new TsaConfiguration(EC, SHA1, SHA512, Set.of(SHA256), "1.3.3.7", false))),
 
                 // RSA
-                arguments(named("SHA512withRSA", new TsaConfiguration(RSA, SHA512, SHA256, Set.of(SHA1, SHA512), "1.2"))),
-                arguments(named("SHA256withRSA", new TsaConfiguration(RSA, SHA256, SHA512, Set.of(SHA1), "1.2"))),
-                arguments(named("SHA1withRSA", new TsaConfiguration(RSA, SHA1, SHA1, Set.of(SHA1, SHA256, SHA512), "1.2"))),
+                arguments(named("SHA512withRSA", new TsaConfiguration(RSA, SHA512, SHA256, Set.of(SHA1, SHA512), "1.2", false))),
+                arguments(named("SHA256withRSA", new TsaConfiguration(RSA, SHA256, SHA512, Set.of(SHA1), "1.2", false))),
+                arguments(
+                    named("SHA1withRSA", new TsaConfiguration(RSA, SHA1, SHA1, Set.of(SHA1, SHA256, SHA512), "1.2", false))),
 
                 // DSA
-                arguments(named("SHA512withDSA", new TsaConfiguration(DSA, SHA512, SHA256, Set.of(SHA1, SHA512), "1.2"))),
-                arguments(named("SHA256withDSA", new TsaConfiguration(DSA, SHA256, SHA512, Set.of(SHA256), "1.2"))));
+                arguments(named("SHA512withDSA", new TsaConfiguration(DSA, SHA512, SHA256, Set.of(SHA1, SHA512), "1.2", false))),
+                arguments(named("SHA256withDSA", new TsaConfiguration(DSA, SHA256, SHA512, Set.of(SHA256), "1.2", false))));
         }
 
     }
@@ -168,7 +170,7 @@ class BouncyCastleTimeStampAuthorityTest {
             var sha1Request = new TimeStampReq(sha1Imprint, null, null, ASN1Boolean.FALSE, null);
             InputStream tspRequestStream = new ByteArrayInputStream(sha1Request.getEncoded());
 
-            var configuration = new TsaConfiguration(RSA, SHA512, SHA512, Set.of(SHA512), "1.2");
+            var configuration = new TsaConfiguration(RSA, SHA512, SHA512, Set.of(SHA512), "1.2", false);
             delegatingTsaProperties.setConfiguration(configuration);
             configurableSigningCertificateLoader.setConfiguration(configuration);
 
@@ -194,7 +196,7 @@ class BouncyCastleTimeStampAuthorityTest {
             var sha256Request = new TimeStampReq(sha256Imprint, null, new ASN1Integer(nonce), ASN1Boolean.TRUE, null);
             byte[] asnEncodedRequest = sha256Request.getEncoded();
 
-            var configuration = new TsaConfiguration(algorithm, SHA256, SHA256, Set.of(SHA512, SHA256), "1.2");
+            var configuration = new TsaConfiguration(algorithm, SHA256, SHA256, Set.of(SHA512, SHA256), "1.2", false);
             delegatingTsaProperties.setConfiguration(configuration);
             configurableSigningCertificateLoader.setConfiguration(configuration);
 
@@ -202,8 +204,7 @@ class BouncyCastleTimeStampAuthorityTest {
 
             ZonedDateTime now = LocalDateTime.parse("2023-06-21T13:37:00").atZone(ZoneId.systemDefault());
             currentDateServiceStub.setCurrentDateSupplier(() -> now);
-            given(dateConverterMock.toZonedDateTime(Date.from(now.toInstant()))).willReturn(now);
-            given(serialNumberGeneratorMock.generateSerialNumber()).willReturn(1337L);
+            serialNumberGeneratorStub.setSerialNumberSupplier(() -> 1337L);
 
             // when
             TimeStampResponseData response = testSubject.signRequest(new ByteArrayInputStream(asnEncodedRequest));
@@ -231,6 +232,34 @@ class BouncyCastleTimeStampAuthorityTest {
                 softly.assertThat(TimeStampResp.getInstance(response.getAsnEncoded()).getStatus().getStatus())
                     .isEqualTo(ResponseStatus.GRANTED.getValue());
             });
+        }
+
+        @Test
+        void includesCertificateSubject() throws Exception {
+            byte[] sha256Hash = Base64.getDecoder().decode("n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=");
+            var nonce = BigInteger.valueOf(1337L);
+            var sha256Imprint = new MessageImprint(new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha256), sha256Hash);
+            var sha256Request = new TimeStampReq(sha256Imprint, null, new ASN1Integer(nonce), ASN1Boolean.TRUE, null);
+            byte[] asnEncodedRequest = sha256Request.getEncoded();
+
+            var configuration = new TsaConfiguration(EC, SHA256, SHA256, Set.of(SHA512, SHA256), "1.2", true);
+            delegatingTsaProperties.setConfiguration(configuration);
+            configurableSigningCertificateLoader.setConfiguration(configuration);
+
+            testSubject.initialize();
+
+            // when
+            TimeStampResponseData response = testSubject.signRequest(new ByteArrayInputStream(asnEncodedRequest));
+
+            // then
+            var expectedName = new X509CertificateHolder(TestKeyLoader.loadEcCertificate().getEncoded()).getSubject();
+            var actualName = (X500Name) new TimeStampResponse(TimeStampResp.getInstance(response.getAsnEncoded()))
+                .getTimeStampToken()
+                .getTimeStampInfo()
+                .getTsa()
+                .getName();
+
+            assertThat(actualName).isEqualTo(expectedName);
         }
 
     }

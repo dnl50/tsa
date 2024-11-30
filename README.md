@@ -58,6 +58,7 @@ the [Quarkus Documentation](https://quarkus.io/guides/config-reference#configura
 | `tsa.policy-oid`               | No        | 1.2           | The OID of the policy under which the TSP responses are produced.                                                                                                                                                                                   |
 | `tsa.keystore.path`            | Yes       |               | The path of the PKCS#12 archive containing the certificate and private key used to sign TSP requests. Prefixing the path with `classpath:` will result in the PKCS#12 archive from being loaded from the classpath (not supported in native image). |
 | `tsa.keystore.password`        | No        |               | The password of the PKCS#12 archive.                                                                                                                                                                                                                |
+| `tsa.include-tsa-name`         | No        | true          | Specifies whether the [`tsa` Field in the `TSTInfo`](https://datatracker.ietf.org/doc/html/rfc3161#autoid-8) should include the subject of the certificate.                                                                                         |
 
 ### Logging
 

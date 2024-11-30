@@ -53,6 +53,14 @@ public interface TsaProperties {
     String policyOid();
 
     /**
+     * Specifies whether the {@code tsa} Field in the {@code TSTInfo} should include the subject of the certificate.
+     * <p/>
+     * Activated by default.
+     */
+    @WithDefault("true")
+    boolean includeTsaName();
+
+    /**
      * Encapsulates the properties for configuring the TSA keystore.
      */
     KeystoreLoaderProperties keystore();
