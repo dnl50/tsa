@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 
+import lombok.Getter;
+
 import org.bouncycastle.asn1.ASN1Boolean;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -19,6 +21,7 @@ import org.bouncycastle.asn1.tsp.TimeStampReq;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import dev.mieser.tsa.signing.api.exception.InvalidTspRequestException;
@@ -28,80 +31,112 @@ class TspParserTest {
 
     private final TspParser testSubject = new TspParser();
 
-    @Test
-    void parseRequestThrowsExceptionWhenRequestCannotBeParsed() {
-        // given
-        byte[] invalidTspRequest = "tsp request".getBytes(UTF_8);
-        InputStream tspRequestInputStream = new ByteArrayInputStream(invalidTspRequest);
+    @Nested
+    class RequestParsing {
 
-        // when / then
-        assertThatExceptionOfType(InvalidTspRequestException.class)
-            .isThrownBy(() -> testSubject.parseRequest(tspRequestInputStream));
+        @Test
+        void throwsExceptionWhenRequestCannotBeParsed() {
+            // given
+            byte[] invalidTspRequest = "tsp request".getBytes(UTF_8);
+            InputStream tspRequestInputStream = new ByteArrayInputStream(invalidTspRequest);
+
+            // when / then
+            assertThatExceptionOfType(InvalidTspRequestException.class)
+                .isThrownBy(() -> testSubject.parseRequest(tspRequestInputStream));
+        }
+
+        @Test
+        void throwsExceptionWhenStreamIsEmpty() {
+            // given
+            InputStream emptyStream = new ByteArrayInputStream(new byte[0]);
+
+            // when / then
+            assertThatExceptionOfType(InvalidTspRequestException.class)
+                .isThrownBy(() -> testSubject.parseRequest(emptyStream))
+                .withMessage("TSP request data is missing");
+        }
+
+        @Test
+        void returnsExpectedRequest() throws Exception {
+            // given
+            TimeStampReq timeStampRequest = createTimeStampRequest();
+            InputStream tspRequestInputStream = new ByteArrayInputStream(timeStampRequest.getEncoded());
+
+            // when
+            TimeStampRequest parsedRequest = testSubject.parseRequest(tspRequestInputStream);
+
+            // then
+            assertThat(parsedRequest.getEncoded()).isEqualTo(timeStampRequest.getEncoded());
+        }
+
+        @Test
+        void doesNotCloseInputStream() throws Exception {
+            // given
+            TimeStampReq timeStampRequest = createTimeStampRequest();
+            CloseAwareInputStream tspRequestInputStream = new CloseAwareInputStream(
+                new ByteArrayInputStream(timeStampRequest.getEncoded()));
+
+            // when
+            testSubject.parseRequest(tspRequestInputStream);
+
+            // then
+            assertThat(tspRequestInputStream.isClosed()).isFalse();
+        }
+
     }
 
-    @Test
-    void parseRequestReturnsExpectedRequest() throws Exception {
-        // given
-        TimeStampReq timeStampRequest = createTimeStampRequest();
-        InputStream tspRequestInputStream = new ByteArrayInputStream(timeStampRequest.getEncoded());
+    @Nested
+    class ResponseParsing {
 
-        // when
-        TimeStampRequest parsedRequest = testSubject.parseRequest(tspRequestInputStream);
+        @Test
+        void throwsExceptionWhenRequestCannotBeParsed() {
+            // given
+            byte[] invalidResponse = "tsp response".getBytes(UTF_8);
+            InputStream tspResponseInputStream = new ByteArrayInputStream(invalidResponse);
 
-        // then
-        assertThat(parsedRequest.getEncoded()).isEqualTo(timeStampRequest.getEncoded());
-    }
+            // when / then
+            assertThatExceptionOfType(InvalidTspResponseException.class)
+                .isThrownBy(() -> testSubject.parseResponse(tspResponseInputStream))
+                .withMessage("Could not parse TSP response");
+        }
 
-    @Test
-    void parseRequestDoesNotCloseInputStream() throws Exception {
-        // given
-        TimeStampReq timeStampRequest = createTimeStampRequest();
-        CloseAwareInputStream tspRequestInputStream = new CloseAwareInputStream(
-            new ByteArrayInputStream(timeStampRequest.getEncoded()));
+        @Test
+        void throwsExceptionWhenStreamIsEmpty() {
+            // given
+            InputStream emptyStream = new ByteArrayInputStream(new byte[0]);
 
-        // when
-        testSubject.parseRequest(tspRequestInputStream);
+            // when / then
+            assertThatExceptionOfType(InvalidTspResponseException.class)
+                .isThrownBy(() -> testSubject.parseResponse(emptyStream))
+                .withMessage("TSP response data is missing");
+        }
 
-        // then
-        assertThat(tspRequestInputStream.isClosed()).isFalse();
-    }
+        @Test
+        void returnsExpectedResponse() throws Exception {
+            // given
+            byte[] timeStampResponse = readAsnEncodedTimeStampResponse();
+            InputStream tspResponseInputStream = new ByteArrayInputStream(timeStampResponse);
 
-    @Test
-    void parseResponseThrowsExceptionWhenRequestCannotBeParsed() {
-        // given
-        byte[] invalidResponse = "tsp response".getBytes(UTF_8);
-        InputStream tspResponseInputStream = new ByteArrayInputStream(invalidResponse);
+            // when
+            TimeStampResponse parsedResponse = testSubject.parseResponse(tspResponseInputStream);
 
-        // when / then
-        assertThatExceptionOfType(InvalidTspResponseException.class)
-            .isThrownBy(() -> testSubject.parseResponse(tspResponseInputStream))
-            .withMessage("Could not parse TSP response");
-    }
+            // then
+            assertThat(parsedResponse.getEncoded()).isEqualTo(timeStampResponse);
+        }
 
-    @Test
-    void parseResponseReturnsExpectedResponse() throws Exception {
-        // given
-        byte[] timeStampResponse = readAsnEncodedTimeStampResponse();
-        InputStream tspResponseInputStream = new ByteArrayInputStream(timeStampResponse);
+        @Test
+        void doesNotCloseInputStream() throws Exception {
+            // given
+            byte[] timeStampResponse = readAsnEncodedTimeStampResponse();
+            CloseAwareInputStream tspResponseInputStream = new CloseAwareInputStream(new ByteArrayInputStream(timeStampResponse));
 
-        // when
-        TimeStampResponse parsedResponse = testSubject.parseResponse(tspResponseInputStream);
+            // when
+            testSubject.parseResponse(tspResponseInputStream);
 
-        // then
-        assertThat(parsedResponse.getEncoded()).isEqualTo(timeStampResponse);
-    }
+            // then
+            assertThat(tspResponseInputStream.isClosed()).isFalse();
+        }
 
-    @Test
-    void parseResponseDoesNotCloseInputStream() throws Exception {
-        // given
-        byte[] timeStampResponse = readAsnEncodedTimeStampResponse();
-        CloseAwareInputStream tspResponseInputStream = new CloseAwareInputStream(new ByteArrayInputStream(timeStampResponse));
-
-        // when
-        testSubject.parseResponse(tspResponseInputStream);
-
-        // then
-        assertThat(tspResponseInputStream.isClosed()).isFalse();
     }
 
     private TimeStampReq createTimeStampRequest() {
@@ -123,6 +158,7 @@ class TspParserTest {
      * @implNote Spying an Input Stream causes the input stream to return -1 when calling the {@code read()} methods (Java
      * 17.0.1, Mockito 4.0.0).
      */
+    @Getter
     private static class CloseAwareInputStream extends FilterInputStream {
 
         private boolean closed;
@@ -135,10 +171,6 @@ class TspParserTest {
         public void close() throws IOException {
             super.close();
             this.closed = true;
-        }
-
-        public boolean isClosed() {
-            return closed;
         }
 
     }

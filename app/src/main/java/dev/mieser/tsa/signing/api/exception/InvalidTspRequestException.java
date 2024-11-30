@@ -6,4 +6,8 @@ public class InvalidTspRequestException extends Exception {
         super(cause);
     }
 
+    public InvalidTspRequestException(String message) {
+        super(message);
+    }
+
 }
