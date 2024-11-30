@@ -6,15 +6,15 @@ include("web")
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            version("quarkus", "3.15.0")
-            version("mapstruct", "1.6.2")
+            version("quarkus", "3.17.2")
+            version("mapstruct", "1.6.3")
 
             plugin("quarkus", "io.quarkus").versionRef("quarkus")
-            plugin("lombok", "io.freefair.lombok").version("8.10")
+            plugin("lombok", "io.freefair.lombok").version("8.11")
             plugin("spotless", "com.diffplug.spotless").version("6.25.0")
 
             library("quarkus-bom", "io.quarkus", "quarkus-bom").versionRef("quarkus")
-            library("bouncycastle", "org.bouncycastle", "bcpkix-jdk18on").version("1.78.1")
+            library("bouncycastle", "org.bouncycastle", "bcpkix-jdk18on").version("1.79")
             library("mapstruct-processor", "org.mapstruct", "mapstruct-processor").versionRef("mapstruct")
             library("mapstruct-runtime", "org.mapstruct", "mapstruct").versionRef("mapstruct")
         }
