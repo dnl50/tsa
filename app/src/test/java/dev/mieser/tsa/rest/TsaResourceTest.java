@@ -59,6 +59,15 @@ public class TsaResourceTest {
     class Sign {
 
         @Test
+        void returnsUnsupportedMediaTypeWhenContentTypeHeaderDoesNotMatch() {
+            RestAssured.given()
+                .accept(TsaMediaType.TIMESTAMP_REPLY)
+                .post("/sign")
+                .then().assertThat()
+                .statusCode(415);
+        }
+
+        @Test
         void returnsResponseOnValidRequest() throws Exception {
             // given
             byte[] sha256Digest = MessageDigest.getInstance("SHA-256").digest("test".getBytes(UTF_8));
@@ -82,6 +91,16 @@ public class TsaResourceTest {
             // then
             assertThat(TimeStampResp.getInstance(issuedResponse).getStatus().getStatus())
                 .isEqualTo(ResponseStatus.GRANTED.getValue());
+        }
+
+        @Test
+        void returnsBadRequestWhenRequestBodyIsEmpty() {
+            RestAssured.given()
+                .contentType(TsaMediaType.TIMESTAMP_QUERY)
+                .accept(TsaMediaType.TIMESTAMP_REPLY)
+                .post("/sign")
+                .then().assertThat()
+                .statusCode(400);
         }
 
         @Test
