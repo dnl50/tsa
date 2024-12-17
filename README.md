@@ -28,7 +28,17 @@ Native Images (e.g. `dnl50/tsa-server:3.1.0`) are only available for `x86-64`. T
 The main purpose of this application is to sign TSP requests using
 the [HTTP Protocol](https://datatracker.ietf.org/doc/html/rfc3161.html#section-3.4). The application therefore offers an
 HTTP endpoint under `/sign` which accepts `POST` requests with the content type `application/timestamp-query`. The
-ASN.1 DER-encoded Time-Stamp Request must be supplied in the request body.
+ASN.1 DER-encoded Timestamp Request must be supplied in the request body.
+
+The following OpenSSL commands can be used to send a timestamp request for an existing file:
+
+```bash
+# create a timestamp request
+openssl ts -query -data /path/to/file -sha512 -cert -out request.tsq
+
+# send the request using cURL
+curl -X POST --data-binary @request.tsq --header "Content-Type: application/timestamp-query" http://localhost:8080/sign -o response.tsr
+````
 
 ### Web UI
 
@@ -36,9 +46,8 @@ ASN.1 DER-encoded Time-Stamp Request must be supplied in the request body.
 
 ### REST API
 
-The available REST Endpoints are documented in a OpenAPI specification which can be downloaded from `/q/openapi`.
-When the application is run in `dev` mode using the `quarkusDev` command you can also explore it using a Swagger UI
-which can be accessed under `/q/swagger-ui`.
+The available REST endpoints are documented in a OpenAPI specification which can be downloaded from
+the [release page](https://github.com/dnl50/tsa/releases).
 
 ### WebSocket Endpoint
 
@@ -72,11 +81,67 @@ The signing certificate used by the Time Stamp Authority must be an RSA, DSA or 
 an [Extended Key Usage](https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.12) extension marked as _critical_.
 The only `KeyPurposeId` present in the sequence must be `id-kp-timeStamping` (OID `1.3.6.1.5.5.7.3.8`).
 
-The following parameter can be added to the OpenSSL x509 utility to add the required critical _Extended Key Usage_
-extension when creating a self-signed certificate:
+### Issuing a CA and TSA certificate with OpenSSL
+
+> You should use a certificate issued by a trusted third party for production use
+
+To issue a signing certificate using a custom CA, you can use the following commands:
+
+First, create a file named `tsa-x509-extensions.cnf` with the following content:
+
+```
+[v3_ca]
+basicConstraints = CA:TRUE
+keyUsage = digitalSignature, keyCertSign
+
+[usr_timestamping]
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, nonRepudiation
+extendedKeyUsage = critical, timeStamping
+```
+
+This file contains the extension profiles which are used later.
+
+Then create a new private key for the CA:
 
 ```bash
-openssl x509 ... -addext extendedKeyUsage=critical,timeStamping
+openssl ecparam -genkey -name secp384r1 -out ca.privkey
+```
+
+After that, create a CSR (_Certificate Signing Request_) for the CA certificate
+
+```bash
+openssl req -new -key ca.privkey -out cacertreq.pem
+```
+
+and sign it with CA's private key created before
+
+```bash
+openssl x509 -req -in cacertreq.pem -extfile tsa-x509-extensions.cnf -extensions v3_ca -key ca.privkey -out cacert.pem
+```
+
+After that you can create a new private key which will be used by the TSA to sign the timestamp requests:
+
+```bash
+openssl ecparam -genkey -name secp384r1 -out tsa.privkey
+```
+
+Then create a CSR for it
+
+```bash
+openssl req -new -key tsa.privkey -out tsacertreq.pem
+```
+
+and issue a certificate using the CA certificate and private key created before:
+
+```bash
+openssl x509 -req -in tsacertreq.pem -extfile tsa-x509-extensions.cnf -extensions usr_timestamping -CA cacert.pem -CAkey ca.privkey -CAcreateserial -out tsacert.pem
+```
+
+The TSA certificate and private key can then be put into a PKCS#12 keystore which can be used by the application:
+
+```bash
+openssl pkcs12 -export -CAfile cacert.pem -chain -in tsacert.pem -inkey tsa.privkey -out tsa-keystore.p12 
 ```
 
 ## Development
