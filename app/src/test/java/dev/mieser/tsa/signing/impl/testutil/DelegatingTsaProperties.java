@@ -1,5 +1,6 @@
 package dev.mieser.tsa.signing.impl.testutil;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,8 +45,13 @@ public class DelegatingTsaProperties implements TsaProperties {
     }
 
     @Override
-    public KeystoreLoaderProperties keystore() {
+    public Optional<KeystoreProperties> keystore() {
         throw new UnsupportedOperationException("Not required for unit testing.");
+    }
+
+    @Override
+    public Optional<Pkcs11Properties> pkcs11() {
+        return Optional.empty();
     }
 
 }

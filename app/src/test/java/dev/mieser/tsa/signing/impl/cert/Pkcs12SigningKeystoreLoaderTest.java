@@ -1,17 +1,24 @@
 package dev.mieser.tsa.signing.impl.cert;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 
-import org.apache.commons.io.FileUtils;
 import org.bouncycastle.util.io.pem.PemReader;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -22,78 +29,153 @@ class Pkcs12SigningKeystoreLoaderTest {
     private static final char[] PASSWORD = "supersecurepassword".toCharArray();
 
     @TempDir
-    private File tempDir;
+    private Path tempDir;
 
-    @Test
-    void canLoadKeystoreFromClasspath() throws Exception {
-        // given
-        var testSubject = new Pkcs12SigningKeystoreLoader("classpath:keystore/ec.p12", NO_PASSWORD);
+    @Nested
+    class ClasspathResource {
 
-        // when / then
-        assertThat(testSubject.loadCertificate()).isNotNull();
+        @Test
+        void canLoadKeystoreFromClasspath() {
+            // given
+            var testSubject = new Pkcs12SigningKeystoreLoader("classpath:keystore/ec.p12", NO_PASSWORD, null);
+
+            // when / then
+            assertSoftly(softly -> {
+                softly.assertThat(testSubject.loadCertificate()).isNotNull();
+                softly.assertThat(testSubject.loadPrivateKey()).isNotNull();
+            });
+        }
+
+        @Test
+        void throwsExceptionWhenClasspathResourceWasNotFound() {
+            // given
+            var testSubject = new Pkcs12SigningKeystoreLoader("classpath:unknown-resource.p12", NO_PASSWORD, null);
+
+            // when / then
+            assertThatException()
+                .isThrownBy(testSubject::loadCertificate)
+                .withMessage("Classpath resource 'unknown-resource.p12' not found.");
+        }
+
     }
 
-    @Test
-    void canLoadKeystoreWhenPkcs12FileIsNotPasswordProtected() throws Exception {
-        // given
-        X509Certificate expectedCertificate = loadCertificate();
-        PrivateKey expectedPrivateKey = loadPrivateKey();
-        File tempFile = copyResourceToTempDirectory("unprotected.p12");
+    @Nested
+    class FileSystemResource {
 
-        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile.getAbsolutePath(), NO_PASSWORD);
+        @Test
+        void throwsExceptionWhenKeyStoreFileNotFound() {
+            // given
+            var testSubject = new Pkcs12SigningKeystoreLoader(tempDir.resolve("unknown-file.p12").toAbsolutePath().toString(),
+                NO_PASSWORD, null);
 
-        // when
-        X509Certificate actualCertificate = testSubject.loadCertificate();
-        PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
+            // when / then
+            assertThatIllegalStateException().isThrownBy(testSubject::loadCertificate)
+                .withMessageMatching("Failed to load PKCS#12 Keystore from '.*unknown-file\\.p12'\\.");
+        }
 
-        // then
-        assertSoftly(softly -> {
-            softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
-            softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
-        });
     }
 
-    @Test
-    void canLoadKeystoreWhenPkcs12FileIsPasswordProtected() throws Exception {
-        // given
-        X509Certificate expectedCertificate = loadCertificate();
-        PrivateKey expectedPrivateKey = loadPrivateKey();
-        File tempFile = copyResourceToTempDirectory("password-protected.p12");
+    @Nested
+    class PasswordProtection {
 
-        var testSubject = new Pkcs12SigningKeystoreLoader(tempFile.getAbsolutePath(), PASSWORD);
+        @Test
+        void canLoadKeystoreWhenPkcs12FileIsNotPasswordProtected() throws Exception {
+            // given
+            X509Certificate expectedCertificate = loadCertificate();
+            PrivateKey expectedPrivateKey = loadPrivateKey();
+            String tempFilePath = copyResourceToTempDirectory("unprotected.p12");
 
-        // when
-        X509Certificate actualCertificate = testSubject.loadCertificate();
-        PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
+            var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, NO_PASSWORD, null);
 
-        // then
-        assertSoftly(softly -> {
-            softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
-            softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
-        });
+            // when
+            X509Certificate actualCertificate = testSubject.loadCertificate();
+            PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
+                softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
+            });
+        }
+
+        @Test
+        void canLoadKeystoreWhenPkcs12FileIsPasswordProtected() throws Exception {
+            // given
+            X509Certificate expectedCertificate = loadCertificate();
+            PrivateKey expectedPrivateKey = loadPrivateKey();
+            String tempFilePath = copyResourceToTempDirectory("password-protected.p12");
+
+            var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, PASSWORD, null);
+
+            // when
+            X509Certificate actualCertificate = testSubject.loadCertificate();
+            PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
+                softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
+            });
+        }
+
     }
 
-    @Test
-    void throwsExceptionWhenKeyStoreFileNotFound() {
-        // given
-        String keyStoreFile = "unknown-file.p12";
+    @Nested
+    class Aliases {
 
-        var testSubject = new Pkcs12SigningKeystoreLoader(new File(tempDir, keyStoreFile).getAbsolutePath(), NO_PASSWORD);
+        @Test
+        void usesConfiguredAlias() throws Exception {
+            X509Certificate expectedCertificate = loadCertificate();
+            PrivateKey expectedPrivateKey = loadPrivateKey();
+            String tempFilePath = copyResourceToTempDirectory("multiple-aliases.p12");
 
-        // when / then
-        assertThatIllegalStateException().isThrownBy(testSubject::loadCertificate)
-            .withMessageMatching("Failed to load PKCS#12 Keystore from '.*unknown-file\\.p12'\\.");
-    }
+            var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, NO_PASSWORD, "alias-1");
 
-    @Test
-    void throwsExceptionWhenClasspathResourceWasNotFound() {
-        // given
-        var testSubject = new Pkcs12SigningKeystoreLoader("classpath:unknown-resource.p12", NO_PASSWORD);
+            // when
+            X509Certificate actualCertificate = testSubject.loadCertificate();
+            PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
 
-        // when / then
-        assertThatException()
-            .isThrownBy(testSubject::loadCertificate)
-            .withMessage("Classpath resource 'unknown-resource.p12' not found.");
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
+                softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
+            });
+        }
+
+        @Test
+        void throwsExceptionWhenNoEntriesArePresent() throws Exception {
+            // given
+            String tempFilePath = copyResourceToTempDirectory("empty-keystore.p12");
+            var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, NO_PASSWORD, null);
+
+            // when / then
+            assertThatIllegalStateException().isThrownBy(testSubject::loadCertificate)
+                .withMessage("No entries present in PKCS#12 container.");
+        }
+
+        @Test
+        void throwsExceptionWhenMultipleEntriesArePresentAndAliasNotConfigured() throws Exception {
+            // given
+            String tempFilePath = copyResourceToTempDirectory("multiple-aliases.p12");
+            var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, NO_PASSWORD, null);
+
+            // when / then
+            assertThatIllegalStateException().isThrownBy(testSubject::loadCertificate)
+                .withMessage("Multiple entries present in PKCS#12 container. Please configure the alias to use.");
+        }
+
+        @Test
+        void throwsExceptionWhenConfiguredAliasNotFound() throws Exception {
+            // given
+            String tempFilePath = copyResourceToTempDirectory("unprotected.p12");
+            var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, NO_PASSWORD, "unknown-alias");
+
+            // when / then
+            assertThatIllegalStateException()
+                .isThrownBy(testSubject::loadCertificate)
+                .withMessage("The keystore does not contain an entry with alias 'unknown-alias'.");
+        }
+
     }
 
     private PrivateKey loadPrivateKey() throws Exception {
@@ -115,13 +197,14 @@ class Pkcs12SigningKeystoreLoaderTest {
         }
     }
 
-    private File copyResourceToTempDirectory(String resourcePath) throws IOException {
-        var tempFile = new File(tempDir, "file");
-        try (var inputStream = getClass().getResourceAsStream(resourcePath);) {
-            FileUtils.copyInputStreamToFile(inputStream, tempFile);
+    private String copyResourceToTempDirectory(String resourcePath) throws IOException {
+        Path tempFile = tempDir.resolve("file");
+        try (var inputStream = getClass().getResourceAsStream(resourcePath);
+            OutputStream tempFileOutputStream = Files.newOutputStream(tempFile)) {
+            inputStream.transferTo(tempFileOutputStream);
         }
 
-        return tempFile;
+        return tempFile.toAbsolutePath().toString();
     }
 
 }

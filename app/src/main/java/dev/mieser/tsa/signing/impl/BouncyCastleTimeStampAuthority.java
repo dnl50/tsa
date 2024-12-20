@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
@@ -17,9 +18,12 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.SignerInfoGenerator;
-import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
+import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
+import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculator;
+import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampRequest;
@@ -49,6 +53,8 @@ import dev.mieser.tsa.signing.impl.serial.SerialNumberGenerator;
 @Slf4j
 @RequiredArgsConstructor
 public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
+
+    private final Provider jceProvider;
 
     private final TsaProperties tsaProperties;
 
@@ -136,29 +142,40 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
         String hashAlgorithmOid = tsaProperties.essCertIdAlgorithm().getObjectIdentifier();
         var hashAlgorithmIdentifier = new AlgorithmIdentifier(new ASN1ObjectIdentifier(hashAlgorithmOid));
 
-        return new JcaDigestCalculatorProviderBuilder().build()
+        return new JcaDigestCalculatorProviderBuilder()
+            .setProvider(jceProvider)
+            .build()
             .get(hashAlgorithmIdentifier);
     }
 
     private SignerInfoGenerator buildSignerInfoGenerator() throws OperatorCreationException, CertificateEncodingException {
-        X509Certificate signingCertificate = signingKeystoreLoader.loadCertificate();
-        String jcaAlgorithmName = signingCertificate.getPublicKey().getAlgorithm();
+        X509Certificate signatureCertificate = signingKeystoreLoader.loadCertificate();
+        String jcaAlgorithmName = signatureCertificate.getPublicKey().getAlgorithm();
         PublicKeyAlgorithm publicKeyAlgorithm = PublicKeyAlgorithm.fromJcaName(jcaAlgorithmName)
             .orElseThrow(() -> new IllegalArgumentException(
                 String.format("Public Key algorithm '%s' is not supported.", jcaAlgorithmName)));
 
-        PrivateKey signingPrivateKey = signingKeystoreLoader.loadPrivateKey();
-        String signingAlgorithmName = bouncyCastleSignatureAlgorithmName(publicKeyAlgorithm);
+        PrivateKey signaturePrivateKey = signingKeystoreLoader.loadPrivateKey();
+        String signatureAlgorithmName = bouncyCastleSignatureAlgorithmName(publicKeyAlgorithm);
         log.info("Public key algorithm is '{}', using signature algorithm '{}'.", publicKeyAlgorithm.getJcaName(),
-            signingAlgorithmName);
+            signatureAlgorithmName);
 
-        return new JcaSimpleSignerInfoGeneratorBuilder().build(signingAlgorithmName, signingPrivateKey, signingCertificate);
+        DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder()
+            .setProvider(jceProvider)
+            .build();
+        ContentSigner contentSigner = new JcaContentSignerBuilder(signatureAlgorithmName)
+            .setProvider(jceProvider)
+            .build(signaturePrivateKey);
+
+        return new JcaSignerInfoGeneratorBuilder(digestCalculatorProvider)
+            .build(contentSigner, signatureCertificate);
     }
 
     /**
      * @param publicKeyAlgorithm
      *     The algorithm of the public key whose corresponding private key is used to sign the TSP requests with, not
      *     {@code null}.
+     * 
      * @return The name of the Bouncy Castle signature algorithm used to sign TSP requests.
      */
     private String bouncyCastleSignatureAlgorithmName(PublicKeyAlgorithm publicKeyAlgorithm) {

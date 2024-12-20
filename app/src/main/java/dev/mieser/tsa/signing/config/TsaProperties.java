@@ -1,16 +1,20 @@
 package dev.mieser.tsa.signing.config;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import dev.mieser.tsa.signing.config.validator.EitherKeystoreOrPkcs11;
 import dev.mieser.tsa.signing.config.validator.ValidDigestAlgorithmIdentifier;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 
+@EitherKeystoreOrPkcs11
 @ConfigMapping(prefix = "tsa")
 public interface TsaProperties {
 
@@ -61,18 +65,23 @@ public interface TsaProperties {
     boolean includeTsaName();
 
     /**
-     * Encapsulates the properties for configuring the TSA keystore.
+     * Encapsulates the properties for configuring a local keystore.
      */
-    KeystoreLoaderProperties keystore();
+    Optional<@Valid KeystoreProperties> keystore();
 
-    interface KeystoreLoaderProperties {
+    /**
+     * Encapsulates the properties for using a PKCS#11 device.
+     */
+    Optional<@Valid Pkcs11Properties> pkcs11();
+
+    interface KeystoreProperties {
 
         /**
          * The path to the PKCS#12 file containing the certificate and private key. When the path begins with {@code classpath:}
          * the keystore is read from the classpath. Loading a keystore from the classpath is a convenience feature for
          * development purposes and will not work in a GraalVM native image.
          */
-        @NotEmpty
+        @NotBlank
         String path();
 
         /**
@@ -81,6 +90,26 @@ public interface TsaProperties {
          * No password is used by default.
          */
         Optional<String> password();
+
+        /**
+         * The alias of the keystore entry to use.
+         */
+        Optional<String> alias();
+
+    }
+
+    interface Pkcs11Properties {
+
+        /**
+         * The PIN of the PKCS#11 device.
+         */
+        Optional<String> pin();
+
+        /**
+         * The configuration of the {@code SunPKCS11} JCE provider.
+         */
+        @NotEmpty
+        Map<@NotNull String, String> configuration();
 
     }
 

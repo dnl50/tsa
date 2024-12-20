@@ -9,15 +9,19 @@ import java.io.InputStream;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * {@link SigningKeystoreLoader} which supports PKCS#12 key stores.
  */
+@Slf4j
 @RequiredArgsConstructor
 public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
 
@@ -28,6 +32,10 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
     private final String path;
 
     private final char[] password;
+
+    private final String alias;
+
+    private boolean loaded;
 
     private X509Certificate certificate;
 
@@ -43,18 +51,18 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
     @Override
     public PrivateKey loadPrivateKey() {
         extractCertificateAndPrivateKey();
-
         return privateKey;
     }
 
     private void extractCertificateAndPrivateKey() {
-        if (certificate != null && privateKey != null) {
+        if (loaded) {
             return;
         }
 
         KeyStore keyStore = loadKeystore();
         this.certificate = extractCertificate(keyStore);
         this.privateKey = extractPrivateKey(keyStore);
+        this.loaded = true;
     }
 
     private KeyStore loadKeystore() {
@@ -82,40 +90,39 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
     }
 
     private X509Certificate extractCertificate(KeyStore keyStore) {
-        return extractEntry(keyStore, (k, a) -> (X509Certificate) k.getCertificate(a));
+        return extractEntry(keyStore, (k, a) -> (X509Certificate) k.getCertificate(a))
+            .orElseThrow(() -> new IllegalStateException("The keystore entry does not contain a X.509 certificate."));
     }
 
     private PrivateKey extractPrivateKey(KeyStore keyStore) {
-        return extractEntry(keyStore, (k, a) -> (PrivateKey) k.getKey(a, password));
+        return extractEntry(keyStore, (k, alias) -> (PrivateKey) k.getKey(alias, password))
+            .orElseThrow(() -> new IllegalStateException("The keystore entry does not contain a private key."));
     }
 
-    private <T> T extractEntry(KeyStore keyStore, KeystoreEntryExtractor<T> entryExtractor) {
+    private <T> Optional<T> extractEntry(KeyStore keyStore, KeystoreEntryExtractor<T> entryExtractor) {
         try {
-            String keyAlias = extractSingleKeyAlias(keyStore);
-            return entryExtractor.extractEntry(keyStore, keyAlias);
-        } catch (KeyStoreException | UnrecoverableEntryException | NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Cannot extract entry from key store.", e);
-        }
-    }
-
-    private String extractSingleKeyAlias(KeyStore keyStore) throws KeyStoreException {
-        String firstKeyAlias = null;
-
-        for (String alias : list(keyStore.aliases())) {
-            if (!keyStore.isKeyEntry(alias)) {
-                continue;
-            } else if (firstKeyAlias != null) {
-                throw new IllegalStateException("Multiple key entries present in PKCS#12 container.");
+            String entryAliasToUse = StringUtils.isNotBlank(alias) ? alias : extractSingleAlias(keyStore);
+            if (!keyStore.isKeyEntry(entryAliasToUse) && !keyStore.isCertificateEntry(entryAliasToUse)) {
+                throw new IllegalStateException(
+                    "The keystore does not contain an entry with alias '%s'.".formatted(entryAliasToUse));
             }
 
-            firstKeyAlias = alias;
+            log.info("Using keystore entry alias '{}'.", entryAliasToUse);
+            return Optional.ofNullable(entryExtractor.extractEntry(keyStore, entryAliasToUse));
+        } catch (KeyStoreException | UnrecoverableEntryException | NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Failed to extract entry from key store.", e);
+        }
+    }
+
+    private String extractSingleAlias(KeyStore keyStore) throws KeyStoreException {
+        List<String> aliases = list(keyStore.aliases());
+        if (aliases.isEmpty()) {
+            throw new IllegalStateException("No entries present in PKCS#12 container.");
+        } else if (aliases.size() > 1) {
+            throw new IllegalStateException("Multiple entries present in PKCS#12 container. Please configure the alias to use.");
         }
 
-        if (firstKeyAlias == null) {
-            throw new IllegalStateException("No key entry present in PKCS#12 container.");
-        }
-
-        return firstKeyAlias;
+        return aliases.getFirst();
     }
 
     /**

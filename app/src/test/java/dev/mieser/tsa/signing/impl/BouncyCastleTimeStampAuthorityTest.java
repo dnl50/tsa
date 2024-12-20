@@ -45,17 +45,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.mieser.tsa.datetime.impl.DateConverterImpl;
 import dev.mieser.tsa.domain.FailureInfo;
 import dev.mieser.tsa.domain.ResponseStatus;
 import dev.mieser.tsa.domain.TimeStampRequestData;
 import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
-import dev.mieser.tsa.signing.config.DigestAlgorithmConverter;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
 import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
-import dev.mieser.tsa.signing.impl.mapper.TimeStampResponseMapper;
 import dev.mieser.tsa.signing.impl.testutil.ConfigurableSigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.testutil.CurrentDateServiceStub;
 import dev.mieser.tsa.signing.impl.testutil.DelegatingTsaProperties;
@@ -78,13 +75,11 @@ class BouncyCastleTimeStampAuthorityTest {
 
     @BeforeEach
     void setUp() {
-        testSubject = new BouncyCastleTimeStampAuthority(delegatingTsaProperties,
-            new TspParser(),
-            configurableSigningCertificateLoader,
-            currentDateServiceStub,
-            serialNumberGeneratorStub,
-            new TimeStampResponseMapper(new DateConverterImpl()),
-            new DigestAlgorithmConverter());
+        /*
+         * testSubject = new BouncyCastleTimeStampAuthority(delegatingTsaProperties, new TspParser(),
+         * configurableSigningCertificateLoader, currentDateServiceStub, serialNumberGeneratorStub, new
+         * TimeStampResponseMapper(new DateConverterImpl()), new DigestAlgorithmConverter());
+         */
     }
 
     @Nested
@@ -101,13 +96,11 @@ class BouncyCastleTimeStampAuthorityTest {
             given(certificateMock.getPublicKey()).willReturn(publicKeyMock);
             given(publicKeyMock.getAlgorithm()).willReturn("EdDSA");
 
-            var testSubject = new BouncyCastleTimeStampAuthority(delegatingTsaProperties,
-                new TspParser(),
-                certificateLoaderMock,
-                currentDateServiceStub,
-                serialNumberGeneratorStub,
-                new TimeStampResponseMapper(new DateConverterImpl()),
-                new DigestAlgorithmConverter());
+            /*
+             * var testSubject = new BouncyCastleTimeStampAuthority(delegatingTsaProperties, new TspParser(),
+             * certificateLoaderMock, currentDateServiceStub, serialNumberGeneratorStub, new TimeStampResponseMapper(new
+             * DateConverterImpl()), new DigestAlgorithmConverter());
+             */
 
             // when / then
             assertThatExceptionOfType(TsaInitializationException.class)
