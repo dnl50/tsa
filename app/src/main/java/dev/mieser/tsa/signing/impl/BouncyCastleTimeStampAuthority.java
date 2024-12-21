@@ -3,10 +3,8 @@ package dev.mieser.tsa.signing.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 
@@ -42,8 +40,9 @@ import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.api.exception.TspResponseException;
 import dev.mieser.tsa.signing.config.DigestAlgorithmConverter;
 import dev.mieser.tsa.signing.config.TsaProperties;
+import dev.mieser.tsa.signing.impl.cert.CertificateAndPrivateKey;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
-import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
+import dev.mieser.tsa.signing.impl.cert.keystore.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampResponseMapper;
 import dev.mieser.tsa.signing.impl.serial.SerialNumberGenerator;
 
@@ -116,8 +115,9 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
                 new ASN1ObjectIdentifier(tsaProperties.policyOid()));
             timeStampTokenGenerator.addCertificates(tokenGeneratorCertificateStore());
             if (tsaProperties.includeTsaName()) {
-                X509CertificateHolder signingCertificate = new X509CertificateHolder(signingKeystoreLoader.loadCertificate()
-                    .getEncoded());
+                X509CertificateHolder signingCertificate = new X509CertificateHolder(
+                    signingKeystoreLoader.loadCertificateAndPrivateKey()
+                        .certificate().getEncoded());
                 timeStampTokenGenerator.setTSA(new GeneralName(signingCertificate.getSubject()));
             }
 
@@ -149,13 +149,12 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
     }
 
     private SignerInfoGenerator buildSignerInfoGenerator() throws OperatorCreationException, CertificateEncodingException {
-        X509Certificate signatureCertificate = signingKeystoreLoader.loadCertificate();
-        String jcaAlgorithmName = signatureCertificate.getPublicKey().getAlgorithm();
+        CertificateAndPrivateKey certificateAndPrivateKey = signingKeystoreLoader.loadCertificateAndPrivateKey();
+        String jcaAlgorithmName = certificateAndPrivateKey.certificate().getPublicKey().getAlgorithm();
         PublicKeyAlgorithm publicKeyAlgorithm = PublicKeyAlgorithm.fromJcaName(jcaAlgorithmName)
             .orElseThrow(() -> new IllegalArgumentException(
                 String.format("Public Key algorithm '%s' is not supported.", jcaAlgorithmName)));
 
-        PrivateKey signaturePrivateKey = signingKeystoreLoader.loadPrivateKey();
         String signatureAlgorithmName = bouncyCastleSignatureAlgorithmName(publicKeyAlgorithm);
         log.info("Public key algorithm is '{}', using signature algorithm '{}'.", publicKeyAlgorithm.getJcaName(),
             signatureAlgorithmName);
@@ -165,17 +164,16 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
             .build();
         ContentSigner contentSigner = new JcaContentSignerBuilder(signatureAlgorithmName)
             .setProvider(jceProvider)
-            .build(signaturePrivateKey);
+            .build(certificateAndPrivateKey.privateKey());
 
         return new JcaSignerInfoGeneratorBuilder(digestCalculatorProvider)
-            .build(contentSigner, signatureCertificate);
+            .build(contentSigner, certificateAndPrivateKey.certificate());
     }
 
     /**
      * @param publicKeyAlgorithm
      *     The algorithm of the public key whose corresponding private key is used to sign the TSP requests with, not
      *     {@code null}.
-     * 
      * @return The name of the Bouncy Castle signature algorithm used to sign TSP requests.
      */
     private String bouncyCastleSignatureAlgorithmName(PublicKeyAlgorithm publicKeyAlgorithm) {
@@ -193,7 +191,7 @@ public class BouncyCastleTimeStampAuthority implements TimeStampAuthority {
      */
     private Store<X509CertificateHolder> tokenGeneratorCertificateStore() throws IOException, CertificateEncodingException {
         X509CertificateHolder signingCertificate = new X509CertificateHolder(
-            signingKeystoreLoader.loadCertificate().getEncoded());
+            signingKeystoreLoader.loadCertificateAndPrivateKey().certificate().getEncoded());
         return new CollectionStore<>(List.of(signingCertificate));
     }
 

@@ -52,7 +52,7 @@ import dev.mieser.tsa.domain.TimeStampResponseData;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.impl.cert.PublicKeyAlgorithm;
-import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
+import dev.mieser.tsa.signing.impl.cert.keystore.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.testutil.ConfigurableSigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.testutil.CurrentDateServiceStub;
 import dev.mieser.tsa.signing.impl.testutil.DelegatingTsaProperties;

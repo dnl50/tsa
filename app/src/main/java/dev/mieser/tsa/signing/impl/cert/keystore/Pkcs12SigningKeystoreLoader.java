@@ -1,4 +1,4 @@
-package dev.mieser.tsa.signing.impl.cert;
+package dev.mieser.tsa.signing.impl.cert.keystore;
 
 import static java.util.Collections.list;
 
@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
 
+import dev.mieser.tsa.signing.impl.cert.CertificateAndPrivateKey;
+
 /**
  * {@link SigningKeystoreLoader} which supports PKCS#12 key stores.
  */
@@ -35,34 +37,22 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
 
     private final String alias;
 
-    private boolean loaded;
-
-    private X509Certificate certificate;
-
-    private PrivateKey privateKey;
+    private CertificateAndPrivateKey loadedCertificateAndPrivateKey;
 
     @Override
-    public X509Certificate loadCertificate() {
+    public CertificateAndPrivateKey loadCertificateAndPrivateKey() {
         extractCertificateAndPrivateKey();
-
-        return certificate;
-    }
-
-    @Override
-    public PrivateKey loadPrivateKey() {
-        extractCertificateAndPrivateKey();
-        return privateKey;
+        return loadedCertificateAndPrivateKey;
     }
 
     private void extractCertificateAndPrivateKey() {
-        if (loaded) {
+        if (loadedCertificateAndPrivateKey != null) {
             return;
         }
 
         KeyStore keyStore = loadKeystore();
-        this.certificate = extractCertificate(keyStore);
-        this.privateKey = extractPrivateKey(keyStore);
-        this.loaded = true;
+        this.loadedCertificateAndPrivateKey = new CertificateAndPrivateKey(extractCertificate(keyStore),
+            extractPrivateKey(keyStore));
     }
 
     private KeyStore loadKeystore() {
@@ -123,21 +113,6 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
         }
 
         return aliases.getFirst();
-    }
-
-    /**
-     * Interface abstraction of the {@link KeyStore#getCertificate(String)} and {@link KeyStore#getKey(String, char[])}
-     * methods.
-     *
-     * @param <T>
-     *     The type of the certificate or key to be abstracted from the {@link KeyStore}.
-     */
-    @FunctionalInterface
-    private interface KeystoreEntryExtractor<T> {
-
-        T extractEntry(KeyStore keyStore,
-            String alias) throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException;
-
     }
 
 }

@@ -1,5 +1,6 @@
 package dev.mieser.tsa.signing.config;
 
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -101,15 +102,24 @@ public interface TsaProperties {
     interface Pkcs11Properties {
 
         /**
+         * The PKCS#11 implementation to use.
+         */
+        Path library();
+
+        /**
          * The PIN of the PKCS#11 device.
          */
         Optional<String> pin();
 
         /**
+         * The {@code CKA_ID} of the key pair to use.
+         */
+        Optional<String> keyIdentifier();
+
+        /**
          * The configuration of the {@code SunPKCS11} JCE provider.
          */
-        @NotEmpty
-        Map<@NotNull String, String> configuration();
+        Map<@NotNull String, String> additionalConfiguration();
 
     }
 

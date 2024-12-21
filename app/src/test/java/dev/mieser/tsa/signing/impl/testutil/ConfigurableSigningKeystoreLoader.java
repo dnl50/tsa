@@ -5,7 +5,7 @@ import java.security.cert.X509Certificate;
 
 import lombok.Setter;
 
-import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
+import dev.mieser.tsa.signing.impl.cert.keystore.SigningKeystoreLoader;
 import dev.mieser.tsa.testutil.TestKeyLoader;
 
 /**

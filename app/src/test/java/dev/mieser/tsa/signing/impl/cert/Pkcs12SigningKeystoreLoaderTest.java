@@ -1,7 +1,6 @@
 package dev.mieser.tsa.signing.impl.cert;
 
-import static org.assertj.core.api.Assertions.assertThatException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.io.IOException;
@@ -22,6 +21,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import dev.mieser.tsa.signing.impl.cert.keystore.Pkcs12SigningKeystoreLoader;
+
 class Pkcs12SigningKeystoreLoaderTest {
 
     private static final char[] NO_PASSWORD = new char[0];
@@ -40,10 +41,7 @@ class Pkcs12SigningKeystoreLoaderTest {
             var testSubject = new Pkcs12SigningKeystoreLoader("classpath:keystore/ec.p12", NO_PASSWORD, null);
 
             // when / then
-            assertSoftly(softly -> {
-                softly.assertThat(testSubject.loadCertificate()).isNotNull();
-                softly.assertThat(testSubject.loadPrivateKey()).isNotNull();
-            });
+            assertThatNoException().isThrownBy(testSubject::loadCertificateAndPrivateKey);
         }
 
         @Test
@@ -53,7 +51,7 @@ class Pkcs12SigningKeystoreLoaderTest {
 
             // when / then
             assertThatException()
-                .isThrownBy(testSubject::loadCertificate)
+                .isThrownBy(testSubject::loadCertificateAndPrivateKey)
                 .withMessage("Classpath resource 'unknown-resource.p12' not found.");
         }
 
@@ -69,7 +67,7 @@ class Pkcs12SigningKeystoreLoaderTest {
                 NO_PASSWORD, null);
 
             // when / then
-            assertThatIllegalStateException().isThrownBy(testSubject::loadCertificate)
+            assertThatIllegalStateException().isThrownBy(testSubject::loadCertificateAndPrivateKey)
                 .withMessageMatching("Failed to load PKCS#12 Keystore from '.*unknown-file\\.p12'\\.");
         }
 
@@ -88,13 +86,12 @@ class Pkcs12SigningKeystoreLoaderTest {
             var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, NO_PASSWORD, null);
 
             // when
-            X509Certificate actualCertificate = testSubject.loadCertificate();
-            PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
+            CertificateAndPrivateKey actualCertificateAndPrivateKey = testSubject.loadCertificateAndPrivateKey();
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
-                softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
+                softly.assertThat(actualCertificateAndPrivateKey.certificate()).isEqualTo(expectedCertificate);
+                softly.assertThat(actualCertificateAndPrivateKey.privateKey()).isEqualTo(expectedPrivateKey);
             });
         }
 
@@ -108,13 +105,12 @@ class Pkcs12SigningKeystoreLoaderTest {
             var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, PASSWORD, null);
 
             // when
-            X509Certificate actualCertificate = testSubject.loadCertificate();
-            PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
+            CertificateAndPrivateKey actualCertificateAndPrivateKey = testSubject.loadCertificateAndPrivateKey();
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
-                softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
+                softly.assertThat(actualCertificateAndPrivateKey.certificate()).isEqualTo(expectedCertificate);
+                softly.assertThat(actualCertificateAndPrivateKey.privateKey()).isEqualTo(expectedPrivateKey);
             });
         }
 
@@ -132,13 +128,12 @@ class Pkcs12SigningKeystoreLoaderTest {
             var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, NO_PASSWORD, "alias-1");
 
             // when
-            X509Certificate actualCertificate = testSubject.loadCertificate();
-            PrivateKey actualPrivateKey = testSubject.loadPrivateKey();
+            CertificateAndPrivateKey actualCertificateAndPrivateKey = testSubject.loadCertificateAndPrivateKey();
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(actualCertificate).isEqualTo(expectedCertificate);
-                softly.assertThat(actualPrivateKey).isEqualTo(expectedPrivateKey);
+                softly.assertThat(actualCertificateAndPrivateKey.certificate()).isEqualTo(expectedCertificate);
+                softly.assertThat(actualCertificateAndPrivateKey.privateKey()).isEqualTo(expectedPrivateKey);
             });
         }
 
@@ -149,7 +144,7 @@ class Pkcs12SigningKeystoreLoaderTest {
             var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, NO_PASSWORD, null);
 
             // when / then
-            assertThatIllegalStateException().isThrownBy(testSubject::loadCertificate)
+            assertThatIllegalStateException().isThrownBy(testSubject::loadCertificateAndPrivateKey)
                 .withMessage("No entries present in PKCS#12 container.");
         }
 
@@ -160,7 +155,7 @@ class Pkcs12SigningKeystoreLoaderTest {
             var testSubject = new Pkcs12SigningKeystoreLoader(tempFilePath, NO_PASSWORD, null);
 
             // when / then
-            assertThatIllegalStateException().isThrownBy(testSubject::loadCertificate)
+            assertThatIllegalStateException().isThrownBy(testSubject::loadCertificateAndPrivateKey)
                 .withMessage("Multiple entries present in PKCS#12 container. Please configure the alias to use.");
         }
 
@@ -172,7 +167,7 @@ class Pkcs12SigningKeystoreLoaderTest {
 
             // when / then
             assertThatIllegalStateException()
-                .isThrownBy(testSubject::loadCertificate)
+                .isThrownBy(testSubject::loadCertificateAndPrivateKey)
                 .withMessage("The keystore does not contain an entry with alias 'unknown-alias'.");
         }
 

@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.*;
 
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -27,7 +26,7 @@ import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.impl.cert.CertificateParser;
 import dev.mieser.tsa.signing.impl.cert.SigningCertificateExtractor;
 import dev.mieser.tsa.signing.impl.cert.SigningCertificateHolder;
-import dev.mieser.tsa.signing.impl.cert.SigningKeystoreLoader;
+import dev.mieser.tsa.signing.impl.cert.keystore.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampValidationResultMapper;
 import dev.mieser.tsa.testutil.CertificateGenerator;
 import dev.mieser.tsa.testutil.TestKeyLoader;
@@ -98,7 +97,7 @@ class BouncyCastleTimeStampValidatorTest {
                 .map(SigningCertificateHolder::getSigningCertificate)
                 .orElseThrow();
 
-            given(signingKeystoreLoaderMock.loadCertificate())
+            given(signingKeystoreLoaderMock.loadCertificateAndPrivateKey())
                 .willReturn(new JcaX509CertificateConverter().getCertificate(matchingCertificate));
             testSubject.initialize();
 

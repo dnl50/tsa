@@ -29,8 +29,10 @@ import dev.mieser.tsa.signing.api.exception.InvalidTspResponseException;
 import dev.mieser.tsa.signing.api.exception.TsaInitializationException;
 import dev.mieser.tsa.signing.api.exception.TsaNotInitializedException;
 import dev.mieser.tsa.signing.impl.cert.*;
+import dev.mieser.tsa.signing.impl.cert.keystore.SigningKeystoreLoader;
 import dev.mieser.tsa.signing.impl.mapper.TimeStampValidationResultMapper;
 
+// TODO: use JCE provider?
 @Slf4j
 @RequiredArgsConstructor
 public class BouncyCastleTimeStampValidator implements TimeStampValidator {
@@ -54,7 +56,8 @@ public class BouncyCastleTimeStampValidator implements TimeStampValidator {
         }
 
         try {
-            defaultSignatureVerifier = buildSignerInformationVerifier(signingKeystoreLoader.loadCertificate());
+            defaultSignatureVerifier = buildSignerInformationVerifier(
+                signingKeystoreLoader.loadCertificateAndPrivateKey().certificate());
         } catch (InvalidCertificateException e) {
             throw new TsaInitializationException("Failed to initialize signature verifier.", e);
         }
