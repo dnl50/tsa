@@ -1,12 +1,10 @@
 {
-  "name": "Java Graal",
+  "name": "Java Time Stamp Authority",
   "image": "mcr.microsoft.com/devcontainers/java:1-21-bullseye",
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
       "jdkDistro": "graalce",
-      "version": "none",
-      "installMaven": "false",
-      "installGradle": "false"
+      "version": "21.0.2"
     }
   },
   "customizations": {
@@ -14,4 +12,4 @@
       "backend": "IntelliJ"
     }
   }
-}
+}  
