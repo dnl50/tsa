@@ -29,7 +29,7 @@ dependencies {
 
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("jakarta.ws.rs:jakarta.ws.rs-api")
-    implementation(libs.bouncycastle)
+    implementation("org.bouncycastle:bcpkix-jdk18on")
     implementation(libs.mapstruct.runtime)
 
     runtimeOnly("io.quarkus:quarkus-jdbc-h2")
@@ -42,13 +42,13 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("io.quarkus:quarkus-junit5-mockito")
     testImplementation("io.rest-assured:rest-assured")
-    testImplementation(testLibs.assertj)
-    testImplementation(testLibs.archunit)
+    testImplementation(libs.assertj)
+    testImplementation(libs.archunit)
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -59,6 +59,11 @@ tasks.withType<Test>().configureEach {
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
+}
+
+val compileAll by tasks.registering {
+    description = "Lifecycle Task to compile all source sets"
+    dependsOn(tasks.withType<JavaCompile>())
 }
 
 // this file is used in the publish-workflow as well
@@ -84,23 +89,26 @@ spotless {
     }
 }
 
+// setting "quarkus.native.enabled" is not enough when using Gradle, you also have to disable jar packaging
+// see https://github.com/quarkusio/quarkus/discussions/40679
+val buildNativeImage = providers.gradleProperty("nativeImage")
+    .map { it.toBoolean() }
+    .orElse(false)
+
 quarkus {
+    set("package.jar.enabled", buildNativeImage.map { !it }.map(Boolean::toString))
+    set("native.enabled", buildNativeImage.map(Boolean::toString))
     set("native.container-build", "true")
     set("container-image.build", "true")
     set("container-image.group", "dnl50")
     set("container-image.name", "tsa-server")
-    set("container-image.tag", provider {
-        if (project.hasProperty("imageTagSuffix")) {
-            "${project.version}-${project.property("imageTagSuffix")}"
-        } else {
-            project.version.toString()
+    set(
+        "container-image.tag",
+        buildNativeImage.map { native ->
+            "${project.version}${if (native) "" else "-jvm"}"
         }
-    })
+    )
     finalName.set("tsa-${project.version}")
-}
-
-tasks.check {
-    dependsOn(tasks.testNative)
 }
 
 // for some reason quarkus does recognize that the JDBC URL is set in the prod profile. therefore it

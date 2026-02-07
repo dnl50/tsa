@@ -74,7 +74,7 @@ jobs:
           QUARKUS_NATIVE_ENABLED: false
           QUARKUS_PACKAGE_JAR_TYPE: mutable-jar
           QUARKUS_DOCKER_BUILDX_PLATFORM: linux/amd64,linux/arm64
-        run: ./gradlew clean build -PimageTagSuffix=jvm
+        run: ./gradlew build
 
       - name: Update Docker Hub description
         if: ${{ github.event.action == 'released' }}

@@ -1,25 +1,21 @@
-package dev.mieser.tsa.gradle
+package dev.mieser.tsa.gradle.versioning
 
-import org.gradle.api.Plugin
+import dev.mieser.tsa.gradle.versioning.Ref.Type
 import org.gradle.api.Project
+import org.gradle.api.logging.Logging
+import org.gradle.api.provider.ValueSource
+import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.process.ExecOperations
-import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets.UTF_8
 import javax.inject.Inject
 
-/**
- * Sets the project version based on the [GITHUB_REF](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables)
- * environment variable or the current branch name, when the environment variable is not set. When the `projectVersion` project property is set, its
- * value is used as the project version.
- */
-class VersioningPlugin @Inject constructor(private val execOperations: ExecOperations) : Plugin<Project> {
+abstract class VersionValueSource @Inject constructor(private val execOperations: ExecOperations) :
+    ValueSource<String, ValueSourceParameters.None> {
 
-    private val log = LoggerFactory.getLogger(VersioningPlugin::class.java)
+    private val log = Logging.getLogger(VersionValueSource::class.java)
 
     private companion object {
-
-        const val PROJECT_VERSION_PROPERTY_NAME = "projectVersion"
 
         const val GITHUB_REF = "GITHUB_REF"
 
@@ -31,26 +27,7 @@ class VersioningPlugin @Inject constructor(private val execOperations: ExecOpera
 
     }
 
-    override fun apply(project: Project) {
-        determineVersion(project).run {
-            log.info("Setting project version to '{}'.", this)
-            project.version = this
-        }
-
-        project.tasks.register("printVersion") {
-            description = "Print the Project Version to stdout"
-            doLast {
-                println(project.version)
-            }
-        }
-    }
-
-    private fun determineVersion(project: Project): String {
-        if (project.hasProperty(PROJECT_VERSION_PROPERTY_NAME)) {
-            log.info("Using the value of the '{}' property as the project version.", PROJECT_VERSION_PROPERTY_NAME)
-            return project.property(PROJECT_VERSION_PROPERTY_NAME) as String
-        }
-
+    override fun obtain(): String {
         return readRefFromEnvironment()?.run(::formatRef) ?: determineVersionFromCurrentEnv()
     }
 
@@ -90,7 +67,8 @@ class VersioningPlugin @Inject constructor(private val execOperations: ExecOpera
             return null
         }
 
-        val type = Type.values().find { it.identifier == matcher.group("type") }!!
+        val type = Type.entries.find { it.identifier == matcher.group("type") }
+            ?: error("unknown type '${matcher.group("type")}'")
         val value = matcher.group("value")
 
         return Ref(type, value)
@@ -107,21 +85,6 @@ class VersioningPlugin @Inject constructor(private val execOperations: ExecOpera
 
             Type.BRANCH -> "${ref.value.replace('/', '-')}-$SNAPSHOT_SUFFIX"
         }
-    }
-
-    private data class Ref(
-        val type: Type,
-        val value: String
-    )
-
-    private enum class Type(val identifier: String) {
-
-        BRANCH("heads"),
-
-        PULL_REQUEST("pull"),
-
-        TAG("tags")
-
     }
 
 }

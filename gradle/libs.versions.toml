@@ -1,0 +1,20 @@
+[versions]
+# most versions are managed by the quarkus BOM
+archunit = "1.4.1"
+assertj = "3.27.7"
+lombok = "9.2.0"
+mapstruct = "1.6.3"
+quarkus = "3.31.2"
+spotless = "8.2.1"
+
+[libraries]
+archunit = { module = "com.tngtech.archunit:archunit", version.ref = "archunit" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+mapstruct-runtime = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
+mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+quarkus-bom = { module = "io.quarkus:quarkus-bom", version.ref = "quarkus" }
+
+[plugins]
+quarkus = { id = "io.quarkus", version.ref = "quarkus" }
+lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

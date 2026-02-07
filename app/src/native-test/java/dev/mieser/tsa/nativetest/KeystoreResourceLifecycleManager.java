@@ -13,8 +13,7 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 /**
  * {@link QuarkusTestResourceLifecycleManager} which copies a PKCS#12 keystore to a temporary directory on the host
- * system and adds an argument to the {@code docker run} command executed by Quarkus so that the temporary file on the
- * host system is mounted in the container.
+ * system and mounts the temporary file inside the container.
  */
 @Slf4j
 public class KeystoreResourceLifecycleManager implements QuarkusTestResourceLifecycleManager {
@@ -25,7 +24,9 @@ public class KeystoreResourceLifecycleManager implements QuarkusTestResourceLife
     public Map<String, String> start() {
         temporaryFile = copyKeystoreToTemporaryFile();
 
-        return Map.of("quarkus.test.arg-line", String.format("-v %s:/work/keystore.p12", temporaryFile.toAbsolutePath()));
+        return Map.of(
+            "quarkus.test.container.volume-mounts.\"%s\"".formatted(temporaryFile.toAbsolutePath()),
+            "/work/keystore.p12");
     }
 
     @Override

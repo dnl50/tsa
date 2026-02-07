@@ -11,7 +11,7 @@ gradlePlugin {
     plugins {
         create("versioning") {
             id = "dev.mieser.versioning"
-            implementationClass = "dev.mieser.tsa.gradle.VersioningPlugin"
+            implementationClass = "dev.mieser.tsa.gradle.versioning.VersioningPlugin"
         }
     }
 }

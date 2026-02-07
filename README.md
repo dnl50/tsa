@@ -146,6 +146,28 @@ openssl pkcs12 -export -CAfile cacert.pem -chain -in tsacert.pem -inkey tsa.priv
 
 ## Development
 
+### Building an OCI image with a GraalVM native executable
+
+Due to restrictions of the [Quarkus Gradle Plugin](https://github.com/quarkusio/quarkus/discussions/40679)
+you can either build an OCI image with a GraalVM native executable or a JVM based OCI image.
+
+The name of the `testNative` Gradle task is therefore extremely misleading, because it can either use the JVM based
+image or the GraalVM native executable image.
+
+By default, a JVM based OCI image is built and used in the `testNative` task. To build a GraalVM native executable
+image, set the `nativeImage` Gradle property to `true` when executing Gradle tasks:
+
+```bash
+# build the native image without executing end-to-end-tests (just execute the regular JUnit tests)
+./gradlew build -PnativeImage=true
+
+# build the native image and execute the end-to-end-tests (without the regular JUnit tests)
+./gradlew testNative -PnativeImage=true
+```
+
+This Gradle property will properly configure the `quarkus.package.jar.enabled`, `quarkus.native.enabled` and
+`quarkus.container-image.tag` configuration parameters.
+
 ### Running in development mode
 
 In normal operation, no signing certificate is configured by default since you probably want to use your own/your
