@@ -14,6 +14,7 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  * {@link SigningKeystoreLoader} which supports PKCS#12 key stores.
@@ -72,7 +73,7 @@ public class Pkcs12SigningKeystoreLoader implements SigningKeystoreLoader {
 
     private InputStream openStream() throws IOException {
         if (path.toLowerCase().startsWith(CLASSPATH_MARKER)) {
-            String pathWithoutClasspathPrefix = StringUtils.removeStartIgnoreCase(path, CLASSPATH_MARKER);
+            String pathWithoutClasspathPrefix = Strings.CI.removeStart(path, CLASSPATH_MARKER);
             InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(pathWithoutClasspathPrefix);
             return Objects.requireNonNull(resourceStream,
                 String.format("Classpath resource '%s' not found.", pathWithoutClasspathPrefix));
